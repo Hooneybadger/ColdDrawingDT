@@ -1,0 +1,117 @@
+# ============================================================
+# Local working notes
+# ============================================================
+docs/internal/
+AGENTS.md
+CLAUDE.md
+CODEX.md
+.cursor/
+.claude/
+.codex/
+
+# ============================================================
+# Secrets / local configuration
+# ============================================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# ============================================================
+# AI model artifacts (download from Hugging Face)
+# ============================================================
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+
+# ============================================================
+# FEA generated artifacts
+# ============================================================
+fea/workspaces/
+fea/results/
+fea/runs/
+simulation/workspaces/
+simulation/results/
+*.msh
+
+# Source/template .rad files may be version controlled; do not ignore *.rad globally.
+
+# ============================================================
+# Generated Digital Twin / OpenUSD assets
+# ============================================================
+generated/
+artifacts/
+usd/generated/
+omniverse/generated/
+
+# ============================================================
+# Omniverse / NVIDIA local data
+# ============================================================
+.omniverse/
+.kit/
+kit/cache/
+kit/logs/
+cache/
+logs/
+
+# ============================================================
+# Runtime state / databases
+# ============================================================
+data/runtime/
+data/history/
+data/tmp/
+*.db
+*.sqlite
+*.sqlite3
+postgres-data/
+rabbitmq-data/
+grafana-data/
+prometheus-data/
+
+# ============================================================
+# Docker / local volumes
+# ============================================================
+.volumes/
+docker-data/
+
+# ============================================================
+# IDE / OS
+# ============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# Temporary / exports
+# ============================================================
+tmp/
+temp/
+exports/
+*.log
