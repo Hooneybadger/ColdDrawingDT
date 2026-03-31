@@ -1,0 +1,29 @@
+version: fea-reference-v1
+analysis:
+  dimensionality: axisymmetric_2d
+  solver: OpenRadioss
+  integration: explicit
+  intent: quasi_static
+geometry:
+  initial_radius_m: 0.01
+  inlet_length_m: 0.04
+  outlet_length_m: 0.04
+mesh:
+  profile_version: mesh-v1
+  deformation_zone_size_m: 0.00035
+  far_field_size_m: 0.0010
+contact:
+  profile_version: contact-v1
+material:
+  profile_id: stainless_reference_v1
+  mapping_version: hardening-map-v1
+quality:
+  profile_version: quasi-static-quality-v1
+outputs:
+  - von_mises_stress
+  - equivalent_plastic_strain
+  - drawing_force
+  - displacement
+  - kinetic_energy
+  - internal_energy
+  - contact_response
