@@ -1,0 +1,9 @@
+version: fea-criterion-v1
+policy:
+  require_quality_pass: true
+  on_missing_required_metric: INCONCLUSIVE
+  on_quality_failure: INCONCLUSIVE
+criteria:
+  # Project-specific engineering thresholds are defined here as versioned configuration.
+  # The implementation must refuse automatic SAFE/UNSAFE if required thresholds are absent.
+  required_thresholds: []
