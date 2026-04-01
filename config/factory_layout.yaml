@@ -41,3 +41,7 @@ assets:
   - {id: BG.MIEUM.MNT.01, type: MaintenanceZone, x: 52.0, y: 34.5, z: 0, l: 18.0, w: 5.0, h: 3.0}
   - {id: BG.MIEUM.UTL.01, type: UtilityZone, x: 72.0, y: 34.5, z: 0, l: 22.0, w: 5.0, h: 3.0}
 
+cranes:
+  - {id: BG.MIEUM.CRN.A, x_min: 4.0, x_max: 92.0, y_min: 0.6, y_max: 13.1}
+  - {id: BG.MIEUM.CRN.B, x_min: 4.0, x_max: 92.0, y_min: 14.3, y_max: 26.8}
+  - {id: BG.MIEUM.CRN.C, x_min: 4.0, x_max: 92.0, y_min: 28.0, y_max: 40.5}
