@@ -1,0 +1,19 @@
+site:
+  id: BG.MIEUM
+  units: meter
+  coordinate_system:
+    origin: southwest_floor_corner
+    x: hall_longitudinal
+    y: hall_width
+    z: up
+
+main_factory:
+  size:
+    x: 96.0
+    y: 41.13
+    z: 14.2
+  grid:
+    x: [0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96]
+    y: [0, 13.71, 27.42, 41.13]
+
+assets:
