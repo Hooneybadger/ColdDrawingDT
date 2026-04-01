@@ -25,3 +25,10 @@ assets:
   - {id: BG.MIEUM.ECT.01, type: EddyCurrentInspection, x: 56.0, y: 5.4, z: 0, l: 16.0, w: 3.0, h: 2.2}
   - {id: BG.MIEUM.HYD.01, type: HydroTest, x: 73.0, y: 5.4, z: 0, l: 12.0, w: 3.5, h: 2.2}
   - {id: BG.MIEUM.VIS.01, type: VisualInspection, x: 86.0, y: 5.4, z: 0, l: 8.0, w: 3.5, h: 2.2}
+  - {id: BG.MIEUM.RAW.01, type: RawMaterialRack, x: 1.0, y: 14.5, z: 0, l: 14.0, w: 5.5, h: 2.0}
+  - {id: BG.MIEUM.PNT.01, type: PointingMachine, x: 10.0, y: 20.7, z: 0, l: 4.0, w: 2.4, h: 2.0}
+  - {id: BG.MIEUM.PNT.02, type: PointingMachine, x: 10.0, y: 23.6, z: 0, l: 4.0, w: 2.4, h: 2.0}
+  - {id: BG.MIEUM.PLG.01, type: PilgerMill, x: 16.0, y: 14.5, z: 0, l: 34.0, w: 5.4, h: 2.6}
+  - {id: BG.MIEUM.WSH.01, type: WashingLine, x: 52.0, y: 14.5, z: 0, l: 12.0, w: 4.0, h: 2.5}
+  - {id: BG.MIEUM.PACK.01, type: PackingZone, x: 66.0, y: 14.5, z: 0, l: 28.0, w: 5.5, h: 2.0}
+  - {id: BG.MIEUM.FG.01, type: FinishedGoodsRack, x: 66.0, y: 20.7, z: 0, l: 28.0, w: 5.7, h: 2.0}
