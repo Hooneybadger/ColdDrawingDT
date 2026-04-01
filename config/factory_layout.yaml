@@ -17,3 +17,11 @@ main_factory:
     y: [0, 13.71, 27.42, 41.13]
 
 assets:
+  - {id: BG.MIEUM.DRW.02, type: DrawingMachine, x: 18.0, y: 1.2, z: 0, l: 35.5, w: 5.5, h: 2.8}
+  - {id: BG.MIEUM.DRW.04, type: DrawingMachine, x: 18.0, y: 7.4, z: 0, l: 35.5, w: 5.5, h: 2.8}
+  - {id: BG.MIEUM.STR.01, type: StraighteningLine, x: 56.0, y: 1.2, z: 0, l: 17.0, w: 3.3, h: 2.3}
+  - {id: BG.MIEUM.CUT.01, type: CuttingLine, x: 74.0, y: 1.2, z: 0, l: 11.0, w: 3.2, h: 2.2}
+  - {id: BG.MIEUM.DIM.01, type: DimensionInspection, x: 86.0, y: 1.2, z: 0, l: 8.0, w: 3.0, h: 2.2}
+  - {id: BG.MIEUM.ECT.01, type: EddyCurrentInspection, x: 56.0, y: 5.4, z: 0, l: 16.0, w: 3.0, h: 2.2}
+  - {id: BG.MIEUM.HYD.01, type: HydroTest, x: 73.0, y: 5.4, z: 0, l: 12.0, w: 3.5, h: 2.2}
+  - {id: BG.MIEUM.VIS.01, type: VisualInspection, x: 86.0, y: 5.4, z: 0, l: 8.0, w: 3.5, h: 2.2}
