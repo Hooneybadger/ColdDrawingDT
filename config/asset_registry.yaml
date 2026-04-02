@@ -91,3 +91,15 @@ assets:
     aas_id: urn:bg:mieum:utl:01
     usd_prim: /World/BugokFactory/Utilities/General/Utility_01
     class: UtilityZone
+  BG.MIEUM.CRN.A:
+    aas_id: urn:bg:mieum:crn:a
+    usd_prim: /World/BugokFactory/MaterialHandling/Cranes/Crane_A
+    class: OverheadCrane
+  BG.MIEUM.CRN.B:
+    aas_id: urn:bg:mieum:crn:b
+    usd_prim: /World/BugokFactory/MaterialHandling/Cranes/Crane_B
+    class: OverheadCrane
+  BG.MIEUM.CRN.C:
+    aas_id: urn:bg:mieum:crn:c
+    usd_prim: /World/BugokFactory/MaterialHandling/Cranes/Crane_C
+    class: OverheadCrane
