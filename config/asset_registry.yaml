@@ -59,3 +59,35 @@ assets:
     aas_id: urn:bg:mieum:fg:01
     usd_prim: /World/BugokFactory/MaterialHandling/Racks/FinishedGoods_01
     class: FinishedGoodsRack
+  BG.MIEUM.HT.01:
+    aas_id: urn:bg:mieum:ht:01
+    usd_prim: /World/BugokFactory/Production/HeatTreatment/HT_01
+    class: HeatTreatmentLine
+  BG.MIEUM.HT.02:
+    aas_id: urn:bg:mieum:ht:02
+    usd_prim: /World/BugokFactory/Production/HeatTreatment/HT_02
+    class: HeatTreatmentLine
+  BG.MIEUM.HREC.01:
+    aas_id: urn:bg:mieum:hrec:01
+    usd_prim: /World/BugokFactory/Utilities/HeatRecovery/HeatRecovery_01
+    class: HeatRecovery
+  BG.MIEUM.OIL.01:
+    aas_id: urn:bg:mieum:oil:01
+    usd_prim: /World/BugokFactory/Utilities/OilCirculation/Oil_01
+    class: OilCirculation
+  BG.MIEUM.GAS.01:
+    aas_id: urn:bg:mieum:gas:01
+    usd_prim: /World/BugokFactory/Utilities/Gas/Gas_01
+    class: GasSystem
+  BG.MIEUM.CTRL.01:
+    aas_id: urn:bg:mieum:ctrl:01
+    usd_prim: /World/BugokFactory/Utilities/Electrical/Control_01
+    class: ControlElectrical
+  BG.MIEUM.MNT.01:
+    aas_id: urn:bg:mieum:mnt:01
+    usd_prim: /World/BugokFactory/Utilities/Maintenance/Maintenance_01
+    class: MaintenanceZone
+  BG.MIEUM.UTL.01:
+    aas_id: urn:bg:mieum:utl:01
+    usd_prim: /World/BugokFactory/Utilities/General/Utility_01
+    class: UtilityZone
