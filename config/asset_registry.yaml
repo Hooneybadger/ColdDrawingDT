@@ -1,0 +1,33 @@
+assets:
+  BG.MIEUM.DRW.02:
+    aas_id: urn:bg:mieum:drw:02
+    usd_prim: /World/BugokFactory/Production/Drawing/Drawing_02
+    class: DrawingMachine
+  BG.MIEUM.DRW.04:
+    aas_id: urn:bg:mieum:drw:04
+    usd_prim: /World/BugokFactory/Production/Drawing/Drawing_04
+    class: DrawingMachine
+  BG.MIEUM.STR.01:
+    aas_id: urn:bg:mieum:str:01
+    usd_prim: /World/BugokFactory/Production/Straightening/Straightening_01
+    class: StraighteningLine
+  BG.MIEUM.CUT.01:
+    aas_id: urn:bg:mieum:cut:01
+    usd_prim: /World/BugokFactory/Production/Cutting/Cutting_01
+    class: CuttingLine
+  BG.MIEUM.DIM.01:
+    aas_id: urn:bg:mieum:dim:01
+    usd_prim: /World/BugokFactory/Inspection/Dimension/Dimension_01
+    class: DimensionInspection
+  BG.MIEUM.ECT.01:
+    aas_id: urn:bg:mieum:ect:01
+    usd_prim: /World/BugokFactory/Inspection/ECT/ECT_01
+    class: EddyCurrentInspection
+  BG.MIEUM.HYD.01:
+    aas_id: urn:bg:mieum:hyd:01
+    usd_prim: /World/BugokFactory/Inspection/Hydro/Hydro_01
+    class: HydroTest
+  BG.MIEUM.VIS.01:
+    aas_id: urn:bg:mieum:vis:01
+    usd_prim: /World/BugokFactory/Inspection/Visual/Visual_01
+    class: VisualInspection
