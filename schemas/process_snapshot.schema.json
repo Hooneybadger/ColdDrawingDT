@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProcessSnapshot",
+  "type": "object",
+  "required": [
+    "snapshot_id",
+    "asset_id",
+    "captured_at",
+    "features"
+  ],
+  "properties": {
+    "snapshot_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_state_version": {
+      "type": "string"
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reduction_ratio",
+        "die_half_angle_rad",
+        "friction_coefficient",
+        "normalized_hardening_coefficient"
+      ],
+      "properties": {
+        "reduction_ratio": {
+          "type": "number"
+        },
+        "die_half_angle_rad": {
+          "type": "number"
+        },
+        "friction_coefficient": {
+          "type": "number"
+        },
+        "normalized_hardening_coefficient": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
