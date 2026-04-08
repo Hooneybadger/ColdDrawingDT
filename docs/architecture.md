@@ -28,3 +28,16 @@ flowchart TD
   decision --> metrics[Metrics]
 ```
 
+## Who owns which data
+
+| Data | Owner |
+|---|---|
+| Asset identity and live meaning | AAS / BaSyx |
+| Time history of measurements | TimescaleDB |
+| Evaluation and Decision lifecycle | PostgreSQL tables |
+| PINN files and version | Local model manifest |
+| FEA job lifecycle | Database row plus queue |
+| FEA raw files | On-site artifact store |
+| Spatial factory | OpenUSD |
+| Metrics | Prometheus |
+
