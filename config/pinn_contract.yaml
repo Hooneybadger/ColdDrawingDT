@@ -1,0 +1,20 @@
+model:
+  repository: https://huggingface.co/MongsangGa/cold-drawing-pinn-poc
+  release: v0.1.1
+  weights: pinn.pt
+  entrypoint: predict.py
+features:
+  - name: reduction_ratio
+    min: 0.10
+    max: 0.50
+  - name: die_half_angle_rad
+    min: 0.07
+    max: 0.35
+  - name: friction_coefficient
+    min: 0.03
+    max: 0.15
+  - name: normalized_hardening_coefficient
+    min: 0.20
+    max: 1.20
+verdicts: [SAFE, UNSAFE, NEED_FEA]
+nullable_fields: [probability, confidence]
