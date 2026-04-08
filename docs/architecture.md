@@ -41,3 +41,25 @@ flowchart TD
 | Spatial factory | OpenUSD |
 | Metrics | Prometheus |
 
+## Two check paths
+
+Fast path, from the demo Snapshot `snap-0001`:
+
+```text
+state change -> Snapshot -> PINN -> SAFE or UNSAFE -> Routing policy -> Decision
+```
+
+FEA path, from demo PINN result `NEED_FEA`:
+
+```text
+state change -> Snapshot -> PINN NEED_FEA -> FEA job -> Gmsh -> OpenRadioss -> criterion -> Decision
+```
+
+Failure path in this version's routing file:
+
+```text
+required FEA -> FAILED or TIMEOUT or INCONCLUSIVE -> MANUAL_REVIEW
+```
+
+See [examples/decision.example.json](examples/decision.example.json) and [examples/decision_fea.example.json](examples/decision_fea.example.json).
+
