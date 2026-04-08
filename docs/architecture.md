@@ -113,3 +113,6 @@ See [examples/decision.example.json](examples/decision.example.json) and [exampl
 - FEA field view
 - Senior and operator apps
 
+## Scenario boundary
+
+A Scenario starts from a Snapshot, applies overrides, and stores its own Evaluation. It must not change live Digital Twin state unless a person later accepts that change.
