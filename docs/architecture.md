@@ -63,3 +63,53 @@ required FEA -> FAILED or TIMEOUT or INCONCLUSIVE -> MANUAL_REVIEW
 
 See [examples/decision.example.json](examples/decision.example.json) and [examples/decision_fea.example.json](examples/decision_fea.example.json).
 
+## Layer jobs
+
+### Edge adapter
+
+- Talk to OPC UA
+- Map nodes to domain fields
+- Keep source time and quality
+- Reconnect with backoff
+
+### Digital Twin
+
+- Asset identity
+- Current process, material, Evaluation, and FEA state
+
+### History store
+
+- Measurements and state changes
+- Snapshot source references
+- Timeline queries
+
+### Evaluation
+
+- Freshness check
+- Immutable Snapshot
+- PINN call
+- Routing policy
+- FEA job create
+- Lineage save
+
+### PINN adapter
+
+- Build features in the glossary order
+- Check supported ranges
+- Call the released local model
+- Parse `SAFE`, `UNSAFE`, `NEED_FEA`
+
+### FEA pipeline
+
+- Map process features to physical inputs
+- Build geometry and mesh
+- Run OpenRadioss
+- Apply the versioned safety criterion
+
+### OpenUSD view
+
+- Factory layout
+- Live and history overlays
+- FEA field view
+- Senior and operator apps
+
