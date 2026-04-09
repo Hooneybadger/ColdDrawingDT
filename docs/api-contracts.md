@@ -51,3 +51,21 @@ A Scenario is labeled `SCENARIO` everywhere. It cannot overwrite live factory st
 }
 ```
 
+## PINN result
+
+[examples/prediction_result.example.json](examples/prediction_result.example.json):
+
+```json
+{
+  "verdict": "NEED_FEA",
+  "stress_indicator": 0.0,
+  "damage_indicator": 0.0,
+  "physics_residual": 0.0,
+  "confidence": null,
+  "model_version": "v0.1.1",
+  "supported_range": true
+}
+```
+
+`confidence: null` means unused, not zero.
+
