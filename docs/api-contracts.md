@@ -19,3 +19,17 @@ Do not send an unnamed four-value list outside the PINN process.
 
 Source: [config/pinn_contract.yaml](../config/pinn_contract.yaml) and [schemas/process_snapshot.schema.json](../schemas/process_snapshot.schema.json).
 
+## Evaluation request
+
+The client names the Asset. The server copies live values from the Digital Twin. The client does not submit safety-critical feature values for a live Evaluation.
+
+[examples/evaluation_request.example.json](examples/evaluation_request.example.json):
+
+```json
+{
+  "asset_id": "BG.MIEUM.DRW.04",
+  "mode": "OPERATIONAL",
+  "expected_state_version": "state-0001"
+}
+```
+
