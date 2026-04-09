@@ -33,3 +33,21 @@ The client names the Asset. The server copies live values from the Digital Twin.
 }
 ```
 
+## Scenario request
+
+A Scenario is labeled `SCENARIO` everywhere. It cannot overwrite live factory state.
+
+[examples/scenario_request.example.json](examples/scenario_request.example.json):
+
+```json
+{
+  "base_snapshot_id": "snap-0001",
+  "overrides": {
+    "reduction_ratio": 0.3,
+    "die_half_angle_rad": 0.2,
+    "friction_coefficient": 0.08,
+    "normalized_hardening_coefficient": 0.7
+  }
+}
+```
+
