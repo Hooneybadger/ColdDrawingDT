@@ -69,3 +69,22 @@ A Scenario is labeled `SCENARIO` everywhere. It cannot overwrite live factory st
 
 `confidence: null` means unused, not zero.
 
+## FEA job
+
+[examples/fea_job.example.json](examples/fea_job.example.json):
+
+```json
+{
+  "job_id": "fea-0001",
+  "evaluation_id": "eval-0002",
+  "snapshot_id": "snap-0002",
+  "status": "QUEUED",
+  "solver": "OpenRadioss",
+  "solver_version": "unset",
+  "material_mapping_version": "hardening-map-v1",
+  "safety_criterion_version": "fea-criterion-v1"
+}
+```
+
+`solver_version` is `unset` until a worker pins a real solver build.
+
