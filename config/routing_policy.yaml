@@ -1,0 +1,16 @@
+version: routing-v1
+rules:
+  - when: required_input_missing
+    result: MANUAL_REVIEW
+  - when: twin_stale
+    result: MANUAL_REVIEW
+  - when: pinn_unavailable_or_invalid
+    result: MANUAL_REVIEW
+  - when: pinn_verdict_NEED_FEA
+    result: REQUIRES_FEA
+  - when: site_policy_requires_fea
+    result: REQUIRES_FEA
+  - when: pinn_verdict_UNSAFE
+    result: REJECT
+  - when: pinn_verdict_SAFE
+    result: ACCEPT
