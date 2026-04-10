@@ -27,3 +27,11 @@ Output fields:
 - model version
 - optional probability or confidence (`null` means unused)
 
+## Adapter rule
+
+The product does not reimplement model math. It calls the released files through a stable adapter and records version and checksum.
+
+```text
+Snapshot -> feature builder -> range check -> local PINN -> parsed result
+```
+
