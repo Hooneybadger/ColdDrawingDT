@@ -109,3 +109,17 @@ Fast path: [examples/decision.example.json](examples/decision.example.json)
 
 FEA path that needs a person: [examples/decision_fea.example.json](examples/decision_fea.example.json)
 
+## Planned HTTP API
+
+```text
+GET  /assets/{asset_id}
+GET  /assets/{asset_id}/state
+GET  /assets/{asset_id}/history
+POST /assets/{asset_id}/evaluations
+GET  /evaluations/{evaluation_id}
+POST /scenarios
+GET  /scenarios/{scenario_id}
+GET  /fea-jobs/{job_id}
+GET  /decisions/{decision_id}
+```
+
