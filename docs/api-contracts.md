@@ -88,3 +88,24 @@ A Scenario is labeled `SCENARIO` everywhere. It cannot overwrite live factory st
 
 `solver_version` is `unset` until a worker pins a real solver build.
 
+## Decision
+
+Schema: [schemas/decision.schema.json](../schemas/decision.schema.json).
+
+Fast path: [examples/decision.example.json](examples/decision.example.json)
+
+```json
+{
+  "decision_id": "dec-0001",
+  "evaluation_id": "eval-0001",
+  "snapshot_id": "snap-0001",
+  "status": "FINALIZED",
+  "verdict": "SAFE",
+  "model_version": "v0.1.1",
+  "routing_policy_version": "routing-v1",
+  "fea_job_id": null
+}
+```
+
+FEA path that needs a person: [examples/decision_fea.example.json](examples/decision_fea.example.json)
+
