@@ -123,3 +123,14 @@ GET  /fea-jobs/{job_id}
 GET  /decisions/{decision_id}
 ```
 
+## Planned events
+
+Event names:
+
+- `TWIN_UPDATED`
+- `EVALUATION_STATE_CHANGED`
+- `FEA_JOB_STATE_CHANGED`
+- `DECISION_FINALIZED`
+- `ALERT_RAISED`
+
+HTTP remains the source for commands and queries. Events only notify, and they include IDs so a client can fetch again.
