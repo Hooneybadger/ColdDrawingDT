@@ -35,3 +35,19 @@ The product does not reimplement model math. It calls the released files through
 Snapshot -> feature builder -> range check -> local PINN -> parsed result
 ```
 
+## Routing
+
+Source: [config/routing_policy.yaml](../config/routing_policy.yaml), version `routing-v1`.
+
+Order:
+
+1. Required Digital Twin data missing -> `MANUAL_REVIEW`
+2. Digital Twin stale -> `MANUAL_REVIEW`
+3. PINN missing or invalid -> `MANUAL_REVIEW`
+4. PINN returns `NEED_FEA` -> `REQUIRES_FEA`
+5. Site policy requires FEA -> `REQUIRES_FEA`
+6. PINN returns `UNSAFE` -> `REJECT`
+7. PINN returns `SAFE` -> `ACCEPT`
+
+Do not invent a probability cutoff. This PINN release does not require one.
+
