@@ -73,3 +73,22 @@ stateDiagram-v2
 
 FEA is extra physics work for cases that need more check. A covered `UNSAFE` result does not need a second solve only because it is unsafe. The PINN already emits `NEED_FEA`. That is the main FEA trigger, plus data-quality and site rules.
 
+## Queue
+
+Planned queues:
+
+- `fea.default`
+- `fea.priority`
+
+Worker rules for long jobs:
+
+- Late acknowledgement
+- Low prefetch
+- Persist the job row before launch
+- Idempotent tasks
+- Subprocess timeout and process-group cleanup
+
+Job states:
+
+`PENDING -> QUEUED -> RUNNING -> SUCCEEDED or FAILED or TIMEOUT or CANCELLED`
+
