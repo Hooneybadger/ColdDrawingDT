@@ -51,3 +51,21 @@ Order:
 
 Do not invent a probability cutoff. This PINN release does not require one.
 
+## Evaluation states
+
+```mermaid
+stateDiagram-v2
+  [*] --> CREATED
+  CREATED --> SNAPSHOT_READY
+  SNAPSHOT_READY --> PINN_RUNNING
+  PINN_RUNNING --> MANUAL_REVIEW: invalid or unavailable
+  PINN_RUNNING --> ROUTING
+  ROUTING --> FINALIZED: ACCEPT or REJECT
+  ROUTING --> FEA_QUEUED: REQUIRES_FEA
+  FEA_QUEUED --> FEA_RUNNING
+  FEA_RUNNING --> POSTPROCESSING: SUCCEEDED
+  POSTPROCESSING --> FINALIZING
+  FINALIZING --> FINALIZED
+  FEA_RUNNING --> MANUAL_REVIEW: FAILED or TIMEOUT
+```
+
