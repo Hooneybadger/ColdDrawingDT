@@ -107,3 +107,22 @@ hash(
 )
 ```
 
+## Planned FEA code layout
+
+```text
+simulation/
+  preprocess/
+    parameter_mapping.py
+    geometry.py
+    mesh.py
+    radioss_deck.py
+  solver/
+    openradioss.py
+  postprocess/
+    fields.py
+    energy.py
+    force.py
+    damage.py
+    safety_criterion.py
+```
+
