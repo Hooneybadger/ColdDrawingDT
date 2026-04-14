@@ -92,3 +92,18 @@ Job states:
 
 `PENDING -> QUEUED -> RUNNING -> SUCCEEDED or FAILED or TIMEOUT or CANCELLED`
 
+## Idempotency
+
+Reuse a successful FEA result when this hash matches, unless a person asks to rerun:
+
+```text
+hash(
+  snapshot_id,
+  fea_profile_version,
+  material_mapping_version,
+  mesh_config_version,
+  solver_version,
+  safety_criterion_version
+)
+```
+
