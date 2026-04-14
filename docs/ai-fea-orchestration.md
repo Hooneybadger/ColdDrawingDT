@@ -126,3 +126,8 @@ simulation/
     safety_criterion.py
 ```
 
+## Final Decision after FEA
+
+Solver success creates an FEA result object. A separate versioned criterion then returns `SAFE`, `UNSAFE`, or `INCONCLUSIVE`. `INCONCLUSIVE` goes to Manual review.
+
+This version's criterion file has no numeric thresholds yet, so an automatic SAFE/UNSAFE from FEA must not be claimed. See [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml).
