@@ -99,3 +99,6 @@ First deploy:
 
 Do not add MQTT only because BaSyx can speak MQTT. The edge adapter already covers source data unless a later fan-out need appears.
 
+## History boundary
+
+The Digital Twin holds current values and current references. Every accepted state change is also written to TimescaleDB with source time, ingest time, quality, and Asset ID.
