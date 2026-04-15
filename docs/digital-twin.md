@@ -81,3 +81,11 @@ Worked example: [examples/process_snapshot.example.json](examples/process_snapsh
 }
 ```
 
+## Freshness
+
+```text
+freshness = evaluation_start_time - latest_required_source_timestamp
+```
+
+Configuration will set a maximum age per source class. Missing required signal or a stale Snapshot blocks an automatic final Decision.
+
