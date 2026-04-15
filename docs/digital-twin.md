@@ -89,3 +89,13 @@ freshness = evaluation_start_time - latest_required_source_timestamp
 
 Configuration will set a maximum age per source class. Missing required signal or a stale Snapshot blocks an automatic final Decision.
 
+## BaSyx
+
+First deploy:
+
+- AAS Environment or AAS Repository
+- Submodel Repository
+- Registry when many services need discovery
+
+Do not add MQTT only because BaSyx can speak MQTT. The edge adapter already covers source data unless a later fan-out need appears.
+
