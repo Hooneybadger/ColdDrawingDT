@@ -63,3 +63,19 @@ The curve numbers are not in the repository yet. Do not treat the normalized sca
 
 `friction_coefficient` maps to die/material friction. Contact and penalty settings live in a versioned FEA profile, not as hidden constants. Demo value: `0.08`.
 
+## Mesh
+
+Gmsh Python API will build the 2D axisymmetric mesh.
+
+- Finer near die entry, cone, and exit
+- Coarser away from the deformation zone
+- Deterministic size config
+- Mesh stats and checksum
+
+Mesh convergence is part of validation.
+
+Reference sizes in this version:
+
+- deformation zone `0.00035 m`
+- far field `0.0010 m`
+
