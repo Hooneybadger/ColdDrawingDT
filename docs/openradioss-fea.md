@@ -48,3 +48,14 @@ r_0 = 0.01 m
 r_f = 0.01 * sqrt(1 - 0.3) = 0.00837 m
 ```
 
+## Material mapping
+
+PINN field `normalized_hardening_coefficient` is not MPa.
+
+This version records IDs only:
+
+- `material_profile_id: stainless_reference_v1`
+- `mapping_version: hardening-map-v1`
+
+The curve numbers are not in the repository yet. Do not treat the normalized scalar as a physical unit. A later calibrated card can replace the mapping without changing Evaluation contracts.
+
