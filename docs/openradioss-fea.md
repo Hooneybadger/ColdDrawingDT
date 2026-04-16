@@ -59,3 +59,7 @@ This version records IDs only:
 
 The curve numbers are not in the repository yet. Do not treat the normalized scalar as a physical unit. A later calibrated card can replace the mapping without changing Evaluation contracts.
 
+## Contact
+
+`friction_coefficient` maps to die/material friction. Contact and penalty settings live in a versioned FEA profile, not as hidden constants. Demo value: `0.08`.
+
