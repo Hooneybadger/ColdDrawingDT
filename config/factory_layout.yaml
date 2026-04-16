@@ -1,0 +1,47 @@
+site:
+  id: BG.MIEUM
+  units: meter
+  coordinate_system:
+    origin: southwest_floor_corner
+    x: hall_longitudinal
+    y: hall_width
+    z: up
+
+main_factory:
+  size:
+    x: 96.0
+    y: 41.13
+    z: 14.2
+  grid:
+    x: [0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96]
+    y: [0, 13.71, 27.42, 41.13]
+
+assets:
+  - {id: BG.MIEUM.DRW.02, type: DrawingMachine, x: 18.0, y: 1.2, z: 0, l: 35.5, w: 5.5, h: 2.8}
+  - {id: BG.MIEUM.DRW.04, type: DrawingMachine, x: 18.0, y: 7.4, z: 0, l: 35.5, w: 5.5, h: 2.8}
+  - {id: BG.MIEUM.STR.01, type: StraighteningLine, x: 56.0, y: 1.2, z: 0, l: 17.0, w: 3.3, h: 2.3}
+  - {id: BG.MIEUM.CUT.01, type: CuttingLine, x: 74.0, y: 1.2, z: 0, l: 11.0, w: 3.2, h: 2.2}
+  - {id: BG.MIEUM.DIM.01, type: DimensionInspection, x: 86.0, y: 1.2, z: 0, l: 8.0, w: 3.0, h: 2.2}
+  - {id: BG.MIEUM.ECT.01, type: EddyCurrentInspection, x: 56.0, y: 5.4, z: 0, l: 16.0, w: 3.0, h: 2.2}
+  - {id: BG.MIEUM.HYD.01, type: HydroTest, x: 73.0, y: 5.4, z: 0, l: 12.0, w: 3.5, h: 2.2}
+  - {id: BG.MIEUM.VIS.01, type: VisualInspection, x: 86.0, y: 5.4, z: 0, l: 8.0, w: 3.5, h: 2.2}
+  - {id: BG.MIEUM.RAW.01, type: RawMaterialRack, x: 1.0, y: 14.5, z: 0, l: 14.0, w: 5.5, h: 2.0}
+  - {id: BG.MIEUM.PNT.01, type: PointingMachine, x: 10.0, y: 20.7, z: 0, l: 4.0, w: 2.4, h: 2.0}
+  - {id: BG.MIEUM.PNT.02, type: PointingMachine, x: 10.0, y: 23.6, z: 0, l: 4.0, w: 2.4, h: 2.0}
+  - {id: BG.MIEUM.PLG.01, type: PilgerMill, x: 16.0, y: 14.5, z: 0, l: 34.0, w: 5.4, h: 2.6}
+  - {id: BG.MIEUM.WSH.01, type: WashingLine, x: 52.0, y: 14.5, z: 0, l: 12.0, w: 4.0, h: 2.5}
+  - {id: BG.MIEUM.PACK.01, type: PackingZone, x: 66.0, y: 14.5, z: 0, l: 28.0, w: 5.5, h: 2.0}
+  - {id: BG.MIEUM.FG.01, type: FinishedGoodsRack, x: 66.0, y: 20.7, z: 0, l: 28.0, w: 5.7, h: 2.0}
+  - {id: BG.MIEUM.HT.01, type: HeatTreatmentLine, x: 14.0, y: 28.4, z: 0, l: 36.8, w: 4.0, h: 3.5}
+  - {id: BG.MIEUM.HT.02, type: HeatTreatmentLine, x: 14.0, y: 33.1, z: 0, l: 36.8, w: 4.0, h: 3.5}
+  - {id: BG.MIEUM.HREC.01, type: HeatRecovery, x: 52.0, y: 28.4, z: 0, l: 8.0, w: 5.0, h: 3.0}
+  - {id: BG.MIEUM.OIL.01, type: OilCirculation, x: 61.0, y: 28.4, z: 0, l: 8.0, w: 5.0, h: 3.0}
+  - {id: BG.MIEUM.GAS.01, type: GasSystem, x: 70.0, y: 28.4, z: 0, l: 11.0, w: 5.0, h: 3.0}
+  - {id: BG.MIEUM.CTRL.01, type: ControlElectrical, x: 82.0, y: 28.4, z: 0, l: 12.0, w: 5.0, h: 3.0}
+  - {id: BG.MIEUM.MNT.01, type: MaintenanceZone, x: 52.0, y: 34.5, z: 0, l: 18.0, w: 5.0, h: 3.0}
+  - {id: BG.MIEUM.UTL.01, type: UtilityZone, x: 72.0, y: 34.5, z: 0, l: 22.0, w: 5.0, h: 3.0}
+
+cranes:
+  - {id: BG.MIEUM.CRN.A, x_min: 4.0, x_max: 92.0, y_min: 0.6, y_max: 13.1}
+  - {id: BG.MIEUM.CRN.B, x_min: 4.0, x_max: 92.0, y_min: 14.3, y_max: 26.8}
+  - {id: BG.MIEUM.CRN.C, x_min: 4.0, x_max: 92.0, y_min: 28.0, y_max: 40.5}
