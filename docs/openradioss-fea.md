@@ -22,3 +22,29 @@ Cold drawing has large plastic strain and sliding friction. OpenRadioss is an ex
 
 The process is quasi-static. Explicit time stepping is allowed only if energy and force checks show that fake inertia is not driving the answer.
 
+## First model
+
+First case: round bar, 2D axisymmetric.
+
+Geometry:
+
+- Start radius from the reference profile
+- Final radius from `reduction_ratio`
+- Die cone from `die_half_angle_rad`
+- Enough inlet and outlet contact length
+- Rigid or very stiff die
+
+Circular reduction:
+
+```text
+A_f = A_0 * (1 - reduction_ratio)
+r_f = r_0 * sqrt(1 - reduction_ratio)
+```
+
+Demo Snapshot uses `reduction_ratio = 0.3` and `initial_radius_m = 0.01` from [config/fea_reference_case.yaml](../config/fea_reference_case.yaml):
+
+```text
+r_0 = 0.01 m
+r_f = 0.01 * sqrt(1 - 0.3) = 0.00837 m
+```
+
