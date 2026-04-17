@@ -123,3 +123,16 @@ Keep when available:
 
 Damage is a separate postprocess unless a chosen OpenRadioss failure model is validated for that meaning.
 
+## Safety criterion
+
+```mermaid
+flowchart TD
+  done[OpenRadioss finished] --> result[FEA result metrics and quality]
+  result --> criterion[Safety criterion fea-criterion-v1]
+  criterion --> safe[SAFE]
+  criterion --> unsafe[UNSAFE]
+  criterion --> inconclusive[INCONCLUSIVE]
+```
+
+Thresholds live in [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml). In this version `required_thresholds` is an empty list. The implementation must refuse automatic `SAFE` or `UNSAFE` when required thresholds are absent. Solver exit code is never a safety verdict.
+
