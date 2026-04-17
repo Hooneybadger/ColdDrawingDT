@@ -1,0 +1,105 @@
+assets:
+  BG.MIEUM.DRW.02:
+    aas_id: urn:bg:mieum:drw:02
+    usd_prim: /World/BugokFactory/Production/Drawing/Drawing_02
+    class: DrawingMachine
+  BG.MIEUM.DRW.04:
+    aas_id: urn:bg:mieum:drw:04
+    usd_prim: /World/BugokFactory/Production/Drawing/Drawing_04
+    class: DrawingMachine
+  BG.MIEUM.STR.01:
+    aas_id: urn:bg:mieum:str:01
+    usd_prim: /World/BugokFactory/Production/Straightening/Straightening_01
+    class: StraighteningLine
+  BG.MIEUM.CUT.01:
+    aas_id: urn:bg:mieum:cut:01
+    usd_prim: /World/BugokFactory/Production/Cutting/Cutting_01
+    class: CuttingLine
+  BG.MIEUM.DIM.01:
+    aas_id: urn:bg:mieum:dim:01
+    usd_prim: /World/BugokFactory/Inspection/Dimension/Dimension_01
+    class: DimensionInspection
+  BG.MIEUM.ECT.01:
+    aas_id: urn:bg:mieum:ect:01
+    usd_prim: /World/BugokFactory/Inspection/ECT/ECT_01
+    class: EddyCurrentInspection
+  BG.MIEUM.HYD.01:
+    aas_id: urn:bg:mieum:hyd:01
+    usd_prim: /World/BugokFactory/Inspection/Hydro/Hydro_01
+    class: HydroTest
+  BG.MIEUM.VIS.01:
+    aas_id: urn:bg:mieum:vis:01
+    usd_prim: /World/BugokFactory/Inspection/Visual/Visual_01
+    class: VisualInspection
+  BG.MIEUM.RAW.01:
+    aas_id: urn:bg:mieum:raw:01
+    usd_prim: /World/BugokFactory/MaterialHandling/Racks/RawRack_01
+    class: RawMaterialRack
+  BG.MIEUM.PNT.01:
+    aas_id: urn:bg:mieum:pnt:01
+    usd_prim: /World/BugokFactory/Production/Pointing/Pointing_01
+    class: PointingMachine
+  BG.MIEUM.PNT.02:
+    aas_id: urn:bg:mieum:pnt:02
+    usd_prim: /World/BugokFactory/Production/Pointing/Pointing_02
+    class: PointingMachine
+  BG.MIEUM.PLG.01:
+    aas_id: urn:bg:mieum:plg:01
+    usd_prim: /World/BugokFactory/Production/Pilger/Pilger_01
+    class: PilgerMill
+  BG.MIEUM.WSH.01:
+    aas_id: urn:bg:mieum:wsh:01
+    usd_prim: /World/BugokFactory/Production/Cleaning/Washing_01
+    class: WashingLine
+  BG.MIEUM.PACK.01:
+    aas_id: urn:bg:mieum:pack:01
+    usd_prim: /World/BugokFactory/Production/Packaging/Packing_01
+    class: PackingZone
+  BG.MIEUM.FG.01:
+    aas_id: urn:bg:mieum:fg:01
+    usd_prim: /World/BugokFactory/MaterialHandling/Racks/FinishedGoods_01
+    class: FinishedGoodsRack
+  BG.MIEUM.HT.01:
+    aas_id: urn:bg:mieum:ht:01
+    usd_prim: /World/BugokFactory/Production/HeatTreatment/HT_01
+    class: HeatTreatmentLine
+  BG.MIEUM.HT.02:
+    aas_id: urn:bg:mieum:ht:02
+    usd_prim: /World/BugokFactory/Production/HeatTreatment/HT_02
+    class: HeatTreatmentLine
+  BG.MIEUM.HREC.01:
+    aas_id: urn:bg:mieum:hrec:01
+    usd_prim: /World/BugokFactory/Utilities/HeatRecovery/HeatRecovery_01
+    class: HeatRecovery
+  BG.MIEUM.OIL.01:
+    aas_id: urn:bg:mieum:oil:01
+    usd_prim: /World/BugokFactory/Utilities/OilCirculation/Oil_01
+    class: OilCirculation
+  BG.MIEUM.GAS.01:
+    aas_id: urn:bg:mieum:gas:01
+    usd_prim: /World/BugokFactory/Utilities/Gas/Gas_01
+    class: GasSystem
+  BG.MIEUM.CTRL.01:
+    aas_id: urn:bg:mieum:ctrl:01
+    usd_prim: /World/BugokFactory/Utilities/Electrical/Control_01
+    class: ControlElectrical
+  BG.MIEUM.MNT.01:
+    aas_id: urn:bg:mieum:mnt:01
+    usd_prim: /World/BugokFactory/Utilities/Maintenance/Maintenance_01
+    class: MaintenanceZone
+  BG.MIEUM.UTL.01:
+    aas_id: urn:bg:mieum:utl:01
+    usd_prim: /World/BugokFactory/Utilities/General/Utility_01
+    class: UtilityZone
+  BG.MIEUM.CRN.A:
+    aas_id: urn:bg:mieum:crn:a
+    usd_prim: /World/BugokFactory/MaterialHandling/Cranes/Crane_A
+    class: OverheadCrane
+  BG.MIEUM.CRN.B:
+    aas_id: urn:bg:mieum:crn:b
+    usd_prim: /World/BugokFactory/MaterialHandling/Cranes/Crane_B
+    class: OverheadCrane
+  BG.MIEUM.CRN.C:
+    aas_id: urn:bg:mieum:crn:c
+    usd_prim: /World/BugokFactory/MaterialHandling/Cranes/Crane_C
+    class: OverheadCrane
