@@ -136,3 +136,15 @@ flowchart TD
 
 Thresholds live in [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml). In this version `required_thresholds` is an empty list. The implementation must refuse automatic `SAFE` or `UNSAFE` when required thresholds are absent. Solver exit code is never a safety verdict.
 
+## Planned CLI
+
+```bash
+python -m cold_drawing_twin.simulation.run \
+  --reduction-ratio 0.30 \
+  --die-angle-rad 0.20 \
+  --friction 0.08 \
+  --hardening 0.70
+```
+
+That command does not exist in this version. When it exists, it must run a real Gmsh -> OpenRadioss solve and print quality, metrics, criterion version, and verdict.
+
