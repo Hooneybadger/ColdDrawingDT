@@ -109,3 +109,17 @@ A job that misses the versioned quality rule is `INCONCLUSIVE`, not `SAFE` or `U
 
 Do not hard-code one kinetic/internal energy ratio as science. Keep the rule in a versioned quality profile and test it on reference cases. This version names that profile `quasi-static-quality-v1` and does not yet give numeric limits.
 
+## Solver outputs
+
+Keep when available:
+
+- von Mises stress
+- equivalent plastic strain
+- reaction / drawing force
+- displacement
+- energy histories
+- contact status / force
+- critical-region coordinates
+
+Damage is a separate postprocess unless a chosen OpenRadioss failure model is validated for that meaning.
+
