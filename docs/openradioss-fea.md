@@ -79,3 +79,19 @@ Reference sizes in this version:
 - deformation zone `0.00035 m`
 - far field `0.0010 m`
 
+## Solver steps
+
+```text
+1. Create an isolated job directory
+2. Write immutable inputs and config
+3. Generate geometry and mesh
+4. Write OpenRadioss Starter and Engine decks
+5. Run Starter
+6. Check Starter output
+7. Run Engine with timeout
+8. Parse solver status
+9. Collect energy, field, and force output
+10. Store artifacts and checksums
+11. Run postprocess
+```
+
