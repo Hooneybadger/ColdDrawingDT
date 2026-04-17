@@ -95,3 +95,17 @@ Reference sizes in this version:
 11. Run postprocess
 ```
 
+## Quasi-static checks
+
+Record at least:
+
+- kinetic energy history
+- internal energy history
+- contact energy when available
+- drawing force history
+- deformation response
+
+A job that misses the versioned quality rule is `INCONCLUSIVE`, not `SAFE` or `UNSAFE`.
+
+Do not hard-code one kinetic/internal energy ratio as science. Keep the rule in a versioned quality profile and test it on reference cases. This version names that profile `quasi-static-quality-v1` and does not yet give numeric limits.
+
