@@ -148,3 +148,13 @@ python -m cold_drawing_twin.simulation.run \
 
 That command does not exist in this version. When it exists, it must run a real Gmsh -> OpenRadioss solve and print quality, metrics, criterion version, and verdict.
 
+## Validation matrix
+
+- Mesh coarse / medium / fine
+- Time or mass-scaling sensitivity if used
+- Friction sensitivity
+- Reduction-ratio direction checks
+- Die-angle sensitivity
+- Hardening sensitivity
+- Energy quality
+- Repeatability with pinned solver and config
