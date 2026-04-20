@@ -46,3 +46,21 @@ Halls:
 - Bay B: Y 13.71 to 27.42
 - Bay C: Y 27.42 to 41.13
 
+## Major envelopes
+
+Sizes in meters. These are bounding boxes, not CAD.
+
+| Asset | L | W | H | Job |
+|---|---:|---:|---:|---|
+| Drawing 2 | 35.5 | 5.5 | 2.8 | cold drawing |
+| Drawing 4 | 35.5 | 5.5 | 2.8 | cold drawing |
+| Pilger | 34.0 | 5.4 | 2.6 | cold pilger |
+| Heat treatment 1 | 36.8 | 4.0 | 3.5 | heat and cool |
+| Heat treatment 2 | 36.8 | 4.0 | 3.5 | heat and cool |
+| Straightening | 17.0 | 3.3 | 2.3 | straighten |
+| Cutting | 11.0 | 3.2 | 2.2 | cut |
+| ECT | 16.0 | 3.0 | 2.2 | eddy-current inspect |
+| Hydro test | 12.0 | 3.5 | 2.2 | pressure inspect |
+| Dimension | 8.0 | 3.0 | 2.2 | size inspect |
+| Washing | 12.0 | 4.0 | 2.5 | clean |
+
