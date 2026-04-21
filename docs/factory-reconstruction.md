@@ -151,3 +151,27 @@ Long product can move along the hall or by overhead crane.
 8. Cleaning
 9. Remaining inspection and utilities
 
+## Drawing 4 parts
+
+```text
+Drawing_04
+  Frame
+  Bed
+  MaterialRail
+  Feed
+  DieAssembly
+    Die
+    DieHolder
+    LoadCellTop
+    LoadCellRight
+    LoadCellBottom
+    LoadCellLeft
+    AdjustmentMechanism
+  Clamp
+  Drive
+  Servo
+  OilSystem
+  ControlPanel
+  SafetyGuard
+```
+
