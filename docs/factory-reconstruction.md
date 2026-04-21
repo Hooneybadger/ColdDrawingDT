@@ -118,3 +118,24 @@ Minimum crane parts: bridge, trolley, hook, runway, load attachment.
 
 Digital Twin fields: `bridge_x`, `trolley_y`, `hook_z`, `load_state`, `operation_state`.
 
+## Material flow
+
+```mermaid
+flowchart LR
+  recv[Receiving] --> raw[Raw rack]
+  raw --> pilger[Pilger optional]
+  pilger --> point[Pointing]
+  point --> ht[Heat treatment]
+  ht --> clean[Cleaning]
+  clean --> draw[Drawing]
+  draw --> again{Another pass?}
+  again -->|yes| ht
+  again -->|no| str[Straightening]
+  str --> cut[Cutting]
+  cut --> inspect[ECT Hydro Dimension Visual]
+  inspect --> pack[Packing]
+  pack --> fg[Finished goods]
+```
+
+Long product can move along the hall or by overhead crane.
+
