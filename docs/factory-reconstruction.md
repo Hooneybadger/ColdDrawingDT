@@ -139,3 +139,15 @@ flowchart LR
 
 Long product can move along the hall or by overhead crane.
 
+## Detail modeling order
+
+1. Drawing 4
+2. Pilger 1
+3. Heat treatment 1
+4. ECT 1
+5. Crane A
+6. Drawing 2
+7. Straightening
+8. Cleaning
+9. Remaining inspection and utilities
+
