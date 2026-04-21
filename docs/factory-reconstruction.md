@@ -64,3 +64,45 @@ Sizes in meters. These are bounding boxes, not CAD.
 | Dimension | 8.0 | 3.0 | 2.2 | size inspect |
 | Washing | 12.0 | 4.0 | 2.5 | clean |
 
+## Placed Assets
+
+Lower-left of each envelope. This version places 23 machines or zones plus 3 cranes.
+
+### Bay A - drawing and final inspection
+
+| Asset ID | X | Y | L | W |
+|---|---:|---:|---:|---:|
+| BG.MIEUM.DRW.02 | 18.0 | 1.2 | 35.5 | 5.5 |
+| BG.MIEUM.DRW.04 | 18.0 | 7.4 | 35.5 | 5.5 |
+| BG.MIEUM.STR.01 | 56.0 | 1.2 | 17.0 | 3.3 |
+| BG.MIEUM.CUT.01 | 74.0 | 1.2 | 11.0 | 3.2 |
+| BG.MIEUM.DIM.01 | 86.0 | 1.2 | 8.0 | 3.0 |
+| BG.MIEUM.ECT.01 | 56.0 | 5.4 | 16.0 | 3.0 |
+| BG.MIEUM.HYD.01 | 73.0 | 5.4 | 12.0 | 3.5 |
+| BG.MIEUM.VIS.01 | 86.0 | 5.4 | 8.0 | 3.5 |
+
+### Bay B - pilger, handling, packing
+
+| Asset ID | X | Y | L | W |
+|---|---:|---:|---:|---:|
+| BG.MIEUM.RAW.01 | 1.0 | 14.5 | 14.0 | 5.5 |
+| BG.MIEUM.PNT.01 | 10.0 | 20.7 | 4.0 | 2.4 |
+| BG.MIEUM.PNT.02 | 10.0 | 23.6 | 4.0 | 2.4 |
+| BG.MIEUM.PLG.01 | 16.0 | 14.5 | 34.0 | 5.4 |
+| BG.MIEUM.WSH.01 | 52.0 | 14.5 | 12.0 | 4.0 |
+| BG.MIEUM.PACK.01 | 66.0 | 14.5 | 28.0 | 5.5 |
+| BG.MIEUM.FG.01 | 66.0 | 20.7 | 28.0 | 5.7 |
+
+### Bay C - heat treatment and utilities
+
+| Asset ID | X | Y | L | W |
+|---|---:|---:|---:|---:|
+| BG.MIEUM.HT.01 | 14.0 | 28.4 | 36.8 | 4.0 |
+| BG.MIEUM.HT.02 | 14.0 | 33.1 | 36.8 | 4.0 |
+| BG.MIEUM.HREC.01 | 52.0 | 28.4 | 8.0 | 5.0 |
+| BG.MIEUM.OIL.01 | 61.0 | 28.4 | 8.0 | 5.0 |
+| BG.MIEUM.GAS.01 | 70.0 | 28.4 | 11.0 | 5.0 |
+| BG.MIEUM.CTRL.01 | 82.0 | 28.4 | 12.0 | 5.0 |
+| BG.MIEUM.MNT.01 | 52.0 | 34.5 | 18.0 | 5.0 |
+| BG.MIEUM.UTL.01 | 72.0 | 34.5 | 22.0 | 5.0 |
+
