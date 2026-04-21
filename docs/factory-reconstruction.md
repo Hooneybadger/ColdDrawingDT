@@ -106,3 +106,15 @@ Lower-left of each envelope. This version places 23 machines or zones plus 3 cra
 | BG.MIEUM.MNT.01 | 52.0 | 34.5 | 18.0 | 5.0 |
 | BG.MIEUM.UTL.01 | 72.0 | 34.5 | 22.0 | 5.0 |
 
+## Cranes
+
+| Asset ID | Y domain | X travel |
+|---|---|---|
+| BG.MIEUM.CRN.A | 0.6 to 13.1 | 4 to 92 |
+| BG.MIEUM.CRN.B | 14.3 to 26.8 | 4 to 92 |
+| BG.MIEUM.CRN.C | 28.0 to 40.5 | 4 to 92 |
+
+Minimum crane parts: bridge, trolley, hook, runway, load attachment.
+
+Digital Twin fields: `bridge_x`, `trolley_y`, `hook_z`, `load_state`, `operation_state`.
+
