@@ -175,3 +175,23 @@ Drawing_04
   SafetyGuard
 ```
 
+## Heat treatment 1 parts
+
+```text
+HT_01
+  Infeed
+  HeatingFurnace
+  ConnectionSection
+  CoolingSection
+  Outfeed
+  GasSupplyInterface
+  HeatRecoveryInterface
+  ControlPanel
+```
+
+Oil loop:
+
+```text
+Heating furnace -> heat recovery -> hot water tank -> oil tank -> pump -> drawing oil nozzle -> recovery reservoir
+```
+
