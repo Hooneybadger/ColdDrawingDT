@@ -195,3 +195,14 @@ Oil loop:
 Heating furnace -> heat recovery -> hot water tank -> oil tank -> pump -> drawing oil nozzle -> recovery reservoir
 ```
 
+## Skeleton milestone
+
+A generated OpenUSD stage is complete when it contains:
+
+- 96 x 41.13 x 14.2 m hall
+- Structural bay grid
+- All configured envelopes at the coordinates above
+- Three crane runways
+- Raw, process, inspection, and packing zones
+- Material flow overlay
+- Asset IDs on prim metadata
