@@ -37,3 +37,20 @@ This version has layout YAML and a 2D floor picture. It does not have USD files 
 
 Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04`
 
+## Asset files
+
+Each important Asset is its own USD file.
+
+```text
+assets/drawing/Drawing_04.usd
+  proxy
+  render
+```
+
+Use:
+
+- `payload` for large optional assets
+- `proxy` purpose for distant areas
+- `render` purpose for the focused machine
+- variants for equipment state when useful
+
