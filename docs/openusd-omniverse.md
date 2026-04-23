@@ -88,3 +88,13 @@ flowchart LR
 
 The operator client must not query the Digital Twin database directly. Domain data reaches Kit through the app API and events.
 
+## Twin to 3D map
+
+[config/asset_registry.yaml](../config/asset_registry.yaml) maps:
+
+```text
+Asset ID <-> AAS ID <-> OpenUSD prim
+```
+
+State changes may update badges, material position, activity, alerts, and FEA overlays. They must not write process values into USD as authority.
+
