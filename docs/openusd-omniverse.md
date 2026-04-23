@@ -98,3 +98,23 @@ Asset ID <-> AAS ID <-> OpenUSD prim
 
 State changes may update badges, material position, activity, alerts, and FEA overlays. They must not write process values into USD as authority.
 
+## FEA view
+
+Keep with each job:
+
+- `job_id`
+- `snapshot_id`
+- solver version
+- mesh or deformed geometry
+- field values and critical-region metadata
+
+UI may show:
+
+1. Undeformed reference
+2. Deformed result
+3. Selected stress or strain field
+4. Critical-region marker
+5. Before and after
+
+Demo FEA job ID in docs: `fea-0001`.
+
