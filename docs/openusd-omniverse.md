@@ -66,3 +66,13 @@ Use:
 
 History view must look different from live state.
 
+## Operator app
+
+- Assigned line only
+- Current step and key conditions
+- Decision: `SAFE`, `UNSAFE`, `ANALYSIS_REQUIRED`, `MANUAL_REVIEW`
+- FEA progress when a job is open
+- Short status text
+
+Do not show the full senior analysis surface by default.
+
