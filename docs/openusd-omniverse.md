@@ -76,3 +76,15 @@ History view must look different from live state.
 
 Do not show the full senior analysis surface by default.
 
+## Low-spec delivery
+
+RTX render stays on an on-site GPU host. The operator uses a Kit app over WebRTC.
+
+```mermaid
+flowchart LR
+  browser[Low-spec browser] <-->|WebRTC| host[On-site RTX host]
+  host --> kit[Omniverse Kit app]
+```
+
+The operator client must not query the Digital Twin database directly. Domain data reaches Kit through the app API and events.
+
