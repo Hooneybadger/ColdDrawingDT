@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Decision",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "evaluation_id",
+    "snapshot_id",
+    "status",
+    "verdict",
+    "model_version",
+    "routing_policy_version"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string"
+    },
+    "evaluation_id": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "FINALIZED",
+        "MANUAL_REVIEW"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "SAFE",
+        "UNSAFE",
+        "INCONCLUSIVE",
+        "MANUAL_REVIEW"
+      ]
+    },
+    "model_version": {
+      "type": "string"
+    },
+    "routing_policy_version": {
+      "type": "string"
+    },
+    "fea_job_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
