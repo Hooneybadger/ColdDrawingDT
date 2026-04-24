@@ -44,3 +44,14 @@ GPU host:
 
 OpenRadioss may run in the worker container or on a solver host the worker calls. That choice needs an ADR when implemented.
 
+## Volumes
+
+Keep separate:
+
+- Database
+- BaSyx state if needed
+- Model files
+- FEA job files
+- OpenUSD assets
+- Prometheus and Grafana state as needed
+
