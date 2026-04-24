@@ -118,3 +118,11 @@ UI may show:
 
 Demo FEA job ID in docs: `fea-0001`.
 
+## Streaming acceptance
+
+- Streamable Kit app runs on the RTX host
+- Chromium client receives WebRTC
+- Keyboard and mouse round-trip works
+- Operator scope is applied before draw
+- Distant areas use proxy or unloaded payload
+- Streaming failure never changes a stored Decision
