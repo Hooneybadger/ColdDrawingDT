@@ -26,3 +26,21 @@ Application zone services:
 
 Network zones may collapse on a laptop. The interfaces stay separate in code.
 
+## Planned Compose services
+
+- `api`
+- `edge-adapter`
+- `basyx`
+- `postgres-timescale`
+- `rabbitmq`
+- `fea-worker`
+- `prometheus`
+- `grafana`
+
+GPU host:
+
+- `omniverse-kit-app`
+- optional web stream client
+
+OpenRadioss may run in the worker container or on a solver host the worker calls. That choice needs an ADR when implemented.
+
