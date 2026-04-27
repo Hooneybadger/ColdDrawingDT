@@ -55,3 +55,18 @@ Keep separate:
 - OpenUSD assets
 - Prometheus and Grafana state as needed
 
+## Configuration
+
+Secrets and site URLs use environment files. See [.env.example](../.env.example).
+
+Engineering values stay in versioned repo files so they appear in Lineage:
+
+- PINN ranges
+- FEA material mapping
+- Mesh profile
+- Solver profile
+- Safety criterion
+- Routing policy
+
+Do not hide those values only in environment variables.
+
