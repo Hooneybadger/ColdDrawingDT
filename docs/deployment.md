@@ -83,3 +83,6 @@ DB and RabbitMQ
 
 Readiness, not container start order alone, decides availability.
 
+## Why Compose first
+
+The first site is one factory. Reproducible service isolation matters now. Kubernetes waits until high availability, multi-node scheduling, or many GPU/FEA sessions are a real need.
