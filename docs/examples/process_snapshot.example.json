@@ -1,0 +1,12 @@
+{
+  "snapshot_id": "snap-0001",
+  "asset_id": "BG.MIEUM.DRW.04",
+  "captured_at": "2026-09-14T16:00:00Z",
+  "source_state_version": "state-0001",
+  "features": {
+    "reduction_ratio": 0.3,
+    "die_half_angle_rad": 0.2,
+    "friction_coefficient": 0.08,
+    "normalized_hardening_coefficient": 0.7
+  }
+}

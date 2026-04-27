@@ -1,0 +1,10 @@
+{
+  "job_id": "fea-0001",
+  "evaluation_id": "eval-0002",
+  "snapshot_id": "snap-0002",
+  "status": "QUEUED",
+  "solver": "OpenRadioss",
+  "solver_version": "unset",
+  "material_mapping_version": "hardening-map-v1",
+  "safety_criterion_version": "fea-criterion-v1"
+}

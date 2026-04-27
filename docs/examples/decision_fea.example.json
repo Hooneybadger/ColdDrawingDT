@@ -1,0 +1,10 @@
+{
+  "decision_id": "dec-0002",
+  "evaluation_id": "eval-0002",
+  "snapshot_id": "snap-0002",
+  "status": "MANUAL_REVIEW",
+  "verdict": "INCONCLUSIVE",
+  "model_version": "v0.1.1",
+  "routing_policy_version": "routing-v1",
+  "fea_job_id": "fea-0001"
+}
