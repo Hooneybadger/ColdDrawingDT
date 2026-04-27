@@ -70,3 +70,16 @@ Engineering values stay in versioned repo files so they appear in Lineage:
 
 Do not hide those values only in environment variables.
 
+## Startup
+
+```text
+DB and RabbitMQ
+  -> BaSyx
+  -> API and worker
+  -> Edge adapter
+  -> metrics
+  -> Omniverse app
+```
+
+Readiness, not container start order alone, decides availability.
+
