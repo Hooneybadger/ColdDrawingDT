@@ -83,3 +83,13 @@ Decision
   -> final Digital Twin update
 ```
 
+## Failure meaning
+
+| Failure | Result |
+|---|---|
+| Source stale | Manual review |
+| PINN unavailable | Manual review in `routing-v1` |
+| Queue unavailable | Persist failed or pending and alert |
+| Solver failed | Manual review |
+| Postprocess failed | Manual review |
+| Omniverse unavailable | View degraded; stored Decision stays authority |
