@@ -55,3 +55,16 @@ High priority:
 
 A 3D stream outage matters for operations. It must not change stored Decisions.
 
+## Logs
+
+Structured logs should include:
+
+- Evaluation ID
+- Asset ID
+- Snapshot ID
+- Job ID when present
+- Model or solver version
+- State transition
+
+Do not log secrets. Do not dump full sensitive process payloads without need.
+
