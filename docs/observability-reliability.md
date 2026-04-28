@@ -68,3 +68,18 @@ Structured logs should include:
 
 Do not log secrets. Do not dump full sensitive process payloads without need.
 
+## Lineage query
+
+From `decision_id` `dec-0001` the system must rebuild:
+
+```text
+Decision
+  -> Evaluation
+  -> Snapshot
+  -> source state version and times
+  -> PINN version and output
+  -> routing policy version
+  -> FEA job and solver, material, mesh, criterion versions when used
+  -> final Digital Twin update
+```
+
