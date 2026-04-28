@@ -42,3 +42,16 @@ No metrics backend is deployed in this version. The names below are the contract
 - stream disconnects
 - server GPU use and memory
 
+## Alerts
+
+High priority:
+
+- Stale critical Digital Twin
+- Repeated OPC UA quality failure
+- PINN file missing or checksum mismatch
+- FEA queue above operating limit
+- Repeated FEA failure or timeout
+- Database write failure
+
+A 3D stream outage matters for operations. It must not change stored Decisions.
+
