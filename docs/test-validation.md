@@ -44,3 +44,14 @@ Postprocess:
 - Solver success but quality fail -> `INCONCLUSIVE`
 - Safety criterion version applied
 
+## Integration tests later
+
+- OPC UA source -> AAS update
+- AAS update -> Timescale history
+- Snapshot -> real PINN
+- Queue -> worker lifecycle
+- Gmsh -> OpenRadioss smoke case
+- FEA result -> Decision store
+- Decision -> Digital Twin result
+- Event -> Omniverse state
+
