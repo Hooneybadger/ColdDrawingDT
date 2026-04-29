@@ -55,3 +55,17 @@ Postprocess:
 - Decision -> Digital Twin result
 - Event -> Omniverse state
 
+## End-to-end cases later
+
+Use Drawing 4 and the demo Snapshot numbers unless a case says otherwise.
+
+| ID | Story |
+|---|---|
+| E2E-1 | Fresh in-range input -> PINN SAFE -> Decision without FEA |
+| E2E-2 | Fresh in-range input -> PINN UNSAFE -> Decision without extra FEA unless policy requires it |
+| E2E-3 | PINN NEED_FEA -> OpenRadioss -> criterion -> Decision |
+| E2E-4 | Out of PINN range -> FEA or Manual review per policy; no undefined PINN call |
+| E2E-5 | FEA required and solver fails -> Manual review |
+| E2E-6 | Stale required state -> no automatic final Decision |
+| E2E-7 | Scenario override -> operational Digital Twin unchanged |
+
