@@ -69,3 +69,16 @@ Use Drawing 4 and the demo Snapshot numbers unless a case says otherwise.
 | E2E-6 | Stale required state -> no automatic final Decision |
 | E2E-7 | Scenario override -> operational Digital Twin unchanged |
 
+## Science checks later
+
+FEA:
+
+- Mesh convergence
+- Quasi-static energy quality
+- Simple reference problem when possible
+- Sensitivity direction checks
+
+System:
+
+- Repeat the same Snapshot and config; compare checksums and metrics inside a stated tolerance
+
