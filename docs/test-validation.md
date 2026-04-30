@@ -82,3 +82,15 @@ System:
 
 - Repeat the same Snapshot and config; compare checksums and metrics inside a stated tolerance
 
+## Performance later
+
+Track separately:
+
+- PINN P50 and P95
+- API overhead
+- FEA queue wait
+- FEA runtime
+- WebRTC session start
+- Concurrent operator stream GPU cost
+
+Do not average PINN and FEA latency into one number.
