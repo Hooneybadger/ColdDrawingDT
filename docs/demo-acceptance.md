@@ -57,3 +57,20 @@ make demo-stream
 
 Generate the factory stage and use the operator Kit app through WebRTC.
 
+## Golden demo script
+
+Use Drawing 4 and the demo Snapshot numbers `0.3, 0.2, 0.08, 0.7`.
+
+1. Senior app opens the 96 x 41.13 m factory.
+2. Select `BG.MIEUM.DRW.04` and show live Digital Twin state.
+3. Run a fast-path Evaluation and show Snapshot, model, and policy Lineage.
+4. Apply a condition where PINN returns `NEED_FEA`.
+5. Show job states `QUEUED -> RUNNING -> POSTPROCESSING -> FINALIZED`.
+6. Show FEA deformation and critical region linked to that job and Snapshot.
+7. Open Decision Lineage and versions.
+8. Move to a historical timeline without changing live state.
+9. Open operator view in Chromium over WebRTC.
+10. Show FEA failure or timeout -> `MANUAL_REVIEW`.
+
+Until those apps exist, walk the same story with the JSON examples.
+
