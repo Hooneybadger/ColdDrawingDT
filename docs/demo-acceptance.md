@@ -74,3 +74,12 @@ Use Drawing 4 and the demo Snapshot numbers `0.3, 0.2, 0.08, 0.7`.
 
 Until those apps exist, walk the same story with the JSON examples.
 
+## Architecture gates
+
+- No database access from Omniverse clients
+- No synchronous FEA inside an HTTP request
+- No Scenario overwrite of live state
+- No SAFE fallback from failed or inconclusive required FEA
+- No raw hardening scalar treated as a physical unit
+- No unversioned safety threshold
+
