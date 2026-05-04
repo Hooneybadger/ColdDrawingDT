@@ -83,3 +83,15 @@ Until those apps exist, walk the same story with the JSON examples.
 - No raw hardening scalar treated as a physical unit
 - No unversioned safety threshold
 
+## Portfolio capture later
+
+Only after end-to-end acceptance:
+
+1. Full factory senior view
+2. Drawing 4 detail
+3. System architecture
+4. Digital Twin / PINN / FEA Decision flow
+5. Real OpenRadioss overlay
+6. Decision Lineage
+7. Operator WebRTC view
+8. Grafana reliability dashboard
