@@ -8,3 +8,13 @@ This repository lands work on `main` from short-lived topic branches.
 - [Google Small CLs](https://google.github.io/eng-practices/review/developer/small-cls.html): one self-contained change; about 100 lines is often enough; about 1000 lines is usually too large; related tests stay with the change; refactorings stay separate; the tree must keep working after each land.
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): summary`. If a change fits more than one type, make more than one commit.
 
+## Flow
+
+```mermaid
+flowchart TD
+  concern[One concern] --> branch[Short-lived branch]
+  branch --> commits[Atomic commits]
+  commits --> main[Merge to main]
+  main --> next[Next branch from main]
+```
+
