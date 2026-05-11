@@ -18,3 +18,24 @@ flowchart TD
   main --> next[Next branch from main]
 ```
 
+## Branch
+
+Create the branch from current `main`. Do not commit on `main` during active work.
+
+Name:
+
+```text
+<type>/<short-slug>
+```
+
+`type` matches Conventional Commits: `feat`, `fix`, `docs`, `ci`, `chore`, `refactor`, `test`.
+
+Examples:
+
+- `docs/glossary`
+- `fix/snapshot-feature-order`
+- `feat/pinn-adapter`
+- `ci/contracts-workflow`
+
+ASCII lowercase and hyphens only. Delete the branch after it lands on `main`.
+
