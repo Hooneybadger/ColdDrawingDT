@@ -81,3 +81,10 @@ Google: related tests belong with the logic they prove. Pure refactor stays in i
 | Changed lines | Aim under 400. Split before 1000 |
 | Files | Prefer 12 or fewer, unless one source file plus its generated picture |
 
+## How to split
+
+1. Refactor or rename first.
+2. Change one layer (schema, then adapter, then API) or one vertical slice, not both at once.
+3. Keep the matching example, schema, and the one doc that describes that slice together.
+4. Generated files stay with the source that produced them.
+5. Do not break `main` between commits.
