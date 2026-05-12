@@ -39,3 +39,37 @@ Examples:
 
 ASCII lowercase and hyphens only. Delete the branch after it lands on `main`.
 
+## Commit
+
+One commit is one concern that can be reverted on its own.
+
+Format:
+
+```text
+type(scope): imperative summary
+
+Why this change is needed in one or two sentences.
+```
+
+Examples:
+
+```text
+docs(glossary): define Snapshot and Decision names
+
+Later API docs need one shared vocabulary before they name fields.
+```
+
+```text
+fix(schema): require the four PINN feature names in order
+
+The Snapshot example and pinn_contract.yaml already use this order.
+```
+
+Allowed types: `feat`, `fix`, `docs`, `ci`, `chore`, `refactor`, `test`, `build`, `perf`.
+
+Do not:
+
+- Mix a rename, a feature, and a format sweep in one commit
+
+Google: related tests belong with the logic they prove. Pure refactor stays in its own commit.
+
