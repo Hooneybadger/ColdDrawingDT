@@ -73,3 +73,11 @@ Do not:
 
 Google: related tests belong with the logic they prove. Pure refactor stays in its own commit.
 
+## Size
+
+| Check | Target |
+|---|---|
+| Concerns | One per commit |
+| Changed lines | Aim under 400. Split before 1000 |
+| Files | Prefer 12 or fewer, unless one source file plus its generated picture |
+
