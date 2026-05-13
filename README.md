@@ -69,3 +69,22 @@ Fast-path Decision example: [docs/examples/decision.example.json](docs/examples/
 
 FEA-needed PINN result example: [docs/examples/prediction_result.example.json](docs/examples/prediction_result.example.json)
 
+## Factory floor
+
+This picture is drawn from [config/factory_layout.yaml](config/factory_layout.yaml). The thick box is Drawing 4.
+
+![Main factory floor plan](docs/images/factory-layout.svg)
+
+Rebuild the picture:
+
+```bash
+python scripts/render_factory_layout.py
+```
+
+Check that IDs, schemas, and examples still agree:
+
+```bash
+python -m pip install -r requirements-ci.txt
+python scripts/validate_contracts.py
+```
+
