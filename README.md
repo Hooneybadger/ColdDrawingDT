@@ -33,3 +33,39 @@ Not filled in this version:
 - Hardening curve numbers behind `hardening-map-v1`
 - Application source code
 
+## Worked example: one check on Drawing 4
+
+Live Evaluation does not send process numbers from a client. The server copies them from the Digital Twin.
+
+Snapshot used by the docs:
+
+```json
+{
+  "snapshot_id": "snap-0001",
+  "asset_id": "BG.MIEUM.DRW.04",
+  "captured_at": "2026-09-14T16:00:00Z",
+  "source_state_version": "state-0001",
+  "features": {
+    "reduction_ratio": 0.3,
+    "die_half_angle_rad": 0.2,
+    "friction_coefficient": 0.08,
+    "normalized_hardening_coefficient": 0.7
+  }
+}
+```
+
+Two paths that Snapshot can take:
+
+```mermaid
+flowchart TD
+  snapshot[Snapshot snap-0001] --> pinn[PINN v0.1.1]
+  pinn -->|SAFE or UNSAFE| decision[Decision finalized]
+  pinn -->|NEED_FEA| fea[FEA job]
+  fea -->|quality pass| feaDecision[Decision from FEA criterion]
+  fea -->|fail timeout or weak quality| review[Manual review]
+```
+
+Fast-path Decision example: [docs/examples/decision.example.json](docs/examples/decision.example.json)
+
+FEA-needed PINN result example: [docs/examples/prediction_result.example.json](docs/examples/prediction_result.example.json)
+
