@@ -100,3 +100,17 @@ python scripts/validate_contracts.py
 | [docs/repository.md](docs/repository.md) | What exists now and what comes later |
 | [docs/contribution-units.md](docs/contribution-units.md) | Branch and commit size |
 
+## Repository now
+
+```text
+config/      versioned engineering files
+schemas/     Snapshot and Decision JSON Schema
+docs/        public specifications and examples
+docs/images/ factory picture built from config
+scripts/     contract checks and factory picture
+.github/     community health files and CI
+```
+
+Planned code layout is in [docs/repository.md](docs/repository.md).
+
+How to propose a change: [Contributing](.github/CONTRIBUTING.md).
