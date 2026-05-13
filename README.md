@@ -88,3 +88,15 @@ python -m pip install -r requirements-ci.txt
 python scripts/validate_contracts.py
 ```
 
+## Read next
+
+| Doc | What it covers |
+|---|---|
+| [docs/README.md](docs/README.md) | Full document map |
+| [docs/glossary.md](docs/glossary.md) | Shared names |
+| [docs/architecture.md](docs/architecture.md) | How the parts connect |
+| [docs/api-contracts.md](docs/api-contracts.md) | Data shapes and planned HTTP API |
+| [docs/factory-reconstruction.md](docs/factory-reconstruction.md) | Hall size, grid, and Asset coordinates |
+| [docs/repository.md](docs/repository.md) | What exists now and what comes later |
+| [docs/contribution-units.md](docs/contribution-units.md) | Branch and commit size |
+
