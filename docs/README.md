@@ -59,3 +59,12 @@ These files are the demonstration data used in the docs. CI checks the Snapshot 
 | Fast Decision | [examples/decision.example.json](examples/decision.example.json) |
 | FEA review Decision | [examples/decision_fea.example.json](examples/decision_fea.example.json) |
 
+## How we write docs
+
+- English
+- First-time reader
+- Names from the glossary
+- Short sections
+- ASCII only
+- Show this version as it is
+- Prefer pictures, mermaid, and JSON examples
