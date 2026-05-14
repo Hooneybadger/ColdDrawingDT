@@ -45,3 +45,17 @@ Not present:
 | [adr/README.md](adr/README.md) | Why these tools were chosen |
 | [contribution-units.md](contribution-units.md) | Branch and commit size |
 
+## Examples
+
+These files are the demonstration data used in the docs. CI checks the Snapshot and Decision examples against the schemas.
+
+| File | Path |
+|---|---|
+| Snapshot | [examples/process_snapshot.example.json](examples/process_snapshot.example.json) |
+| Evaluation request | [examples/evaluation_request.example.json](examples/evaluation_request.example.json) |
+| Scenario request | [examples/scenario_request.example.json](examples/scenario_request.example.json) |
+| PINN `NEED_FEA` result | [examples/prediction_result.example.json](examples/prediction_result.example.json) |
+| FEA job | [examples/fea_job.example.json](examples/fea_job.example.json) |
+| Fast Decision | [examples/decision.example.json](examples/decision.example.json) |
+| FEA review Decision | [examples/decision_fea.example.json](examples/decision_fea.example.json) |
+
