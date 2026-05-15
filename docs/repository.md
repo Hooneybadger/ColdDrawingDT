@@ -55,3 +55,15 @@ tests/fea/
 compose.yaml
 ```
 
+## Dependency direction
+
+```text
+api and Omniverse adapters
+  -> orchestration
+  -> domain interfaces
+       -> Digital Twin
+       -> PINN inference
+       -> FEA simulation
+```
+
+Infrastructure code depends inward on interfaces. Domain and orchestration never import Omniverse UI code.
