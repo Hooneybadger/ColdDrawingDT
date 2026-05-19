@@ -40,7 +40,8 @@ build/
 # ============================================================
 # AI model artifacts (download from Hugging Face)
 # ============================================================
-models/
+models/*
+!models/README.md
 checkpoints/
 *.pt
 *.pth
