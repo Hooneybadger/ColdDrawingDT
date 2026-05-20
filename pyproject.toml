@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cold-drawing-twin"
+version = "1.1.0"
+description = "On-site cold drawing Digital Twin: Snapshot, PINN, OpenRadioss FEA, Decision Lineage."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "sqlalchemy>=2.0.36",
+  "psycopg[binary]>=3.2.0",
+  "pydantic-settings>=2.6.0",
+  "pyyaml>=6.0.2",
+  "jsonschema>=4.23.0",
+  "httpx>=0.27.0",
+  "celery>=5.4.0",
+  "prometheus-client>=0.21.0",
+  "asyncua>=1.1.5",
+  "huggingface-hub>=0.26.0",
+]
+
+[project.optional-dependencies]
+pinn = ["torch>=2.4.0"]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-asyncio>=0.24.0",
+]
+
+[project.scripts]
+cold-drawing-twin = "cold_drawing_twin.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
