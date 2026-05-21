@@ -1,0 +1,51 @@
+# Check config, schemas, examples, factory picture, and application tests.
+
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install contract dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Rebuild factory picture
+        run: python scripts/render_factory_layout.py
+      - name: Picture matches config
+        run: git diff --exit-code -- docs/images/factory-layout.svg
+      - name: Validate contracts
+        run: python scripts/validate_contracts.py
+
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gmsh
+        run: sudo apt-get update && sudo apt-get install -y gmsh
+      - name: Install application
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Pytest
+        env:
+          PYTHONPATH: src:.
+        run: python -m pytest -q
