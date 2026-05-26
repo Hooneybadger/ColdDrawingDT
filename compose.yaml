@@ -1,0 +1,112 @@
+services:
+  postgres-timescale:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: cold_drawing
+      POSTGRES_PASSWORD: cold_drawing
+      POSTGRES_DB: cold_drawing
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cold_drawing"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  basyx:
+    image: eclipsebasyx/aas-environment:2.0.0-milestone-15
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./deploy/basyx/application.properties:/application/application.properties:ro
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://cold_drawing:cold_drawing@postgres-timescale:5432/cold_drawing
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      FEA_EXECUTION: celery
+      BASYX_AAS_REPOSITORY_URL: http://basyx:8081
+      BASYX_ENABLED: "true"
+      PINN_MODEL_DIR: /models/cold-drawing-pinn-poc
+    volumes:
+      - ./models:/models
+      - fea-files:/app/simulation/workspaces
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres-timescale:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  fea-worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://cold_drawing:cold_drawing@postgres-timescale:5432/cold_drawing
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      FEA_EXECUTION: celery
+      PINN_MODEL_DIR: /models/cold-drawing-pinn-poc
+      OPENRADIOSS_STARTER_BIN: ${OPENRADIOSS_STARTER_BIN:-}
+      OPENRADIOSS_ENGINE_BIN: ${OPENRADIOSS_ENGINE_BIN:-}
+    volumes:
+      - ./models:/models
+      - fea-files:/app/simulation/workspaces
+    depends_on:
+      postgres-timescale:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  edge-adapter:
+    build:
+      context: .
+      dockerfile: docker/edge.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://cold_drawing:cold_drawing@postgres-timescale:5432/cold_drawing
+      OPCUA_ENDPOINT: opc.tcp://host.docker.internal:4840/cold-drawing/
+      BASYX_AAS_REPOSITORY_URL: http://basyx:8081
+      BASYX_ENABLED: "true"
+    depends_on:
+      postgres-timescale:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    volumes:
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres-data:
+  fea-files:
