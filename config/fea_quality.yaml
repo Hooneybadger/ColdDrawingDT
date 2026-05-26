@@ -1,0 +1,7 @@
+version: quasi-static-quality-v1
+require_histories:
+  - kinetic_energy
+  - internal_energy
+  - drawing_force
+# Numeric KE/IE limits are not set in this version. Missing required histories fail quality.
+numeric_limits: {}
