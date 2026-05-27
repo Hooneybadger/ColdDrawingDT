@@ -1,0 +1,8 @@
+version: freshness-v1
+max_age_seconds:
+  process_state: 30
+required_fields:
+  - reduction_ratio
+  - die_half_angle_rad
+  - friction_coefficient
+  - normalized_hardening_coefficient
