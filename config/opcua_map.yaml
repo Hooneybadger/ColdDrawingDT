@@ -1,0 +1,12 @@
+version: opcua-map-v1
+endpoint: opc.tcp://127.0.0.1:4840/cold-drawing/
+namespace_uri: urn:bg:mieum:opcua
+assets:
+  BG.MIEUM.DRW.04:
+    reduction_ratio: ns=2;s=DRW04.reduction_ratio
+    die_half_angle_rad: ns=2;s=DRW04.die_half_angle_rad
+    friction_coefficient: ns=2;s=DRW04.friction_coefficient
+    normalized_hardening_coefficient: ns=2;s=DRW04.normalized_hardening_coefficient
+    pass_index: ns=2;s=DRW04.pass_index
+    source_timestamp: ns=2;s=DRW04.source_timestamp
+    quality: ns=2;s=DRW04.quality
