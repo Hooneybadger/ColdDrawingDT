@@ -1,0 +1,5 @@
+version: hardening-map-v1
+material_profile_id: stainless_reference_v1
+calibrated: false
+# Normalized PINN hardening is not MPa. A mill-calibrated plastic curve is not in this repository.
+plastic_curve: null
