@@ -1,0 +1,3 @@
+version: site-policy-v1
+require_fea: false
+allow_pinn_finalize: true
