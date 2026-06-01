@@ -1,0 +1,21 @@
+{
+  "id": null,
+  "title": "Cold Drawing Digital Twin",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Decisions",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [{ "expr": "sum(decisions_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "FEA jobs",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [{ "expr": "sum(fea_jobs_total)", "refId": "A" }]
+    }
+  ]
+}
