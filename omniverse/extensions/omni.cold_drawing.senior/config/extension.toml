@@ -1,0 +1,7 @@
+[package]
+title = "Cold Drawing Senior"
+version = "1.1.0"
+description = "Whole-factory Digital Twin view. Reads the HTTP API only."
+
+[[python.module]]
+name = "omni.cold_drawing.senior"
