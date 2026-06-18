@@ -1,0 +1,2 @@
+# CI / contract checks. Application dependencies will move to pyproject.toml later.
+-r requirements-ci.txt
