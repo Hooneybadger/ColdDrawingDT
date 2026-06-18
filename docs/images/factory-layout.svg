@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040.0 561.3" width="1040" height="561" role="img" aria-label="Main factory floor plan in meters">
+<title>Main factory floor plan</title>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#0f172a} .muted{fill:#475569} .tiny{font-size:10px} .label{font-size:11px;font-weight:700} .axis{font-size:11px}</style>
+<rect x="0" y="0" width="1040.0" height="561.3" fill="#f8fafc"/>
+<text x="56.0" y="24" font-size="18" font-weight="700">Main factory floor plan (meters)</text>
+<text x="56" y="38" class="tiny muted">Origin is the south-west floor corner. X is hall length. Y is hall width. Highlighted box is Drawing 4.</text>
+<rect x="56.0" y="40.0" width="960.0" height="137.1" fill="#ffedd5"/>
+<rect x="56.0" y="177.1" width="960.0" height="137.1" fill="#dcfce7"/>
+<rect x="56.0" y="314.2" width="960.0" height="137.1" fill="#dbeafe"/>
+<text x="64.0" y="443.3" class="tiny muted">Bay A</text>
+<text x="64.0" y="306.2" class="tiny muted">Bay B</text>
+<text x="64.0" y="169.1" class="tiny muted">Bay C</text>
+<line x1="56.0" y1="40.0" x2="56.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="56.0" y="465.3" text-anchor="middle" class="axis muted">0</text>
+<line x1="136.0" y1="40.0" x2="136.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="136.0" y="465.3" text-anchor="middle" class="axis muted">8</text>
+<line x1="216.0" y1="40.0" x2="216.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="216.0" y="465.3" text-anchor="middle" class="axis muted">16</text>
+<line x1="296.0" y1="40.0" x2="296.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="296.0" y="465.3" text-anchor="middle" class="axis muted">24</text>
+<line x1="376.0" y1="40.0" x2="376.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="376.0" y="465.3" text-anchor="middle" class="axis muted">32</text>
+<line x1="456.0" y1="40.0" x2="456.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="456.0" y="465.3" text-anchor="middle" class="axis muted">40</text>
+<line x1="536.0" y1="40.0" x2="536.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="536.0" y="465.3" text-anchor="middle" class="axis muted">48</text>
+<line x1="616.0" y1="40.0" x2="616.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="616.0" y="465.3" text-anchor="middle" class="axis muted">56</text>
+<line x1="696.0" y1="40.0" x2="696.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="696.0" y="465.3" text-anchor="middle" class="axis muted">64</text>
+<line x1="776.0" y1="40.0" x2="776.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="776.0" y="465.3" text-anchor="middle" class="axis muted">72</text>
+<line x1="856.0" y1="40.0" x2="856.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="856.0" y="465.3" text-anchor="middle" class="axis muted">80</text>
+<line x1="936.0" y1="40.0" x2="936.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="936.0" y="465.3" text-anchor="middle" class="axis muted">88</text>
+<line x1="1016.0" y1="40.0" x2="1016.0" y2="451.3" stroke="#94a3b8" stroke-width="0.6"/>
+<text x="1016.0" y="465.3" text-anchor="middle" class="axis muted">96</text>
+<line x1="56.0" y1="451.3" x2="1016.0" y2="451.3" stroke="#64748b" stroke-width="0.8"/>
+<text x="48.0" y="455.3" text-anchor="end" class="axis muted">0</text>
+<line x1="56.0" y1="314.2" x2="1016.0" y2="314.2" stroke="#64748b" stroke-width="0.8"/>
+<text x="48.0" y="318.2" text-anchor="end" class="axis muted">13.71</text>
+<line x1="56.0" y1="177.1" x2="1016.0" y2="177.1" stroke="#64748b" stroke-width="0.8"/>
+<text x="48.0" y="181.1" text-anchor="end" class="axis muted">27.42</text>
+<line x1="56.0" y1="40.0" x2="1016.0" y2="40.0" stroke="#64748b" stroke-width="0.8"/>
+<text x="48.0" y="44.0" text-anchor="end" class="axis muted">41.13</text>
+<rect x="96.0" y="320.3" width="880.0" height="125.0" fill="none" stroke="#334155" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="102.0" y="334.3" class="tiny muted">CRN.A crane</text>
+<rect x="96.0" y="183.3" width="880.0" height="125.0" fill="none" stroke="#334155" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="102.0" y="197.3" class="tiny muted">CRN.B crane</text>
+<rect x="96.0" y="46.3" width="880.0" height="125.0" fill="none" stroke="#334155" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="102.0" y="60.3" class="tiny muted">CRN.C crane</text>
+<rect x="236.0" y="384.3" width="355.0" height="55.0" fill="#93c5fd" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="413.5" y="415.8" text-anchor="middle" class="label" font-size="10">DRW.02</text>
+<rect x="236.0" y="322.3" width="355.0" height="55.0" fill="#93c5fd" stroke="#1e3a8a" stroke-width="2.4" rx="2"/>
+<text x="413.5" y="353.8" text-anchor="middle" class="label" font-size="12">DRW.04</text>
+<rect x="616.0" y="406.3" width="170.0" height="33.0" fill="#67e8f9" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="701.0" y="426.8" text-anchor="middle" class="label" font-size="10">STR.01</text>
+<rect x="796.0" y="407.3" width="110.0" height="32.0" fill="#67e8f9" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="851.0" y="427.3" text-anchor="middle" class="label" font-size="10">CUT.01</text>
+<rect x="916.0" y="409.3" width="80.0" height="30.0" fill="#c4b5fd" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="956.0" y="428.3" text-anchor="middle" class="label" font-size="10">DIM.01</text>
+<rect x="616.0" y="367.3" width="160.0" height="30.0" fill="#c4b5fd" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="696.0" y="386.3" text-anchor="middle" class="label" font-size="10">ECT.01</text>
+<rect x="786.0" y="362.3" width="120.0" height="35.0" fill="#c4b5fd" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="846.0" y="383.8" text-anchor="middle" class="label" font-size="10">HYD.01</text>
+<rect x="916.0" y="362.3" width="80.0" height="35.0" fill="#c4b5fd" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="956.0" y="383.8" text-anchor="middle" class="label" font-size="10">VIS.01</text>
+<rect x="66.0" y="251.3" width="140.0" height="55.0" fill="#e2e8f0" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="136.0" y="282.8" text-anchor="middle" class="label" font-size="10">RAW.01</text>
+<rect x="156.0" y="220.3" width="40.0" height="24.0" fill="#fde047" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="176.0" y="236.3" text-anchor="middle" class="label" font-size="10">PNT.01</text>
+<rect x="156.0" y="191.3" width="40.0" height="24.0" fill="#fde047" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="176.0" y="207.3" text-anchor="middle" class="label" font-size="10">PNT.02</text>
+<rect x="216.0" y="252.3" width="340.0" height="54.0" fill="#86efac" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="386.0" y="283.3" text-anchor="middle" class="label" font-size="10">PLG.01</text>
+<rect x="576.0" y="266.3" width="120.0" height="40.0" fill="#f9a8d4" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="636.0" y="290.3" text-anchor="middle" class="label" font-size="10">WSH.01</text>
+<rect x="716.0" y="251.3" width="280.0" height="55.0" fill="#cbd5e1" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="856.0" y="282.8" text-anchor="middle" class="label" font-size="10">PACK.01</text>
+<rect x="716.0" y="187.3" width="280.0" height="57.0" fill="#e2e8f0" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="856.0" y="219.8" text-anchor="middle" class="label" font-size="10">FG.01</text>
+<rect x="196.0" y="127.3" width="368.0" height="40.0" fill="#fdba74" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="380.0" y="151.3" text-anchor="middle" class="label" font-size="10">HT.01</text>
+<rect x="196.0" y="80.3" width="368.0" height="40.0" fill="#fdba74" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="380.0" y="104.3" text-anchor="middle" class="label" font-size="10">HT.02</text>
+<rect x="576.0" y="117.3" width="80.0" height="50.0" fill="#fecaca" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="616.0" y="146.3" text-anchor="middle" class="label" font-size="10">HREC.01</text>
+<rect x="666.0" y="117.3" width="80.0" height="50.0" fill="#fecaca" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="706.0" y="146.3" text-anchor="middle" class="label" font-size="10">OIL.01</text>
+<rect x="756.0" y="117.3" width="110.0" height="50.0" fill="#fecaca" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="811.0" y="146.3" text-anchor="middle" class="label" font-size="10">GAS.01</text>
+<rect x="876.0" y="117.3" width="120.0" height="50.0" fill="#fecaca" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="936.0" y="146.3" text-anchor="middle" class="label" font-size="10">CTRL.01</text>
+<rect x="576.0" y="56.3" width="180.0" height="50.0" fill="#fcd34d" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="666.0" y="85.3" text-anchor="middle" class="label" font-size="10">MNT.01</text>
+<rect x="776.0" y="56.3" width="220.0" height="50.0" fill="#fcd34d" stroke="#1e293b" stroke-width="0.9" rx="2"/>
+<text x="886.0" y="85.3" text-anchor="middle" class="label" font-size="10">UTL.01</text>
+<rect x="56.0" y="40.0" width="960.0" height="411.3" fill="none" stroke="#0f172a" stroke-width="2"/>
+<text x="56.0" y="487.3" class="tiny muted">96 m x 41.13 m x 14.2 m hall. Coordinates come from config/factory_layout.yaml.</text>
+<rect x="56.0" y="497.3" width="14" height="14" fill="#93c5fd" stroke="#1e293b"/>
+<text x="76.0" y="508.3" class="tiny">Drawing</text>
+<rect x="176.0" y="497.3" width="14" height="14" fill="#86efac" stroke="#1e293b"/>
+<text x="196.0" y="508.3" class="tiny">Pilger</text>
+<rect x="296.0" y="497.3" width="14" height="14" fill="#fdba74" stroke="#1e293b"/>
+<text x="316.0" y="508.3" class="tiny">Heat treatment</text>
+<rect x="416.0" y="497.3" width="14" height="14" fill="#c4b5fd" stroke="#1e293b"/>
+<text x="436.0" y="508.3" class="tiny">Inspection</text>
+<rect x="536.0" y="497.3" width="14" height="14" fill="#e2e8f0" stroke="#1e293b"/>
+<text x="556.0" y="508.3" class="tiny">Racks</text>
+<rect x="656.0" y="497.3" width="14" height="14" fill="#fecaca" stroke="#1e293b"/>
+<text x="676.0" y="508.3" class="tiny">Utilities</text>
+</svg>
