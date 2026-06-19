@@ -1,0 +1,64 @@
+from __future__ import annotations
+
+from enum import StrEnum
+
+
+class EvaluationMode(StrEnum):
+    OPERATIONAL = "OPERATIONAL"
+    SCENARIO = "SCENARIO"
+
+
+class EvaluationState(StrEnum):
+    CREATED = "CREATED"
+    SNAPSHOT_READY = "SNAPSHOT_READY"
+    PINN_RUNNING = "PINN_RUNNING"
+    ROUTING = "ROUTING"
+    FINALIZED = "FINALIZED"
+    FEA_QUEUED = "FEA_QUEUED"
+    FEA_RUNNING = "FEA_RUNNING"
+    POSTPROCESSING = "POSTPROCESSING"
+    FINALIZING = "FINALIZING"
+    MANUAL_REVIEW = "MANUAL_REVIEW"
+
+
+class RoutingAction(StrEnum):
+    ACCEPT = "ACCEPT"
+    REJECT = "REJECT"
+    REQUIRES_FEA = "REQUIRES_FEA"
+    MANUAL_REVIEW = "MANUAL_REVIEW"
+
+
+class PinnVerdict(StrEnum):
+    SAFE = "SAFE"
+    UNSAFE = "UNSAFE"
+    NEED_FEA = "NEED_FEA"
+
+
+class DecisionStatus(StrEnum):
+    FINALIZED = "FINALIZED"
+    MANUAL_REVIEW = "MANUAL_REVIEW"
+
+
+class DecisionVerdict(StrEnum):
+    SAFE = "SAFE"
+    UNSAFE = "UNSAFE"
+    INCONCLUSIVE = "INCONCLUSIVE"
+    MANUAL_REVIEW = "MANUAL_REVIEW"
+
+
+class FeaJobStatus(StrEnum):
+    PENDING = "PENDING"
+    QUEUED = "QUEUED"
+    RUNNING = "RUNNING"
+    POSTPROCESSING = "POSTPROCESSING"
+    SUCCEEDED = "SUCCEEDED"
+    FAILED = "FAILED"
+    TIMEOUT = "TIMEOUT"
+    CANCELLED = "CANCELLED"
+    FINALIZED = "FINALIZED"
+
+
+class FeaCriterionVerdict(StrEnum):
+    SAFE = "SAFE"
+    UNSAFE = "UNSAFE"
+    INCONCLUSIVE = "INCONCLUSIVE"
