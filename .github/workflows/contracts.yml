@@ -1,0 +1,33 @@
+# Check config, schemas, examples, and the factory picture.
+# Shape follows https://github.com/actions/starter-workflows/blob/main/ci/python-package.yml
+
+name: Contracts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Rebuild factory picture
+        run: python scripts/render_factory_layout.py
+      - name: Picture matches config
+        run: git diff --exit-code -- docs/images/factory-layout.svg
+      - name: Validate contracts
+        run: python scripts/validate_contracts.py
