@@ -1,0 +1,9 @@
+#usda 1.0
+(
+    defaultPrim = "Drawing_04"
+)
+
+def Xform "Drawing_04"
+{
+    custom string coldDrawing:assetId = "BG.MIEUM.DRW.04"
+}
