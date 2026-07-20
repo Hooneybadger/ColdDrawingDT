@@ -1,0 +1,564 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def Xform "BugokFactory"
+    {
+        def Xform "Buildings"
+        {
+            def Cube "MainFactory"
+            {
+                double size = 1
+                float3 xformOp:scale = (96.0, 41.13, 0.2)
+                double3 xformOp:translate = (48.0, 20.565, -0.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+        def Xform "Production"
+        {
+            def Xform "Drawing"
+            {
+                def Xform "Drawing_02"
+                {
+                    double3 xformOp:translate = (35.75, 3.95, 1.4)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.DRW.02"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (35.5, 5.5, 2.8)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (35.5, 5.5, 2.8)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+                def Xform "Drawing_04"
+                {
+                    double3 xformOp:translate = (35.75, 10.15, 1.4)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.DRW.04"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (35.5, 5.5, 2.8)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (35.5, 5.5, 2.8)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Pilger"
+            {
+                def Xform "Pilger_01"
+                {
+                    double3 xformOp:translate = (33.0, 17.2, 1.3)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.PLG.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (34.0, 5.4, 2.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (34.0, 5.4, 2.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "HeatTreatment"
+            {
+                def Xform "HT_01"
+                {
+                    double3 xformOp:translate = (32.4, 30.4, 1.75)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.HT.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (36.8, 4.0, 3.5)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (36.8, 4.0, 3.5)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+                def Xform "HT_02"
+                {
+                    double3 xformOp:translate = (32.4, 35.1, 1.75)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.HT.02"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (36.8, 4.0, 3.5)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (36.8, 4.0, 3.5)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Pointing"
+            {
+                def Xform "Pointing_01"
+                {
+                    double3 xformOp:translate = (12.0, 21.9, 1.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.PNT.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (4.0, 2.4, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (4.0, 2.4, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+                def Xform "Pointing_02"
+                {
+                    double3 xformOp:translate = (12.0, 24.8, 1.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.PNT.02"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (4.0, 2.4, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (4.0, 2.4, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Cleaning"
+            {
+                def Xform "Washing_01"
+                {
+                    double3 xformOp:translate = (58.0, 16.5, 1.25)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.WSH.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (12.0, 4.0, 2.5)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (12.0, 4.0, 2.5)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Straightening"
+            {
+                def Xform "Straightening_01"
+                {
+                    double3 xformOp:translate = (64.5, 2.8499999999999996, 1.15)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.STR.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (17.0, 3.3, 2.3)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (17.0, 3.3, 2.3)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Cutting"
+            {
+                def Xform "Cutting_01"
+                {
+                    double3 xformOp:translate = (79.5, 2.8, 1.1)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.CUT.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (11.0, 3.2, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (11.0, 3.2, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Packaging"
+            {
+                def Xform "Packing_01"
+                {
+                    double3 xformOp:translate = (80.0, 17.25, 1.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.PACK.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (28.0, 5.5, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (28.0, 5.5, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+        }
+        def Xform "Inspection"
+        {
+            def Xform "ECT"
+            {
+                def Xform "ECT_01"
+                {
+                    double3 xformOp:translate = (64.0, 6.9, 1.1)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.ECT.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (16.0, 3.0, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (16.0, 3.0, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Hydro"
+            {
+                def Xform "Hydro_01"
+                {
+                    double3 xformOp:translate = (79.0, 7.15, 1.1)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.HYD.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (12.0, 3.5, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (12.0, 3.5, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Dimension"
+            {
+                def Xform "Dimension_01"
+                {
+                    double3 xformOp:translate = (90.0, 2.7, 1.1)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.DIM.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 3.0, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 3.0, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Visual"
+            {
+                def Xform "Visual_01"
+                {
+                    double3 xformOp:translate = (90.0, 7.15, 1.1)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.VIS.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 3.5, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 3.5, 2.2)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+        }
+        def Xform "MaterialHandling"
+        {
+            def Xform "Racks"
+            {
+                def Xform "RawRack_01"
+                {
+                    double3 xformOp:translate = (8.0, 17.25, 1.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.RAW.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (14.0, 5.5, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (14.0, 5.5, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+                def Xform "FinishedGoods_01"
+                {
+                    double3 xformOp:translate = (80.0, 23.55, 1.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.FG.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (28.0, 5.7, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (28.0, 5.7, 2.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Cranes"
+            {
+                def Xform "Crane_A"
+                {
+                    double3 xformOp:translate = (48.0, 6.85, 12.3)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.CRN.A"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (88.0, 12.5, 0.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (88.0, 12.5, 0.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+                def Xform "Crane_B"
+                {
+                    double3 xformOp:translate = (48.0, 20.55, 12.3)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.CRN.B"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (88.0, 12.5, 0.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (88.0, 12.5, 0.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+                def Xform "Crane_C"
+                {
+                    double3 xformOp:translate = (48.0, 34.25, 12.3)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.CRN.C"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (88.0, 12.5, 0.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (88.0, 12.5, 0.6)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+        }
+        def Xform "Utilities"
+        {
+            def Xform "HeatRecovery"
+            {
+                def Xform "HeatRecovery_01"
+                {
+                    double3 xformOp:translate = (56.0, 30.9, 1.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.HREC.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "OilCirculation"
+            {
+                def Xform "Oil_01"
+                {
+                    double3 xformOp:translate = (65.0, 30.9, 1.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.OIL.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (8.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Gas"
+            {
+                def Xform "Gas_01"
+                {
+                    double3 xformOp:translate = (75.5, 30.9, 1.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.GAS.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (11.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (11.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Electrical"
+            {
+                def Xform "Control_01"
+                {
+                    double3 xformOp:translate = (88.0, 30.9, 1.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.CTRL.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (12.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (12.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "Maintenance"
+            {
+                def Xform "Maintenance_01"
+                {
+                    double3 xformOp:translate = (61.0, 37.0, 1.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.MNT.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (18.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (18.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+            def Xform "General"
+            {
+                def Xform "Utility_01"
+                {
+                    double3 xformOp:translate = (83.0, 37.0, 1.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                    custom string coldDrawing:assetId = "BG.MIEUM.UTL.01"
+                    def Cube "proxy" (purpose = "proxy")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (22.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                    def Cube "render" (purpose = "render")
+                    {
+                        double size = 1
+                        float3 xformOp:scale = (22.0, 5.0, 3.0)
+                        uniform token[] xformOpOrder = ["xformOp:scale"]
+                    }
+                }
+            }
+        }
+    }
+}
+
