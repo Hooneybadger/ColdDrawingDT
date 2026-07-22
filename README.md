@@ -1,17 +1,13 @@
 # Cold Drawing Digital Twin
 
-This project designs an on-site system for a cold drawing mill.
+On-site system for a cold drawing mill.
 
-The system will:
-
-1. Read live process values from machines.
+1. Read live process values from machines (OPC UA).
 2. Freeze those values as a Snapshot.
 3. Run a fast PINN safety check.
 4. Run FEA only when the PINN result is `NEED_FEA`, or when site rules require it.
 5. Store a Decision with Lineage.
-6. Show the factory in 3D.
-
-This version is **contracts and documentation**. There is no running API, PINN adapter, FEA worker, or 3D app yet.
+6. Show the factory in OpenUSD. Omniverse Kit apps read the HTTP API.
 
 If a word is new, see [docs/glossary.md](docs/glossary.md).
 
@@ -19,7 +15,7 @@ If a word is new, see [docs/glossary.md](docs/glossary.md).
 
 | Item | Value |
 |---|---|
-| Contract set | 1.1 |
+| Product | 1.1 |
 | PINN release | v0.1.1 |
 | Routing policy | routing-v1 |
 | FEA reference | fea-reference-v1 |
@@ -27,47 +23,42 @@ If a word is new, see [docs/glossary.md](docs/glossary.md).
 | Primary demo Asset | Drawing 4 (`BG.MIEUM.DRW.04`) |
 | Factory hall | 96 m x 41.13 m x 14.2 m |
 
-Not filled in this version:
+Present:
 
-- FEA numeric safety thresholds (`required_thresholds` is empty)
-- Hardening curve numbers behind `hardening-map-v1`
-- Application source code
+- HTTP API
+- Digital Twin store (PostgreSQL / SQLite) with BaSyx sync when enabled
+- Released PINN adapter (`predict.py` + `pinn.pt`)
+- Routing policy `routing-v1`
+- Gmsh axisymmetric mesh and OpenRadioss deck writer
+- Celery FEA worker (or inline runner)
+- Factory OpenUSD stage generator and Kit app shells
+
+Not filled:
+
+- FEA numeric safety thresholds (`required_thresholds` is empty, so FEA cannot return automatic `SAFE` / `UNSAFE`)
+- Calibrated hardening curve numbers behind `hardening-map-v1`
+- Omniverse Kit runtime and WebRTC (those run on the site RTX host)
 
 ## Worked example: one check on Drawing 4
 
 Live Evaluation does not send process numbers from a client. The server copies them from the Digital Twin.
 
-Snapshot used by the docs:
-
-```json
-{
-  "snapshot_id": "snap-0001",
-  "asset_id": "BG.MIEUM.DRW.04",
-  "captured_at": "2026-09-14T16:00:00Z",
-  "source_state_version": "state-0001",
-  "features": {
-    "reduction_ratio": 0.3,
-    "die_half_angle_rad": 0.2,
-    "friction_coefficient": 0.08,
-    "normalized_hardening_coefficient": 0.7
-  }
-}
+```bash
+python -m pip install -e ".[dev]"
+make fetch-pinn
+make demo-fast
 ```
 
-Two paths that Snapshot can take:
+Snapshot numbers used by the docs and demos: `0.3, 0.2, 0.08, 0.7`.
 
 ```mermaid
 flowchart TD
-  snapshot[Snapshot snap-0001] --> pinn[PINN v0.1.1]
+  snapshot[Snapshot] --> pinn[PINN v0.1.1]
   pinn -->|SAFE or UNSAFE| decision[Decision finalized]
   pinn -->|NEED_FEA| fea[FEA job]
-  fea -->|quality pass| feaDecision[Decision from FEA criterion]
-  fea -->|fail timeout or weak quality| review[Manual review]
+  fea -->|quality pass and thresholds present| feaDecision[Decision from FEA criterion]
+  fea -->|fail timeout empty thresholds or weak quality| review[Manual review]
 ```
-
-Fast-path Decision example: [docs/examples/decision.example.json](docs/examples/decision.example.json)
-
-FEA-needed PINN result example: [docs/examples/prediction_result.example.json](docs/examples/prediction_result.example.json)
 
 ## Factory floor
 
@@ -75,13 +66,22 @@ This picture is drawn from [config/factory_layout.yaml](config/factory_layout.ya
 
 ![Main factory floor plan](docs/images/factory-layout.svg)
 
-Rebuild the picture:
-
 ```bash
 python scripts/render_factory_layout.py
+make factory-stage
 ```
 
-Check that IDs, schemas, and examples still agree:
+## Run locally
+
+```bash
+python -m pip install -e ".[dev]"
+make test
+make api
+```
+
+On-site layout: [docs/deployment.md](docs/deployment.md) and `compose.yaml`.
+
+Check contracts:
 
 ```bash
 python -m pip install -r requirements-ci.txt
@@ -95,22 +95,10 @@ python scripts/validate_contracts.py
 | [docs/README.md](docs/README.md) | Full document map |
 | [docs/glossary.md](docs/glossary.md) | Shared names |
 | [docs/architecture.md](docs/architecture.md) | How the parts connect |
-| [docs/api-contracts.md](docs/api-contracts.md) | Data shapes and planned HTTP API |
+| [docs/api-contracts.md](docs/api-contracts.md) | Data shapes and HTTP API |
 | [docs/factory-reconstruction.md](docs/factory-reconstruction.md) | Hall size, grid, and Asset coordinates |
-| [docs/repository.md](docs/repository.md) | What exists now and what comes later |
+| [docs/repository.md](docs/repository.md) | Source layout |
 | [docs/contribution-units.md](docs/contribution-units.md) | Branch and commit size |
-
-## Repository now
-
-```text
-config/      versioned engineering files
-schemas/     Snapshot and Decision JSON Schema
-docs/        public specifications and examples
-docs/images/ factory picture built from config
-scripts/     contract checks and factory picture
-.github/     community health files and CI
-```
-
-Planned code layout is in [docs/repository.md](docs/repository.md).
+| [docs/demo-acceptance.md](docs/demo-acceptance.md) | make targets |
 
 How to propose a change: [Contributing](.github/CONTRIBUTING.md).
