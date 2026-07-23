@@ -6,7 +6,7 @@ All public docs use the same names, ASCII punctuation, and real examples from th
 
 ## Current version
 
-This repository holds contracts, not a running product.
+This repository holds the on-site Digital Twin application and its contracts.
 
 Present:
 
@@ -14,16 +14,14 @@ Present:
 - JSON Schema under `schemas/`
 - Worked JSON under `docs/examples/`
 - Factory picture under `docs/images/`
+- HTTP API, PINN adapter, FEA pipeline, OpenUSD stage
 - Contract check script `scripts/validate_contracts.py`
 
-Not present:
+Not filled:
 
-- HTTP API
-- PINN adapter
-- OpenRadioss worker
-- Omniverse app
-- Filled FEA safety thresholds
-- Filled hardening curve numbers
+- FEA numeric safety thresholds
+- Calibrated hardening curve numbers
+- Omniverse Kit / WebRTC host runtime
 
 ## Map
 
@@ -31,17 +29,17 @@ Not present:
 |---|---|
 | [glossary.md](glossary.md) | Shared names |
 | [architecture.md](architecture.md) | Parts and data owners |
-| [repository.md](repository.md) | Current files and planned code |
-| [api-contracts.md](api-contracts.md) | Snapshot, Decision, planned API |
+| [repository.md](repository.md) | Source layout |
+| [api-contracts.md](api-contracts.md) | Snapshot, Decision, HTTP API |
 | [ai-fea-orchestration.md](ai-fea-orchestration.md) | PINN, routing, FEA job flow |
 | [digital-twin.md](digital-twin.md) | AAS, Snapshot, Freshness |
 | [openradioss-fea.md](openradioss-fea.md) | First FEA model |
 | [factory-reconstruction.md](factory-reconstruction.md) | Hall, grid, Asset layout |
 | [openusd-omniverse.md](openusd-omniverse.md) | 3D factory and two user views |
-| [deployment.md](deployment.md) | On-site layout for later phases |
+| [deployment.md](deployment.md) | Compose layout |
 | [observability-reliability.md](observability-reliability.md) | Metrics, alerts, Lineage |
-| [test-validation.md](test-validation.md) | Tests we will require |
-| [demo-acceptance.md](demo-acceptance.md) | Later demo gates |
+| [test-validation.md](test-validation.md) | Tests |
+| [demo-acceptance.md](demo-acceptance.md) | make targets |
 | [adr/README.md](adr/README.md) | Why these tools were chosen |
 | [contribution-units.md](contribution-units.md) | Branch and commit size |
 
@@ -59,12 +57,3 @@ These files are the demonstration data used in the docs. CI checks the Snapshot 
 | Fast Decision | [examples/decision.example.json](examples/decision.example.json) |
 | FEA review Decision | [examples/decision_fea.example.json](examples/decision_fea.example.json) |
 
-## How we write docs
-
-- English
-- First-time reader
-- Names from the glossary
-- Short sections
-- ASCII only
-- Show this version as it is
-- Prefer pictures, mermaid, and JSON examples
