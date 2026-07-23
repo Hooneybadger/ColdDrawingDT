@@ -12,5 +12,10 @@ Do not copy the same numbers into application constants.
 | `fea_safety_criterion.yaml` | Engineering acceptance policy | fea-criterion-v1, empty thresholds |
 | `factory_layout.yaml` | Hall size and Asset coordinates | 23 placed Assets plus 3 cranes |
 | `asset_registry.yaml` | Asset ID, AAS ID, OpenUSD prim | 26 IDs |
+| `freshness.yaml` | Maximum age for required source data | freshness-v1 |
+| `site_policy.yaml` | Extra site FEA requirement | site-policy-v1 |
+| `opcua_map.yaml` | OPC UA node map for Drawing 4 | opcua-map-v1 |
+| `hardening_map.yaml` | Material mapping ID; plastic curve not calibrated | hardening-map-v1 |
+| `fea_quality.yaml` | Quasi-static quality profile | quasi-static-quality-v1 |
 
 Secrets and URLs stay in `.env` / `.env.example`, not in these files.
