@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version defines the flow. It does not run PINN or OpenRadioss yet.
+This version runs the flow in `src/cold_drawing_twin`. PINN inference needs the released files under `models/`. OpenRadioss needs site binaries and a calibrated hardening map.
 
 ## PINN artifact
 
@@ -10,10 +10,11 @@ Release: Cold Drawing PINN v0.1.1
 
 Files: https://huggingface.co/MongsangGa/cold-drawing-pinn-poc
 
-Planned local call:
+Local call:
 
 ```bash
-python predict.py --features 0.3 0.2 0.08 0.7
+make fetch-pinn
+make model-verify
 ```
 
 That list is the glossary feature order. The same numbers are in [examples/process_snapshot.example.json](examples/process_snapshot.example.json).
@@ -75,7 +76,7 @@ FEA is extra physics work for cases that need more check. A covered `UNSAFE` res
 
 ## Queue
 
-Planned queues:
+Queues:
 
 - `fea.default`
 - `fea.priority`
@@ -107,7 +108,7 @@ hash(
 )
 ```
 
-## Planned FEA code layout
+## FEA code layout
 
 ```text
 simulation/
