@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-The HTTP API is not implemented in this version. The JSON below is the contract the API must follow.
+The HTTP API is implemented in `src/cold_drawing_twin/api`. The JSON below is the contract the API follows.
 
 ## Process features
 
@@ -109,11 +109,12 @@ Fast path: [examples/decision.example.json](examples/decision.example.json)
 
 FEA path that needs a person: [examples/decision_fea.example.json](examples/decision_fea.example.json)
 
-## Planned HTTP API
+## HTTP API
 
 ```text
 GET  /assets/{asset_id}
 GET  /assets/{asset_id}/state
+PUT  /assets/{asset_id}/state
 GET  /assets/{asset_id}/history
 POST /assets/{asset_id}/evaluations
 GET  /evaluations/{evaluation_id}
@@ -121,9 +122,11 @@ POST /scenarios
 GET  /scenarios/{scenario_id}
 GET  /fea-jobs/{job_id}
 GET  /decisions/{decision_id}
+GET  /health
+GET  /metrics
 ```
 
-## Planned events
+## Events
 
 Event names:
 
