@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version describes the target system. Only contracts exist today.
+This version describes the running system. Contracts under `config/` and `schemas/` stay the engineering source for Lineage.
 
 ## Style
 
