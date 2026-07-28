@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version has no Compose file and no containers yet. The layout below is the target.
+This version ships `compose.yaml`. Network zones may collapse on a laptop. The interfaces stay separate in code.
 
 ## Zones
 
@@ -26,7 +26,7 @@ Application zone services:
 
 Network zones may collapse on a laptop. The interfaces stay separate in code.
 
-## Planned Compose services
+## Compose services
 
 - `api`
 - `edge-adapter`
