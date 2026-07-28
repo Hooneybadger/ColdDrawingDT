@@ -2,9 +2,9 @@
 
 Terms: [glossary](glossary.md).
 
-AAS stores the current meaning of each Asset. TimescaleDB stores history. OpenUSD stores space.
+AAS stores the current meaning of each Asset. TimescaleDB (or SQLite in local tests) stores history. OpenUSD stores space.
 
-This version defines the model. BaSyx is not deployed here yet.
+The API writes process state to PostgreSQL tables and, when `BASYX_ENABLED=true`, upserts the same meaning to Eclipse BaSyx.
 
 ## AAS shape
 
