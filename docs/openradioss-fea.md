@@ -14,7 +14,7 @@ Process features
   -> versioned safety criterion
 ```
 
-This version has the reference profile only. It does not run Gmsh or OpenRadioss yet.
+This version ships the reference profile, Gmsh meshing, and OpenRadioss deck writer. A physics solve needs OpenRadioss binaries and a calibrated `hardening-map-v1` plastic curve. Empty `required_thresholds` still block automatic SAFE/UNSAFE.
 
 ## Why OpenRadioss
 
@@ -136,7 +136,7 @@ flowchart TD
 
 Thresholds live in [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml). In this version `required_thresholds` is an empty list. The implementation must refuse automatic `SAFE` or `UNSAFE` when required thresholds are absent. Solver exit code is never a safety verdict.
 
-## Planned CLI
+## CLI
 
 ```bash
 python -m cold_drawing_twin.simulation.run \
@@ -146,7 +146,7 @@ python -m cold_drawing_twin.simulation.run \
   --hardening 0.70
 ```
 
-That command does not exist in this version. When it exists, it must run a real Gmsh -> OpenRadioss solve and print quality, metrics, criterion version, and verdict.
+The command runs Gmsh, writes Starter and Engine decks, and runs OpenRadioss when binaries and a calibrated material card are present. It always prints quality, metrics, criterion version, and verdict. With empty thresholds the criterion verdict is `INCONCLUSIVE`.
 
 ## Validation matrix
 
