@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-No metrics backend is deployed in this version. The names below are the contract for later dashboards.
+Prometheus scrapes `/metrics`. Grafana loads `deploy/grafana/dashboards/cold-drawing.json`.
 
 ## Signals
 
