@@ -1,59 +1,46 @@
 # Repository layout
 
-## This version
-
 ```text
 ColdDrawingDT/
   README.md
+  compose.yaml
+  Makefile
+  pyproject.toml
   .env.example
-  requirements.txt
-  requirements-ci.txt
-  MANIFEST.json
   config/
   schemas/
+  src/cold_drawing_twin/
+    domain/
+    edge/opcua/
+    twin/
+    history/
+    inference/pinn/
+    simulation/preprocess/
+    simulation/solver/
+    simulation/postprocess/
+    orchestration/
+    api/
+    observability/
+  workers/
+  omniverse/
+    apps/senior/
+    apps/operator/
+    extensions/
+    scripts/generate_factory_stage.py
+  usd/factory/
+  usd/assets/
+  tests/unit/
+  tests/integration/
+  tests/e2e/
+  tests/fea/
   docs/
-    examples/
-    images/
-    adr/
-    contribution-units.md
   scripts/
-    validate_contracts.py
-    render_factory_layout.py
+  docker/
+  deploy/
   .github/
 ```
 
-`MANIFEST.json` is a checksum list of public files in this contract set.
-
-## Planned code layout
-
-```text
-src/cold_drawing_twin/
-  domain/
-  edge/opcua/
-  twin/basyx/
-  history/
-  inference/pinn/
-  reliability/
-  simulation/preprocess/
-  simulation/solver/
-  simulation/postprocess/
-  orchestration/
-  api/
-  observability/
-omniverse/
-  apps/senior/
-  apps/operator/
-  extensions/
-  scripts/generate_factory_stage.py
-usd/factory/
-usd/assets/
-workers/
-tests/unit/
-tests/integration/
-tests/e2e/
-tests/fea/
-compose.yaml
-```
+`MANIFEST.json` lists checksums of the public contract set. Application files live beside it.
 
 ## Dependency direction
 
