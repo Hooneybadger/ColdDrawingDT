@@ -4,7 +4,7 @@ Terms: [glossary](glossary.md).
 
 OpenUSD is the spatial source of truth. Omniverse Kit is the 3D app. Neither owns safety rules or process measurements.
 
-This version has layout YAML and a 2D floor picture. It does not have USD files or Kit apps yet.
+This version generates `usd/factory/bugok_factory.usda` from layout YAML and ships Kit extension shells that call the HTTP API. Kit itself and WebRTC streaming run on the site RTX host.
 
 ## Root tree
 
