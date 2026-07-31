@@ -2,18 +2,18 @@
 
 Terms: [glossary](glossary.md).
 
-This version runs one check: `scripts/validate_contracts.py`. The lists below are the tests later phases must add.
+This version runs contract checks and pytest.
 
-## Current check
+## Current checks
 
 ```bash
 python -m pip install -r requirements-ci.txt
 python scripts/validate_contracts.py
+python -m pip install -e ".[dev]"
+make test
 ```
 
-It parses YAML, checks Asset IDs, and validates Snapshot and Decision examples.
-
-## Unit tests later
+## Unit tests
 
 Feature and model:
 
@@ -44,7 +44,7 @@ Postprocess:
 - Solver success but quality fail -> `INCONCLUSIVE`
 - Safety criterion version applied
 
-## Integration tests later
+## Integration tests
 
 - OPC UA source -> AAS update
 - AAS update -> Timescale history
@@ -55,7 +55,7 @@ Postprocess:
 - Decision -> Digital Twin result
 - Event -> Omniverse state
 
-## End-to-end cases later
+## End-to-end cases
 
 Use Drawing 4 and the demo Snapshot numbers unless a case says otherwise.
 
