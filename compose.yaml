@@ -1,10 +1,10 @@
 services:
   postgres-timescale:
-    image: timescale/timescaledb:latest-pg16
+    image: timescale/timescaledb:2.17.2-pg16
     environment:
-      POSTGRES_USER: cold_drawing
-      POSTGRES_PASSWORD: cold_drawing
-      POSTGRES_DB: cold_drawing
+      POSTGRES_USER: ${POSTGRES_USER:-cold_drawing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev-only-not-production}
+      POSTGRES_DB: ${POSTGRES_DB:-cold_drawing}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
@@ -16,7 +16,10 @@ services:
       retries: 10
 
   rabbitmq:
-    image: rabbitmq:3.13-management
+    image: rabbitmq:3.13.7-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-cold_drawing}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-dev-only-not-production}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -38,8 +41,8 @@ services:
       context: .
       dockerfile: docker/api.Dockerfile
     environment:
-      DATABASE_URL: postgresql+psycopg://cold_drawing:cold_drawing@postgres-timescale:5432/cold_drawing
-      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cold_drawing}:${POSTGRES_PASSWORD:-dev-only-not-production}@postgres-timescale:5432/${POSTGRES_DB:-cold_drawing}
+      CELERY_BROKER_URL: amqp://${RABBITMQ_DEFAULT_USER:-cold_drawing}:${RABBITMQ_DEFAULT_PASS:-dev-only-not-production}@rabbitmq:5672//
       FEA_EXECUTION: celery
       BASYX_AAS_REPOSITORY_URL: http://basyx:8081
       BASYX_ENABLED: "true"
@@ -60,8 +63,8 @@ services:
       context: .
       dockerfile: docker/worker.Dockerfile
     environment:
-      DATABASE_URL: postgresql+psycopg://cold_drawing:cold_drawing@postgres-timescale:5432/cold_drawing
-      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cold_drawing}:${POSTGRES_PASSWORD:-dev-only-not-production}@postgres-timescale:5432/${POSTGRES_DB:-cold_drawing}
+      CELERY_BROKER_URL: amqp://${RABBITMQ_DEFAULT_USER:-cold_drawing}:${RABBITMQ_DEFAULT_PASS:-dev-only-not-production}@rabbitmq:5672//
       FEA_EXECUTION: celery
       PINN_MODEL_DIR: /models/cold-drawing-pinn-poc
       OPENRADIOSS_STARTER_BIN: ${OPENRADIOSS_STARTER_BIN:-}
@@ -80,7 +83,7 @@ services:
       context: .
       dockerfile: docker/edge.Dockerfile
     environment:
-      DATABASE_URL: postgresql+psycopg://cold_drawing:cold_drawing@postgres-timescale:5432/cold_drawing
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cold_drawing}:${POSTGRES_PASSWORD:-dev-only-not-production}@postgres-timescale:5432/${POSTGRES_DB:-cold_drawing}
       OPCUA_ENDPOINT: opc.tcp://host.docker.internal:4840/cold-drawing/
       BASYX_AAS_REPOSITORY_URL: http://basyx:8081
       BASYX_ENABLED: "true"
@@ -99,6 +102,8 @@ services:
 
   grafana:
     image: grafana/grafana:11.3.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-dev-only-not-production}
     volumes:
       - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./deploy/grafana/dashboards:/var/lib/grafana/dashboards:ro
