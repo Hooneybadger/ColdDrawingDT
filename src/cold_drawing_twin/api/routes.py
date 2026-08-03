@@ -34,6 +34,17 @@ def services(session: Session = Depends(get_session)):
     return container.services(session)
 
 
+@router.get("/assets")
+def list_assets():
+    registry = asset_registry()
+    return {
+        "assets": [
+            {"asset_id": asset_id, "aas_id": item["aas_id"], "usd_prim": item["usd_prim"], "class": item["class"]}
+            for asset_id, item in registry.items()
+        ]
+    }
+
+
 @router.get("/assets/{asset_id}")
 def get_asset(asset_id: str):
     registry = asset_registry()
