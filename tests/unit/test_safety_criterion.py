@@ -12,3 +12,9 @@ def test_empty_thresholds_refuse_automatic_verdict():
     verdict, reason = apply_criterion(quality_ok=True, metrics={})
     assert verdict == FeaCriterionVerdict.INCONCLUSIVE
     assert "required_thresholds" in reason
+
+
+def test_quality_failure_is_inconclusive():
+    verdict, reason = apply_criterion(quality_ok=False, metrics={"peak_von_mises_pa": 1.0})
+    assert verdict == FeaCriterionVerdict.INCONCLUSIVE
+    assert "quality" in reason

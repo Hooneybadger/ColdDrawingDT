@@ -1,0 +1,8 @@
+{
+  "peak_von_mises_pa": 612.0e6,
+  "peak_plastic_strain": 0.18,
+  "final_outer_radius_m": 0.0084,
+  "maximum_damage": null,
+  "source": "parser-fixture",
+  "note": "Imported fixture for parser tests. Not an actual OpenRadioss ANIM dump."
+}

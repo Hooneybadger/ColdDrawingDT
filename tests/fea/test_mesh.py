@@ -14,8 +14,11 @@ def test_gmsh_axisymmetric_mesh(tmp_path: Path):
         die_half_angle_rad=float(mapped["die_half_angle_rad"]),
         inlet_length_m=float(mapped["inlet_length_m"]),
         outlet_length_m=float(mapped["outlet_length_m"]),
+        clearance_m=float(mapped["clearance_m"]),
     )
-    mesh = generate_mesh(tmp_path, geometry, 0.0008, 0.002)
+    mesh = generate_mesh(tmp_path, geometry, 0.0008, 0.002, radial_elements=4, axial_elements=12, die_elements=6)
     assert mesh["node_count"] > 10
     assert mesh["element_count"] > 10
     assert mesh["checksum"]
+    assert mesh["workpiece"]["quads"]
+    assert mesh["die"]["quads"]

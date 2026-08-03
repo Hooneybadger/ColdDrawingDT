@@ -1,0 +1,10 @@
+# This file is a parser regression fixture. It is not an actual OpenRadioss solve.
+
+ ** ENERGY **
+ INTERNAL ENERGY  :  1.250000E+02
+ KINETIC ENERGY   :  4.100000E-01
+ TOTAL ENERGY     :  1.254100E+02
+ ENERGY ERROR     :  1.200000E-03
+ REACTION FORCE   :  8.750000E+03
+
+ NORMAL TERMINATION

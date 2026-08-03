@@ -1,0 +1,49 @@
+# Optional OpenRadioss smoke. This is not part of the default Tests workflow.
+# It downloads published Linux binaries and runs `make fea-smoke`.
+# A green run is an actual solver execution. Parser fixture tests are not this job.
+
+name: FEA integration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  openradioss-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install application
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Install OpenRadioss
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip curl
+          bash scripts/install_openradioss.sh
+          echo "OPENRADIOSS_PATH=${HOME}/OpenRadioss" >> "$GITHUB_ENV"
+          echo "OPENRADIOSS_STARTER_BIN=${HOME}/OpenRadioss/exec/starter_linux64_gf" >> "$GITHUB_ENV"
+          echo "OPENRADIOSS_ENGINE_BIN=${HOME}/OpenRadioss/exec/engine_linux64_gf" >> "$GITHUB_ENV"
+          echo "RAD_CFG_PATH=${HOME}/OpenRadioss/hm_cfg_files" >> "$GITHUB_ENV"
+          echo "RAD_H3D_PATH=${HOME}/OpenRadioss/extlib/h3d/lib/linux64" >> "$GITHUB_ENV"
+          echo "OMP_STACKSIZE=400m" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${HOME}/OpenRadioss/extlib/hm_reader/linux64:${HOME}/OpenRadioss/extlib/h3d/lib/linux64" >> "$GITHUB_ENV"
+      - name: FEA smoke
+        env:
+          PYTHONPATH: src:.
+        run: make fea-smoke
+      - name: Upload workspace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fea-smoke-workspace
+          path: simulation/workspaces/fea-smoke
+          if-no-files-found: warn

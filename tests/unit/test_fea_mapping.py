@@ -12,6 +12,7 @@ def test_map_keeps_hardening_as_normalized_scalar():
     assert mapped["normalized_hardening_coefficient"] == 0.7
     assert mapped["mapping_version"] == "hardening-map-v1"
     assert abs(mapped["final_radius_m"] - 0.008366600265340756) < 1e-9
+    assert mapped["friction_is_contact_parameter"] is True
 
 
 def test_idempotency_key_changes_with_profile():
