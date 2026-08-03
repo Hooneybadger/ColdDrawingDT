@@ -8,12 +8,37 @@ geometry:
   initial_radius_m: 0.01
   inlet_length_m: 0.04
   outlet_length_m: 0.04
+formulation:
+  n2d3d: 1
+  element: QUAD
+  property: PROP/SOLID
+  isolid: 17
+  contact: INTER/TYPE5
+  die: fixed_nodes
+  drawing: IMPVEL
 mesh:
   profile_version: mesh-v1
   deformation_zone_size_m: 0.00035
   far_field_size_m: 0.0010
+  smoke:
+    profile_version: mesh-smoke-v1
+    radial_elements: 4
+    axial_elements: 16
+    die_elements: 12
 contact:
   profile_version: contact-v1
+  type: TYPE5
+  stiffness_scale: 0.2
+  gap_m: 0.0
+  clearance_m: 2.0e-4
+  # I_Rm=2: do not auto-reverse segments connected to the die solid.
+  # I_Rm=0 reversed the bore normal into the die and crushed the bar at t=0.
+  irm: 2
+  inacti: 0
+drawing:
+  velocity_m_s: 0.5
+  duration_s: 0.04
+  ramp_s: 0.002
 material:
   profile_id: stainless_reference_v1
   mapping_version: hardening-map-v1

@@ -15,7 +15,8 @@ Do not copy the same numbers into application constants.
 | `freshness.yaml` | Maximum age for required source data | freshness-v1 |
 | `site_policy.yaml` | Extra site FEA requirement | site-policy-v1 |
 | `opcua_map.yaml` | OPC UA node map for Drawing 4 | opcua-map-v1 |
-| `hardening_map.yaml` | Material mapping ID; plastic curve not calibrated | hardening-map-v1 |
+| `hardening_map.yaml` | Mill mapping ID; plastic curve not calibrated | hardening-map-v1 |
+| `materials/stainless_reference_v1.yaml` | Reference FEA LAW36 card, not mill calibrated | stainless-reference-v1 |
 | `fea_quality.yaml` | Quasi-static quality profile | quasi-static-quality-v1 |
 
 Secrets and URLs stay in `.env` / `.env.example`, not in these files.

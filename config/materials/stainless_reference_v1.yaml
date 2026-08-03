@@ -1,0 +1,61 @@
+# Reference FEA material for the cold-drawing OpenRadioss case.
+# Not mill-calibrated. PINN normalized_hardening_coefficient is not this curve.
+
+id: stainless_reference_v1
+version: stainless-reference-v1
+
+source:
+  type: reference
+  production_calibrated: false
+  mill_alloy: intended stainless family; numerical card is not a mill 304 certificate
+  citation: |
+    Altair Radioss /MAT/LAW36 (PLAS_TAB) documented example
+    "MAT_TABULATED_STEEL_EXAMPLE", quasi-static function FUNCT/1
+    TrueYieldStressMPa_vs_TruePlasticStrain - QUASI_STATIC
+    https://help.altair.com/hwsolvers/rad/topics/solvers/rad/mat_law36_plas_tab_starter_r.htm
+  original_units: g-mm-ms (density 0.0078, E 221000 MPa)
+  notes: |
+    Density 0.0078 g/mm3 = 7800 kg/m3.
+    E 221000 N/mm2 = 2.21e11 Pa.
+    Yield table Y-values are MPa and are stored here in Pa.
+    Strain-rate extra functions from the same example are not used.
+    This card lets the solver run. It is not a production drawing mill card.
+
+elastic:
+  density_kg_m3: 7800.0
+  young_modulus_pa: 2.21e11
+  poisson_ratio: 0.3
+
+plastic:
+  law: LAW36
+  strain_rate: quasi_static
+  curve:
+    # [true plastic strain, true yield stress Pa]
+    - [0.0, 389.67e6]
+    - [0.003269060686992, 400.23e6]
+    - [0.006930111818697, 412.0e6]
+    - [0.010444667419264, 425.0e6]
+    - [0.01364836646806, 435.0e6]
+    - [0.018589301580824, 452.254e6]
+    - [0.021874379924321, 469.641e6]
+    - [0.025339482510186, 483.105e6]
+    - [0.028791504254908, 494.684e6]
+    - [0.032231428223083, 505.957e6]
+    - [0.039073857673036, 524.886e6]
+    - [0.049247691998806, 548.545e6]
+    - [0.0593166151509, 568.02e6]
+    - [0.069283274188388, 584.179e6]
+    - [0.079150038252912, 597.579e6]
+    - [0.088919522946915, 609.378e6]
+    - [0.098593691533105, 619.695e6]
+    - [0.10817487992333, 629.521e6]
+    - [0.117664394244064, 637.851e6]
+    - [0.127064395848652, 645.58e6]
+    - [0.136376459004361, 652.452e6]
+    - [0.145602624330452, 659.399e6]
+    - [0.154744128728257, 665.639e6]
+    - [0.163802712305892, 671.639e6]
+    - [0.172779797696021, 677.208e6]
+    - [0.181676645262092, 681.9e6]
+    - [0.190494821916083, 686.069e6]
+    - [0.199417970430916, 689.022e6]

@@ -1,5 +1,8 @@
 version: hardening-map-v1
 material_profile_id: stainless_reference_v1
 calibrated: false
-# Normalized PINN hardening is not MPa. A mill-calibrated plastic curve is not in this repository.
+# Mill plastic curve is still absent. FEA uses the versioned reference profile below.
+# PINN normalized_hardening_coefficient is not converted to MPa.
 plastic_curve: null
+reference_profile: stainless_reference_v1
+reference_profile_file: materials/stainless_reference_v1.yaml

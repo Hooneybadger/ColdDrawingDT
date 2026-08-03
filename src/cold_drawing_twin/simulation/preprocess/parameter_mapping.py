@@ -25,4 +25,6 @@ def map_process(features: ProcessFeatures) -> dict[str, float | str]:
         "outlet_length_m": float(reference["geometry"]["outlet_length_m"]),
         "deformation_zone_size_m": float(reference["mesh"]["deformation_zone_size_m"]),
         "far_field_size_m": float(reference["mesh"]["far_field_size_m"]),
+        "clearance_m": float(reference["contact"]["clearance_m"]),
+        "friction_is_contact_parameter": True,
     }
