@@ -39,4 +39,8 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "integration: optional services such as BaSyx",
+]
 filterwarnings = ["ignore::DeprecationWarning"]

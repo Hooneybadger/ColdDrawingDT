@@ -1,7 +1,7 @@
 PYTHONPATH := src:.
 PYTHON ?= python3
 
-.PHONY: test contracts model-verify fea-smoke demo-fast demo-fea factory-stage demo-stream fetch-pinn api
+.PHONY: test contracts model-verify fea-smoke demo-fast demo-fea demo-system seed-opcua factory-stage demo-stream fetch-pinn api
 
 contracts:
 	$(PYTHON) scripts/validate_contracts.py
@@ -25,12 +25,18 @@ demo-fast:
 demo-fea:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli demo-fea
 
+demo-system:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli demo-system
+
+seed-opcua:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli seed-opcua
+
 factory-stage:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli factory-stage
 
 demo-stream:
 	@echo "Launch omniverse/apps/operator/cold_drawing_operator.kit on the RTX host."
-	@echo "The operator client uses WebRTC. Streaming must not write Decisions."
+	@echo "The operator client polls the HTTP API. Streaming must not write Decisions."
 	@test -f usd/factory/bugok_factory.usda || (echo "run make factory-stage first" && exit 1)
 
 api:

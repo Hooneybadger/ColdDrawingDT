@@ -22,6 +22,8 @@ def test_http_contracts(settings):
     assert asset["usd_prim"].endswith("Drawing_04")
     state = client.get(f"/assets/{PRIMARY}/state").json()
     assert state["features"]["reduction_ratio"] == 0.3
+    assets = client.get("/assets").json()
+    assert any(item["asset_id"] == PRIMARY for item in assets["assets"])
     posted = client.post(
         f"/assets/{PRIMARY}/evaluations",
         json={"mode": "OPERATIONAL", "expected_state_version": "state-0001"},

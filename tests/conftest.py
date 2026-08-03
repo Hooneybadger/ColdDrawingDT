@@ -27,6 +27,8 @@ def settings(tmp_path):
         fea_execution="inline",
         basyx_enabled=False,
         openradioss_work_dir=tmp_path / "fea",
+        openradioss_starter_bin="",
+        openradioss_engine_bin="",
         pinn_model_dir=tmp_path / "missing-pinn",
         _env_file=None,
     )

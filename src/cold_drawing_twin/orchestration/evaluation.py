@@ -170,8 +170,19 @@ class EvaluationService:
             "asset_id": snapshot.asset_id,
             "captured_at": iso(snapshot.captured_at),
             "source_state_version": snapshot.source_state_version,
+            "source_timestamp": iso(source_timestamp),
             "features": snapshot.features,
         }
+        lineage = lineage_record(
+            asset_id=asset_id,
+            state_version=source_state_version,
+            source_timestamp=source_timestamp,
+            snapshot=snapshot_payload,
+            pinn=evaluation.pinn_result,
+            pinn_input=features.as_dict(),
+            routing_policy_version=routing_version,
+            routing_action=action.value,
+        )
 
         if action == RoutingAction.ACCEPT:
             self._finalize(
@@ -182,12 +193,7 @@ class EvaluationService:
                 model_version,
                 routing_version,
                 None,
-                lineage_record(
-                    snapshot=snapshot_payload,
-                    pinn=evaluation.pinn_result,
-                    routing_policy_version=routing_version,
-                    routing_action=action.value,
-                ),
+                lineage,
                 operational,
             )
         elif action == RoutingAction.REJECT:
@@ -199,12 +205,7 @@ class EvaluationService:
                 model_version,
                 routing_version,
                 None,
-                lineage_record(
-                    snapshot=snapshot_payload,
-                    pinn=evaluation.pinn_result,
-                    routing_policy_version=routing_version,
-                    routing_action=action.value,
-                ),
+                lineage,
                 operational,
             )
         elif action == RoutingAction.MANUAL_REVIEW:
@@ -216,12 +217,7 @@ class EvaluationService:
                 model_version,
                 routing_version,
                 None,
-                lineage_record(
-                    snapshot=snapshot_payload,
-                    pinn=evaluation.pinn_result,
-                    routing_policy_version=routing_version,
-                    routing_action=action.value,
-                ),
+                lineage,
                 operational,
             )
             evaluation.state = EvaluationState.MANUAL_REVIEW.value
@@ -301,6 +297,13 @@ class EvaluationService:
             created_at=self.now(),
         )
         self.session.add(decision)
+        lineage["decision"] = {
+            "decision_id": decision.decision_id,
+            "verdict": decision.verdict,
+            "status": decision.status,
+            "timestamp": iso(decision.created_at),
+        }
+        decision.lineage = lineage
         evaluation.state = (
             EvaluationState.MANUAL_REVIEW.value
             if status == DecisionStatus.MANUAL_REVIEW
