@@ -109,8 +109,12 @@ def _row_dict(row: AssetStateRow) -> dict[str, Any]:
     return {
         "state_version": row.state_version,
         "features": row.features,
+        "pass_index": row.pass_index,
+        "source_timestamp": row.source_timestamp,
+        "quality": row.quality,
         "latest_evaluation_id": row.latest_evaluation_id,
         "latest_snapshot_id": row.latest_snapshot_id,
+        "latest_decision_id": row.latest_decision_id,
         "latest_verdict": row.latest_verdict,
         "active_fea_job_id": row.active_fea_job_id,
         "last_completed_fea_job_id": row.last_completed_fea_job_id,
