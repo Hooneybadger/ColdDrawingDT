@@ -20,6 +20,25 @@ def generate(output: Path = OUTPUT) -> Path:
         parent = prim.rsplit("/", 1)[0]
         name = prim.rsplit("/", 1)[1]
         cx, cy, cz = x + l / 2.0, y + w / 2.0, z + h / 2.0
+        if asset_id == "BG.MIEUM.DRW.04":
+            placed[parent].append(
+                "\n".join(
+                    [
+                        f'            def Xform "{name}" (',
+                        '                prepend references = @../assets/drawing/Drawing_04.usda@',
+                        "                payloads = {",
+                        '                    token default = @../assets/drawing/Drawing_04.usda@',
+                        "                }",
+                        "            )",
+                        "            {",
+                        f"                double3 xformOp:translate = ({cx}, {cy}, {cz})",
+                        '                uniform token[] xformOpOrder = ["xformOp:translate"]',
+                        f'                custom string coldDrawing:assetId = "{asset_id}"',
+                        "            }",
+                    ]
+                )
+            )
+            return
         placed[parent].append(
             "\n".join(
                 [
@@ -118,12 +137,6 @@ def generate(output: Path = OUTPUT) -> Path:
     lines.append("")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    drawing = REPO_ROOT / "usd" / "assets" / "drawing" / "Drawing_04.usda"
-    drawing.parent.mkdir(parents=True, exist_ok=True)
-    drawing.write_text(
-        '#usda 1.0\n(\n    defaultPrim = "Drawing_04"\n)\n\ndef Xform "Drawing_04"\n{\n    custom string coldDrawing:assetId = "BG.MIEUM.DRW.04"\n}\n',
-        encoding="utf-8",
-    )
     return output
 
 

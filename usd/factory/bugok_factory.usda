@@ -41,23 +41,16 @@ def Xform "World"
                         uniform token[] xformOpOrder = ["xformOp:scale"]
                     }
                 }
-                def Xform "Drawing_04"
+                def Xform "Drawing_04" (
+                    prepend references = @../assets/drawing/Drawing_04.usda@
+                    payloads = {
+                        token default = @../assets/drawing/Drawing_04.usda@
+                    }
+                )
                 {
                     double3 xformOp:translate = (35.75, 10.15, 1.4)
                     uniform token[] xformOpOrder = ["xformOp:translate"]
                     custom string coldDrawing:assetId = "BG.MIEUM.DRW.04"
-                    def Cube "proxy" (purpose = "proxy")
-                    {
-                        double size = 1
-                        float3 xformOp:scale = (35.5, 5.5, 2.8)
-                        uniform token[] xformOpOrder = ["xformOp:scale"]
-                    }
-                    def Cube "render" (purpose = "render")
-                    {
-                        double size = 1
-                        float3 xformOp:scale = (35.5, 5.5, 2.8)
-                        uniform token[] xformOpOrder = ["xformOp:scale"]
-                    }
                 }
             }
             def Xform "Pilger"
