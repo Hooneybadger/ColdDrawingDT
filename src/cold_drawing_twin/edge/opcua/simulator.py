@@ -18,23 +18,19 @@ async def serve_drawing4(features: ProcessFeatures, endpoint: str | None = None)
     idx = await server.register_namespace(uri)
     objects = server.nodes.objects
     machine = await objects.add_object(idx, "DRW04")
-    await machine.add_variable(ua.NodeId("DRW04.reduction_ratio", idx), "reduction_ratio", features.reduction_ratio)
-    await machine.add_variable(ua.NodeId("DRW04.die_half_angle_rad", idx), "die_half_angle_rad", features.die_half_angle_rad)
-    await machine.add_variable(
-        ua.NodeId("DRW04.friction_coefficient", idx), "friction_coefficient", features.friction_coefficient
-    )
-    await machine.add_variable(
-        ua.NodeId("DRW04.normalized_hardening_coefficient", idx),
-        "normalized_hardening_coefficient",
-        features.normalized_hardening_coefficient,
-    )
-    await machine.add_variable(ua.NodeId("DRW04.pass_index", idx), "pass_index", 1)
-    await machine.add_variable(
-        ua.NodeId("DRW04.source_timestamp", idx),
-        "source_timestamp",
-        datetime.now(timezone.utc).isoformat(),
-    )
-    await machine.add_variable(ua.NodeId("DRW04.quality", idx), "quality", "GOOD")
+    now = datetime.now(timezone.utc)
+    for name, value in (
+        ("reduction_ratio", features.reduction_ratio),
+        ("die_half_angle_rad", features.die_half_angle_rad),
+        ("friction_coefficient", features.friction_coefficient),
+        ("normalized_hardening_coefficient", features.normalized_hardening_coefficient),
+        ("pass_index", 1),
+        ("source_timestamp", now.isoformat()),
+        ("quality", "GOOD"),
+    ):
+        node = await machine.add_variable(ua.NodeId(f"DRW04.{name}", idx), name, value)
+        await node.set_writable()
+        await node.write_value(value)
     return server
 
 
