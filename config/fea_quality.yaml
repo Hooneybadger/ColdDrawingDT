@@ -2,6 +2,17 @@ version: quasi-static-quality-v1
 require_histories:
   - kinetic_energy
   - internal_energy
-  - drawing_force
-# Numeric KE/IE limits are not set in this version. Missing required histories fail quality.
+require_metrics:
+  - peak_von_mises_pa
+  - peak_plastic_strain
+  - drawing_force_n
+min_workpiece_quads: 8
+min_workpiece_nodes: 10
+require_normal_termination: true
+reject_nonfinite: true
+# OpenRadioss clips listing ERROR at 99.9%. A saturated clip is not a usable balance.
+# This is the solver's own display limit, not a mill fracture threshold.
+reject_saturated_energy_error: true
+saturated_energy_error: 0.999
+# No KE/IE ratio cutoff is set. Presence and finiteness are required.
 numeric_limits: {}

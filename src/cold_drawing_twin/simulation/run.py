@@ -6,13 +6,13 @@ from pathlib import Path
 
 from cold_drawing_twin.config_files import fea_reference, hardening_map
 from cold_drawing_twin.domain.features import ProcessFeatures
-from cold_drawing_twin.settings import load_settings
+from cold_drawing_twin.settings import Settings, load_settings
 from cold_drawing_twin.simulation.postprocess.damage import damage_metrics
-from cold_drawing_twin.simulation.postprocess.energy import parse_energy_histories
-from cold_drawing_twin.simulation.postprocess.fields import parse_anim_or_placeholder
-from cold_drawing_twin.simulation.postprocess.force import parse_drawing_force
-from cold_drawing_twin.simulation.postprocess.safety_criterion import apply_criterion, quality_pass
+from cold_drawing_twin.simulation.postprocess.parser import parse_solver_outputs
+from cold_drawing_twin.simulation.postprocess.quality_gate import evaluate_quality
+from cold_drawing_twin.simulation.postprocess.safety_criterion import apply_criterion
 from cold_drawing_twin.simulation.preprocess.geometry import build_geometry
+from cold_drawing_twin.simulation.preprocess.material import load_reference_material
 from cold_drawing_twin.simulation.preprocess.mesh import generate_mesh
 from cold_drawing_twin.simulation.preprocess.parameter_mapping import map_process
 from cold_drawing_twin.simulation.preprocess.radioss_deck import write_radioss_decks
@@ -25,6 +25,8 @@ def run_case(
     job_id: str = "fea-smoke",
     *,
     run_solver: bool = True,
+    smoke: bool | None = None,
+    settings: Settings | None = None,
 ) -> dict:
     work_dir.mkdir(parents=True, exist_ok=True)
     mapped = map_process(features)
@@ -34,12 +36,23 @@ def run_case(
         die_half_angle_rad=float(mapped["die_half_angle_rad"]),
         inlet_length_m=float(mapped["inlet_length_m"]),
         outlet_length_m=float(mapped["outlet_length_m"]),
+        clearance_m=float(mapped["clearance_m"]),
     )
+    mesh_kwargs = {}
+    use_smoke = job_id == "fea-smoke" if smoke is None else smoke
+    if use_smoke:
+        smoke_cfg = fea_reference()["mesh"]["smoke"]
+        mesh_kwargs = {
+            "radial_elements": int(smoke_cfg["radial_elements"]),
+            "axial_elements": int(smoke_cfg["axial_elements"]),
+            "die_elements": int(smoke_cfg["die_elements"]),
+        }
     mesh = generate_mesh(
         work_dir,
         geometry,
         float(mapped["deformation_zone_size_m"]),
         float(mapped["far_field_size_m"]),
+        **mesh_kwargs,
     )
     decks = write_radioss_decks(
         work_dir,
@@ -48,15 +61,12 @@ def run_case(
         float(mapped["friction_coefficient"]),
         job_id,
     )
+    material = load_reference_material()
+    mapping = hardening_map()
     solver_status = "SKIPPED"
     solver_error = None
-    settings = load_settings()
-    mapping = hardening_map()
-    if mapping.get("plastic_curve") is None:
-        run_solver = False
-        solver_status = "FAILED"
-        solver_error = "hardening-map-v1 has no calibrated plastic curve"
-    elif run_solver:
+    settings = settings or load_settings()
+    if run_solver:
         try:
             run_openradioss(
                 starter_bin=settings.openradioss_starter_bin,
@@ -70,11 +80,9 @@ def run_case(
         except SolverError as exc:
             solver_status = exc.status
             solver_error = str(exc)
-    histories = parse_energy_histories(work_dir)
-    forces = parse_drawing_force(work_dir)
-    fields = parse_anim_or_placeholder(work_dir)
-    histories["drawing_force"] = forces.get("drawing_force") or []
-    ok, quality_reason = quality_pass(histories)
+    parsed = parse_solver_outputs(work_dir)
+    ok, quality_reason = evaluate_quality(solver_status=solver_status, parsed=parsed, mesh=mesh)
+    mesh_version = fea_reference()["mesh"]["smoke"]["profile_version"] if use_smoke else fea_reference()["mesh"]["profile_version"]
     metrics = {
         "geometry": {
             "r0": geometry.r0,
@@ -86,12 +94,17 @@ def run_case(
             "element_count": mesh["element_count"],
             "checksum": mesh["checksum"],
         },
-        "fields": fields,
-        "histories": {key: values[-1] if values else None for key, values in histories.items()},
-        "damage": damage_metrics(fields),
+        "fields": parsed.get("fields") or {},
+        "histories": {key: (values[-1] if values else None) for key, values in (parsed.get("histories") or {}).items()},
+        "damage": damage_metrics(parsed.get("fields") or {}),
+        **(parsed.get("metrics") or {}),
         "fea_profile_version": fea_reference()["version"],
         "material_mapping_version": mapping["version"],
-        "mesh_config_version": fea_reference()["mesh"]["profile_version"],
+        "material_profile_version": material["version"],
+        "mesh_config_version": mesh_version,
+        "parser": parsed.get("parser"),
+        "placeholder": False,
+        "termination": parsed.get("termination"),
     }
     verdict, criterion_reason = apply_criterion(quality_ok=ok, metrics=metrics)
     result = {
@@ -103,6 +116,9 @@ def run_case(
         "criterion_verdict": verdict.value,
         "criterion_reason": criterion_reason,
         "metrics": metrics,
+        "fea_profile_version": fea_reference()["version"],
+        "material_mapping_version": mapping["version"],
+        "mesh_config_version": mesh_version,
         "decks": decks,
         "work_dir": str(work_dir),
     }
@@ -111,13 +127,14 @@ def run_case(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run Gmsh and OpenRadioss for one drawing case.")
+    parser = argparse.ArgumentParser(description="Run the cold-drawing OpenRadioss reference case.")
     parser.add_argument("--reduction-ratio", type=float, required=True)
     parser.add_argument("--die-angle-rad", type=float, required=True)
     parser.add_argument("--friction", type=float, required=True)
     parser.add_argument("--hardening", type=float, required=True)
     parser.add_argument("--work-dir", type=Path, default=Path("simulation/workspaces/cli"))
     parser.add_argument("--job-id", default="fea-cli")
+    parser.add_argument("--no-solver", action="store_true")
     args = parser.parse_args(argv)
     features = ProcessFeatures(
         reduction_ratio=args.reduction_ratio,
@@ -125,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
         friction_coefficient=args.friction,
         normalized_hardening_coefficient=args.hardening,
     )
-    result = run_case(features, args.work_dir, args.job_id)
+    result = run_case(features, args.work_dir, args.job_id, run_solver=not args.no_solver)
     print(json.dumps(result, indent=2, default=str))
     return 0 if result["solver_status"] == "SUCCEEDED" else 1
 

@@ -42,7 +42,7 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     work_dir = Path(settings.openradioss_work_dir) / job.job_id
     job.work_dir = str(work_dir)
     features = features_from_mapping(snapshot.features)
-    result = run_case(features, work_dir, job.job_id, run_solver=True)
+    result = run_case(features, work_dir, job.job_id, run_solver=True, settings=settings)
     job.metrics = result["metrics"]
     job.quality = {"pass": result["quality_pass"], "reason": result["quality_reason"]}
     job.criterion_verdict = result["criterion_verdict"]
@@ -65,7 +65,7 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
             evaluation,
             snapshot,
             job,
-            DecisionVerdict.MANUAL_REVIEW,
+            DecisionVerdict.INCONCLUSIVE,
             DecisionStatus.MANUAL_REVIEW,
             EvaluationState.MANUAL_REVIEW,
             twin,
@@ -121,6 +121,9 @@ def _finalize_from_fea(
 ) -> None:
     service = EvaluationService(session, twin, pinn=None, events=events)
     lineage = lineage_record(
+        asset_id=evaluation.asset_id,
+        state_version=snapshot.source_state_version,
+        source_timestamp=snapshot.captured_at,
         snapshot={
             "snapshot_id": snapshot.snapshot_id,
             "asset_id": snapshot.asset_id,
@@ -128,6 +131,7 @@ def _finalize_from_fea(
             "source_state_version": snapshot.source_state_version,
         },
         pinn=evaluation.pinn_result,
+        pinn_input=snapshot.features,
         routing_policy_version=routing_policy()["version"],
         routing_action=evaluation.routing_action or "REQUIRES_FEA",
         fea={
@@ -136,11 +140,13 @@ def _finalize_from_fea(
             "solver": job.solver,
             "solver_version": job.solver_version,
             "material_mapping_version": job.material_mapping_version,
+            "material_profile_version": (job.metrics or {}).get("material_profile_version"),
             "mesh_config_version": job.mesh_config_version,
             "fea_profile_version": job.fea_profile_version,
             "safety_criterion_version": job.safety_criterion_version,
             "criterion_verdict": job.criterion_verdict,
             "quality": job.quality,
+            "metrics": job.metrics,
         },
     )
     evaluation.state = EvaluationState.FINALIZING.value
