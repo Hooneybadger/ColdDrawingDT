@@ -24,6 +24,7 @@ def write_radioss_decks(
     reference = fea_reference()
     drawing = reference["drawing"]
     contact = reference["contact"]
+    formulation = reference["formulation"]
     duration = float(drawing["duration_s"])
     velocity = float(drawing["velocity_m_s"])
     ramp = float(drawing["ramp_s"])
@@ -31,6 +32,10 @@ def write_radioss_decks(
     stfac = float(contact["stiffness_scale"])
     irm = int(contact.get("irm", 2))
     inacti = int(contact.get("inacti", 0))
+    isolid = int(formulation.get("isolid", 2))
+    ismstr = int(formulation.get("ismstr", 4))
+    icpre = int(formulation.get("icpre", 0))
+    iframe = int(formulation.get("iframe", 1))
 
     workpiece = mesh["workpiece"]
     die = mesh["die"]
@@ -49,6 +54,10 @@ def write_radioss_decks(
             stfac=stfac,
             irm=irm,
             inacti=inacti,
+            isolid=isolid,
+            ismstr=ismstr,
+            icpre=icpre,
+            iframe=iframe,
         ),
         encoding="utf-8",
     )
@@ -71,6 +80,10 @@ def _starter_text(
     stfac: float,
     irm: int,
     inacti: int,
+    isolid: int,
+    ismstr: int,
+    icpre: int,
+    iframe: int,
 ) -> str:
     nodes = workpiece["nodes"] + die["nodes"]
     node_block = "\n".join(i10(nid) + e20(x, y, z) for nid, x, y, z in nodes)
@@ -94,6 +107,7 @@ def _starter_text(
 # mapping_version {material['mapping_version']}
 # source_type {source.get('type')}
 # friction_coefficient mapped to /INTER/TYPE5 Fric={friction}
+# isolid={isolid} ismstr={ismstr} icpre={icpre} iframe={iframe}
 # r0={geometry.r0} rf={geometry.rf} cone={geometry.cone_length_m}
 #---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|
 /BEGIN
@@ -113,13 +127,13 @@ die
 {i10(2, 2)}
 /PROP/SOLID/1
 workpiece_quad
-{i10(17, 4, 0, 2, 0, 0, 0, 1)}
+{i10(isolid, ismstr, 0, icpre, 0, 0, 0, iframe)}
 {e20(1.10, 0.05, 0.10)}
 {e20(0.0, 0.0, 0.0, 0.0, 0.0)}
 {i10(0, 0, 0)}
 /PROP/SOLID/2
 die_quad
-{i10(17, 4, 0, 2, 0, 0, 0, 1)}
+{i10(isolid, ismstr, 0, icpre, 0, 0, 0, iframe)}
 {e20(1.10, 0.05, 0.10)}
 {e20(0.0, 0.0, 0.0, 0.0, 0.0)}
 {i10(0, 0, 0)}

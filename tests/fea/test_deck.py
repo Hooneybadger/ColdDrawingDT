@@ -50,6 +50,9 @@ def test_radioss_deck_is_axisymmetric_drawing_model(tmp_path: Path):
     assert "/SH3N/" not in starter
     assert "/INTER/TYPE5/1" in starter
     assert "       000                   2         0" in starter
+    assert "isolid=2" in starter
+    assert "        17         4         0         2" not in starter
+    assert "         2         4         0         0" in starter
     assert "/IMPVEL/1" in starter
     assert "/MAT/PLAS_TAB/1" in starter
     assert "/SURF/SEG/1" in starter

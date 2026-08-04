@@ -35,20 +35,23 @@ def test_parser_reads_radioss_cycle_table(tmp_path: Path):
     assert parsed["metrics"]["internal_energy"] == 12.5
     assert parsed["metrics"]["kinetic_energy"] == 0.41
     assert parsed["metrics"]["energy_error"] == 0.012
+    assert parsed["metrics"]["external_work"] == 8.75
     assert parsed["termination"]["normal"] is True
 
 
 def test_parser_reads_th_csv_reacz(tmp_path: Path):
     csv_text = (
-        "time,INTERNAL ENERGY,KINETIC ENERGY,"
+        "time,INTERNAL ENERGY,KINETIC ENERGY,EXTERNAL WORK,CONTACT ENERGY,"
         "draw_end 81 PULL var 27,draw_end 81 PULL var 28,draw_end 81 PULL var 29\n"
-        "0.0,1.0,0.1,0.0,0.01,12.0\n"
-        "0.1,2.0,0.2,0.02,0.009,-8750.0\n"
+        "0.0,1.0,0.1,0.5,0.0,0.0,0.01,12.0\n"
+        "0.1,2.0,0.2,1.5,0.0,0.02,0.009,-8750.0\n"
     )
     (tmp_path / "runT01.csv").write_text(csv_text, encoding="utf-8")
     (tmp_path / "engine.out").write_text("NORMAL TERMINATION\n", encoding="utf-8")
     parsed = parse_solver_outputs(tmp_path)
     assert parsed["metrics"]["internal_energy"] == 2.0
+    assert parsed["metrics"]["external_work"] == 1.5
+    assert parsed["metrics"]["contact_energy"] == 0.0
     assert parsed["metrics"]["drawing_force_n"] == 8750.0
 
 
@@ -87,3 +90,25 @@ def test_quality_rejects_saturated_energy_error():
     )
     assert ok is False
     assert "energy error" in reason
+
+
+def test_quality_accepts_unsaturated_listing_error():
+    ok, reason = evaluate_quality(
+        solver_status="SUCCEEDED",
+        parsed={
+            "termination": {"status": "NORMAL_TERMINATION", "normal": True},
+            "files": ["starter.stdout.log", "engine.stdout.log"],
+            "histories": {"kinetic_energy": [0.001], "internal_energy": [108.0]},
+            "metrics": {
+                "peak_von_mises_pa": 737.0e6,
+                "peak_plastic_strain": 0.35,
+                "drawing_force_n": 9100.0,
+                "kinetic_energy": 0.001,
+                "internal_energy": 108.0,
+                "energy_error": 0.272,
+            },
+        },
+        mesh={"workpiece": {"element_count": 64, "node_count": 85}},
+    )
+    assert ok is True
+    assert "normal termination" in reason

@@ -132,8 +132,10 @@ def main() -> None:
         fail("PINN release in config is not v0.1.1")
     if routing.get("version") != "routing-v1":
         fail("routing policy version is not routing-v1")
-    if fea_ref.get("version") != "fea-reference-v1":
-        fail("FEA reference version is not fea-reference-v1")
+    if fea_ref.get("version") != "fea-reference-v2":
+        fail("FEA reference version is not fea-reference-v2")
+    if int((fea_ref.get("formulation") or {}).get("isolid") or 0) == 17:
+        fail("Isolid=17 is not the 2D Q4 used in fea-reference-v2")
     if fea_crit.get("version") != "fea-criterion-v1":
         fail("FEA criterion version is not fea-criterion-v1")
     if fea_crit["criteria"].get("required_thresholds") != []:

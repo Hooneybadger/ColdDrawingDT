@@ -13,7 +13,7 @@ A thin 3D sector would also be valid, but it costs more and is not required for 
 | Item | Card | Why |
 |---|---|---|
 | Analysis | `/ANALY` N2D3D=1 | Documented axisymmetric mode |
-| Elements | `/QUAD` + `/PROP/SOLID` Isolid=17, Ismstr=4, Icpre=2 | Fully integrated 2D quads; Icpre=2 is the documented elasto-plastic option |
+| Elements | `/QUAD` + `/PROP/SOLID` Isolid=2, Ismstr=4 | 2D Q4 (Belytschko). Isolid=17 fully integrated quads grew internal energy with **no contact** on OpenRadioss `latest-20260728`, so they are not used. |
 | Workpiece | `/MAT/PLAS_TAB` (LAW36) | Tabulated elastoplastic curve from the Altair LAW36 steel example, converted to kg-m-s |
 | Die | `/MAT/LAW1` + `/BCS` | Stationary die; nodes fixed |
 | Contact | `/INTER/TYPE5` + `/SURF/SEG` | 2D node-to-segment contact; `Fric` is the PINN `friction_coefficient`. Starter `INORI2` orients the bore outward from the die solid. `Inacti=0` does not move nodes. `Gap=0` follows the TYPE5 note that a large gap causes energy jumps. |
@@ -61,12 +61,16 @@ GitHub Actions workflow `fea-integration.yml` is manual (`workflow_dispatch`) an
 
 On a local OpenRadioss `latest-20260728` Linux GNU build, `make fea-smoke` reached **NORMAL TERMINATION**.
 
-Parsed from listing + `th_to_csv` + `anim_to_vtk` (not placeholders):
+Parsed from listing + `th_to_csv` + `anim_to_vtk` (not placeholders), **fea-reference-v2** (`Isolid=2`):
 
-- pull-end outer radius ≈ 8.54 mm versus geometric `r_f` ≈ 8.37 mm
+- listing energy error does not saturate; last cycle about 27%, peak about 48%
+- pull-end outer radius ≈ 8.57 mm versus geometric `r_f` ≈ 8.37 mm
 - drawing reaction on the pull nodes on the order of 10⁴ N
-- von Mises and equivalent plastic strain present on workpiece quads
+- peak von Mises ≈ 0.74 GPa and peak equivalent plastic strain ≈ 0.35 on workpiece quads
+- kinetic energy ≪ internal energy (quasi-static intent)
 
-The listing `ERROR` column saturates at 99.9% after contact engages. That is a documented `/INTER/TYPE5` energy-accounting limitation, not a mill fracture threshold. The quality gate therefore **fails** and the criterion stays `INCONCLUSIVE` / `MANUAL_REVIEW`. Metrics are still written to `result.json`.
+`Isolid=17` was rejected: a no-contact run still saturated listing `ERROR` at 99.9% while internal energy grew without matching external work. That is a 2D Q4 formulation failure on this solver build, not a mill fracture threshold.
+
+TYPE5 still reports `CONTACT ENERGY = 0` in the T01 file. Quality uses listing `ERROR` saturation, required files, and finite required metrics. Empty `required_thresholds` still force `INCONCLUSIVE` / `MANUAL_REVIEW` after a quality-passing solve.
 
 `Inacti=3` was rejected: it moved the nose node across the inlet clearance and destroyed the bar at t=0.

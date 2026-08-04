@@ -1,4 +1,4 @@
-version: fea-reference-v1
+version: fea-reference-v2
 analysis:
   dimensionality: axisymmetric_2d
   solver: OpenRadioss
@@ -12,7 +12,12 @@ formulation:
   n2d3d: 1
   element: QUAD
   property: PROP/SOLID
-  isolid: 17
+  # Isolid=2 is the 2D Q4 default (Belytschko). Isolid=17 (fully integrated)
+  # grew internal energy with no contact on OpenRadioss latest-20260728.
+  isolid: 2
+  ismstr: 4
+  icpre: 0
+  iframe: 1
   contact: INTER/TYPE5
   die: fixed_nodes
   drawing: IMPVEL

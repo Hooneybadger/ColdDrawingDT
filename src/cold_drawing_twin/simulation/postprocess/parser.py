@@ -41,8 +41,11 @@ def parse_solver_outputs(work_dir: Path) -> dict[str, Any]:
         "contact_force_n": contact_force,
         "kinetic_energy": _last(th.get("kinetic_energy") or energies.get("kinetic_energy")),
         "internal_energy": _last(th.get("internal_energy") or energies.get("internal_energy")),
+        "external_work": _last(th.get("external_work") or energies.get("external_work")),
+        "contact_energy": _last(th.get("contact_energy") or energies.get("contact_energy")),
         "total_energy": _last(th.get("total_energy") or energies.get("total_energy")),
         "energy_error": _last(th.get("energy_error") or energies.get("energy_error")),
+        "listing_energy_error_peak": _peak(th.get("energy_error") or energies.get("energy_error")),
         "final_outer_radius_m": fields.get("final_outer_radius_m"),
         "maximum_damage": fields.get("maximum_damage"),
     }
@@ -53,6 +56,8 @@ def parse_solver_outputs(work_dir: Path) -> dict[str, Any]:
         "histories": {
             "kinetic_energy": th.get("kinetic_energy") or energies.get("kinetic_energy") or [],
             "internal_energy": th.get("internal_energy") or energies.get("internal_energy") or [],
+            "external_work": th.get("external_work") or energies.get("external_work") or [],
+            "contact_energy": th.get("contact_energy") or energies.get("contact_energy") or [],
             "total_energy": th.get("total_energy") or energies.get("total_energy") or [],
             "energy_error": th.get("energy_error") or energies.get("energy_error") or [],
             "drawing_force": th.get("drawing_force") or energies.get("drawing_force") or [],
@@ -81,6 +86,8 @@ def parse_energy_listing(text: str) -> dict[str, list[float]]:
     values: dict[str, list[float]] = {
         "kinetic_energy": [],
         "internal_energy": [],
+        "external_work": [],
+        "contact_energy": [],
         "total_energy": [],
         "energy_error": [],
         "drawing_force": [],
@@ -88,6 +95,8 @@ def parse_energy_listing(text: str) -> dict[str, list[float]]:
     patterns = (
         ("kinetic_energy", r"K(?:INETIC)?(?:\s|\.|-)ENERGY\s*[:=]\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
         ("internal_energy", r"I(?:NTERNAL)?(?:\s|\.|-)ENERGY\s*[:=]\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
+        ("external_work", r"EXT(?:ERNAL)?(?:\s|\.|-)WORK\s*[:=]\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
+        ("contact_energy", r"CONTACT(?:\s|\.|-)ENERGY\s*[:=]\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
         ("total_energy", r"T(?:OTAL)?(?:\s|\.|-)ENERGY\s*[:=]\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
         ("energy_error", r"ENERGY\s+ERROR\s*[:=]?\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
         ("drawing_force", r"(?:REACZ|DRAWING\s+FORCE|REACTION\s+FORCE)\s*[:=]\s*([+-]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][+-]?\d+)?)"),
@@ -106,6 +115,8 @@ def parse_time_history_csv(work_dir: Path) -> dict[str, list[float]]:
     result: dict[str, list[float]] = {
         "kinetic_energy": [],
         "internal_energy": [],
+        "external_work": [],
+        "contact_energy": [],
         "total_energy": [],
         "energy_error": [],
         "drawing_force": [],
@@ -120,9 +131,11 @@ def parse_time_history_csv(work_dir: Path) -> dict[str, list[float]]:
         pull_groups = _pull_groups(header)
         for row in rows[1:]:
             mapped = {header[i].upper(): row[i] if i < len(row) else "" for i in range(len(header))}
-            _append_named(result["kinetic_energy"], mapped, ("KINETIC ENERGY", "KENERGY"))
-            _append_named(result["internal_energy"], mapped, ("INTERNAL ENERGY", "IENERGY"))
-            _append_named(result["total_energy"], mapped, ("TOTAL ENERGY", "TENERGY"))
+            _append_exact(result["kinetic_energy"], mapped, ("KINETIC ENERGY", "KENERGY"))
+            _append_exact(result["internal_energy"], mapped, ("INTERNAL ENERGY", "IENERGY"))
+            _append_exact(result["external_work"], mapped, ("EXTERNAL WORK", "EXT-WORK"))
+            _append_exact(result["contact_energy"], mapped, ("CONTACT ENERGY",))
+            _append_exact(result["total_energy"], mapped, ("TOTAL ENERGY", "TENERGY"))
             force = _row_drawing_force(row, pull_groups)
             if force is not None:
                 result["drawing_force"].append(force)
@@ -171,6 +184,7 @@ def _parse_cycle_table(text: str) -> dict[str, list[float]]:
         "kinetic_energy": [],
         "energy_error": [],
         "total_energy": [],
+        "external_work": [],
     }
     for raw in text.splitlines():
         match = CYCLE_ROW.match(raw)
@@ -178,10 +192,12 @@ def _parse_cycle_table(text: str) -> dict[str, list[float]]:
             continue
         ie = float(match.group("ie"))
         ke = float(match.group("ke"))
+        work = float(match.group("work"))
         values["internal_energy"].append(ie)
         values["kinetic_energy"].append(ke)
         values["energy_error"].append(float(match.group("err")) / 100.0)
         values["total_energy"].append(ie + ke)
+        values["external_work"].append(work)
     return values
 
 
@@ -207,17 +223,21 @@ def _row_drawing_force(row: list[str], groups: list[list[int]]) -> float | None:
                 values.append(float(row[index]))
             except ValueError:
                 continue
-        large = [value for value in values if abs(value) > 1.0]
-        if not large:
+        if not values:
             continue
-        total += max(large, key=abs)
+        reaction = max(values, key=abs)
+        # Axial travel and radius stay O(1e-2 m). Drawing reaction is newtons.
+        if abs(reaction) <= 1.0:
+            continue
+        total += reaction
         found = True
     return total if found else None
 
 
-def _append_named(target: list[float], mapped: dict[str, str], keys: tuple[str, ...]) -> None:
+def _append_exact(target: list[float], mapped: dict[str, str], names: tuple[str, ...]) -> None:
     for key, value in mapped.items():
-        if any(token == key or token in key for token in keys):
+        stripped = key.strip()
+        if stripped in names:
             try:
                 target.append(float(value))
             except ValueError:
