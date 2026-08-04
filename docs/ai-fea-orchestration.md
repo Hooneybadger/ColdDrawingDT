@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version runs the flow in `src/cold_drawing_twin`. PINN inference needs the released files under `models/`. OpenRadioss needs site binaries and a calibrated hardening map.
+This version runs the flow in `src/cold_drawing_twin`. PINN inference needs the released files under `models/`. OpenRadioss needs site binaries. The mill plastic curve is still empty; FEA uses the versioned reference material profile `stainless_reference_v1`.
 
 ## PINN artifact
 

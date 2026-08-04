@@ -8,49 +8,39 @@ The API writes process state to PostgreSQL tables and, when `BASYX_ENABLED=true`
 
 ## AAS shape
 
-Example Asset: Drawing 4
+Example Asset: Drawing 4. Core source of truth is PostgreSQL. BaSyx is an interoperability projection; a BaSyx failure does not roll back TwinStore.
 
 ```text
 AAS: urn:bg:mieum:drw:04
-  Identification
   ProcessState
-  MaterialState
-  EquipmentState
   EvaluationState
   SimulationState
-  OperationMetadata
 ```
 
 ProcessState:
 
-- `pass_index`
-- `reduction_ratio`
-- `die_half_angle_rad`
-- `drawing_speed` when available
-- `friction_coefficient` or the configured effective value
-- `source_timestamp`
-
-MaterialState:
-
-- `material_profile_id`
-- `normalized_hardening_coefficient`
-- lot or workpiece reference when applicable
+- `reductionRatio`
+- `dieHalfAngleRad`
+- `frictionCoefficient`
+- `normalizedHardeningCoefficient`
+- `passIndex`
+- `sourceTimestamp`
+- `quality`
+- `stateVersion`
 
 EvaluationState:
 
-- `latest_evaluation_id`
-- `latest_snapshot_id`
-- status
-- final verdict
-- `updated_at`
+- `latestEvaluationId`
+- `latestSnapshotId`
+- `latestDecisionId`
+- `latestVerdict`
 
 SimulationState:
 
-- `active_fea_job_id`
-- `last_completed_fea_job_id`
-- solver version
-- result status
-- artifact reference
+- `activeFeaJobId`
+- `lastCompletedFeaJobId`
+
+BaSyx REST IDs use AAS V3 Base64URL encoding without padding. Project-specific fields are not stuffed into the shell JSON.
 
 Identity map: [config/asset_registry.yaml](../config/asset_registry.yaml).
 

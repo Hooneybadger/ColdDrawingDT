@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version runs contract checks and pytest.
+This version runs contract checks and pytest. Default CI does not run OpenRadioss. Parser tests use labeled fixtures. `fea-integration.yml` is a manual workflow for an actual solver smoke.
 
 ## Current checks
 

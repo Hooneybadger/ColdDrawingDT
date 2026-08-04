@@ -57,7 +57,7 @@ Keep separate:
 
 ## Configuration
 
-Secrets and site URLs use environment files. See [.env.example](../.env.example).
+Secrets and site URLs use environment files. See [.env.example](../.env.example). Values there are development-only.
 
 Engineering values stay in versioned repo files so they appear in Lineage:
 

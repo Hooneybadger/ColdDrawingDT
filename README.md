@@ -1,104 +1,119 @@
 # Cold Drawing Digital Twin
 
-On-site system for a cold drawing mill.
+A mill Digital Twin that reads live drawing-machine state, freezes it, runs a fast PINN check, and spends OpenRadioss FEA only when that check returns `NEED_FEA`.
 
-1. Read live process values from machines (OPC UA).
-2. Freeze those values as a Snapshot.
-3. Run a fast PINN safety check.
-4. Run FEA only when the PINN result is `NEED_FEA`, or when site rules require it.
-5. Store a Decision with Lineage.
-6. Show the factory in OpenUSD. Omniverse Kit apps read the HTTP API.
+## Problem
 
-If a word is new, see [docs/glossary.md](docs/glossary.md).
+Cold drawing can leave a pass looking acceptable while local stress and strain are not. A full FEA on every sample is too slow for the line. A PINN-only answer is too weak when the case is outside the model domain or the mill has not validated a fracture threshold.
 
-## Current version
+## Why AI + FEA + Digital Twin
 
-| Item | Value |
+| Layer | Role |
 |---|---|
-| Product | 1.1 |
-| PINN release | v0.1.1 |
-| Routing policy | routing-v1 |
-| FEA reference | fea-reference-v1 |
-| FEA safety criterion | fea-criterion-v1 |
-| Primary demo Asset | Drawing 4 (`BG.MIEUM.DRW.04`) |
-| Factory hall | 96 m x 41.13 m x 14.2 m |
+| OPC UA | Machine values with source time and quality |
+| Digital Twin | Canonical live state in PostgreSQL / TimescaleDB |
+| Snapshot | Immutable copy used for one Evaluation |
+| PINN v0.1.1 | Fast SAFE / UNSAFE / NEED_FEA |
+| Routing `routing-v1` | Fail-safe path selection |
+| OpenRadioss | Selective high-fidelity drawing solve |
+| Decision / Lineage | Stored verdict and the inputs that produced it |
+| OpenUSD / Omniverse | Display of backend state, not a second decision engine |
 
-Present:
+## Architecture
 
-- HTTP API
-- Digital Twin store (PostgreSQL / SQLite) with BaSyx sync when enabled
-- Released PINN adapter (`predict.py` + `pinn.pt`)
-- Routing policy `routing-v1`
-- Gmsh axisymmetric mesh and OpenRadioss deck writer
-- Celery FEA worker (or inline runner)
-- Factory OpenUSD stage generator and Kit app shells
+```text
+OPC UA → Digital Twin → Snapshot → PINN → Routing
+                                      ├─ SAFE / UNSAFE → Decision
+                                      └─ NEED_FEA → Gmsh/structured mesh → OpenRadioss
+                                                    → quality gate → Decision / Manual review
+Digital Twin → AAS/Submodels → BaSyx
+Digital Twin → HTTP API → OpenUSD / Omniverse
+```
 
-Not filled:
+## One real example
 
-- FEA numeric safety thresholds (`required_thresholds` is empty, so FEA cannot return automatic `SAFE` / `UNSAFE`)
-- Calibrated hardening curve numbers behind `hardening-map-v1`
-- Omniverse Kit runtime and WebRTC (those run on the site RTX host)
+Asset: Drawing 4 (`BG.MIEUM.DRW.04`). Demo process vector: `0.3, 0.2, 0.08, 0.7`.
 
-## Worked example: one check on Drawing 4
+### Fast Path
 
-Live Evaluation does not send process numbers from a client. The server copies them from the Digital Twin.
+```text
+OPC UA → Twin → Snapshot → released PINN v0.1.1 → SAFE or UNSAFE → Decision → Lineage
+```
+
+No FEA.
+
+### FEA Path
+
+```text
+Twin → Snapshot → released PINN v0.1.1 → NEED_FEA → OpenRadioss → quality gate → INCONCLUSIVE / MANUAL_REVIEW
+```
+
+This version has no validated FEA fracture threshold. A successful, quality-passing solve is therefore `INCONCLUSIVE`, not automatic SAFE/UNSAFE. Metrics are stored.
+
+Out-of-domain PINN input (for example reduction ratio `0.55`) is a real `NEED_FEA` from `ReleasedPinnAdapter`. `StaticPinnAdapter` is a unit-test double only.
+
+## 3D factory
+
+![Main factory floor plan](docs/images/factory-layout.svg)
+
+Drawing 4 is a referenced hero asset (`usd/assets/drawing/Drawing_04.usda`) with Frame, Die, Workpiece, Entry, Exit, and StatusIndicator. `proxy` and `render` purposes share the same Digital Twin state.
+
+```bash
+make factory-stage
+```
+
+## Run
 
 ```bash
 python -m pip install -e ".[dev]"
 make fetch-pinn
-make demo-fast
-```
-
-Snapshot numbers used by the docs and demos: `0.3, 0.2, 0.08, 0.7`.
-
-```mermaid
-flowchart TD
-  snapshot[Snapshot] --> pinn[PINN v0.1.1]
-  pinn -->|SAFE or UNSAFE| decision[Decision finalized]
-  pinn -->|NEED_FEA| fea[FEA job]
-  fea -->|quality pass and thresholds present| feaDecision[Decision from FEA criterion]
-  fea -->|fail timeout empty thresholds or weak quality| review[Manual review]
-```
-
-## Factory floor
-
-This picture is drawn from [config/factory_layout.yaml](config/factory_layout.yaml). The thick box is Drawing 4.
-
-![Main factory floor plan](docs/images/factory-layout.svg)
-
-```bash
-python scripts/render_factory_layout.py
-make factory-stage
-```
-
-## Run locally
-
-```bash
-python -m pip install -e ".[dev]"
 make test
-make api
+make seed-opcua
+make demo-fast
+make demo-fea
+# or
+make demo-system
 ```
 
-On-site layout: [docs/deployment.md](docs/deployment.md) and `compose.yaml`.
-
-Check contracts:
+OpenRadioss physics solve (optional, needs binaries):
 
 ```bash
-python -m pip install -r requirements-ci.txt
-python scripts/validate_contracts.py
+bash scripts/install_openradioss.sh
+export OPENRADIOSS_STARTER_BIN=$HOME/OpenRadioss/exec/starter_linux64_gf
+export OPENRADIOSS_ENGINE_BIN=$HOME/OpenRadioss/exec/engine_linux64_gf
+make fea-smoke
 ```
+
+Compose (development-only passwords in `.env.example`):
+
+```bash
+cp .env.example .env
+docker compose up -d
+```
+
+## Status of this version
+
+| Item | State |
+|---|---|
+| HTTP API, Twin store, Snapshot, routing-v1 | Implemented |
+| Released PINN adapter (`predict.py` + `pinn.pt`) | Implemented |
+| OPC UA map as source of truth, source timestamp, quality | Implemented |
+| AAS V3 ProcessState / EvaluationState / SimulationState | Implemented |
+| OpenRadioss 2D axisymmetric drawing decks + parsers + quality gate | Implemented |
+| `make fea-smoke` actual Engine solve | Reference implementation (NORMAL TERMINATION; quality fails on TYPE5 energy clip) |
+| OpenRadioss on every CI run | Not implemented (manual `fea-integration.yml`) |
+| Reference LAW36 steel card `stainless_reference_v1` | Reference implementation |
+| Mill-calibrated plastic curve | Production calibration required |
+| FEA automatic SAFE/UNSAFE thresholds | Production calibration required (`required_thresholds: []`) |
+| Omniverse Kit runtime / WebRTC | Not implemented in this repository (host-side) |
+
+PINN `normalized_hardening_coefficient` is not a megapascal material property.
 
 ## Read next
 
 | Doc | What it covers |
 |---|---|
-| [docs/README.md](docs/README.md) | Full document map |
-| [docs/glossary.md](docs/glossary.md) | Shared names |
+| [docs/openradioss-fea.md](docs/openradioss-fea.md) | Formulation, material, contact, quality |
 | [docs/architecture.md](docs/architecture.md) | How the parts connect |
-| [docs/api-contracts.md](docs/api-contracts.md) | Data shapes and HTTP API |
-| [docs/factory-reconstruction.md](docs/factory-reconstruction.md) | Hall size, grid, and Asset coordinates |
-| [docs/repository.md](docs/repository.md) | Source layout |
-| [docs/contribution-units.md](docs/contribution-units.md) | Branch and commit size |
 | [docs/demo-acceptance.md](docs/demo-acceptance.md) | make targets |
-
-How to propose a change: [Contributing](.github/CONTRIBUTING.md).
+| [docs/glossary.md](docs/glossary.md) | Shared names |

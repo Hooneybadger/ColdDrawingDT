@@ -35,7 +35,7 @@ This version generates `usd/factory/bugok_factory.usda` from layout YAML and shi
     Utilities
 ```
 
-Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04`
+Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04` references `usd/assets/drawing/Drawing_04.usda` (Frame, Die, Workpiece, Entry, Exit, StatusIndicator). `proxy` and `render` purposes share that asset. Kit extensions poll `/assets/{id}/state` on a timer. They display backend verdicts; they do not compute safety.
 
 ## Asset files
 

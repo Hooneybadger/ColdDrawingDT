@@ -2,159 +2,71 @@
 
 Terms: [glossary](glossary.md).
 
-Goal: an executable FEA fallback for cold drawing.
+This version writes and, when binaries are installed, runs a 2D axisymmetric cold-drawing reference case. Empty `required_thresholds` still block automatic SAFE/UNSAFE.
 
-```text
-Process features
-  -> physical mapping
-  -> Gmsh axisymmetric geometry and mesh
-  -> OpenRadioss Starter and Engine
-  -> raw output
-  -> postprocess
-  -> versioned safety criterion
-```
+## Formulation
 
-This version ships the reference profile, Gmsh meshing, and OpenRadioss deck writer. A physics solve needs OpenRadioss binaries and a calibrated `hardening-map-v1` plastic curve. Empty `required_thresholds` still block automatic SAFE/UNSAFE.
+OpenRadioss `/ANALY` `N2D3D=1` is axisymmetric: elements live in the YZ plane, the element normal is +X, Y is radial, Z is the axis of revolution, and the mesh must not cross Y=0. Official `/QUAD` cards are the 2D solid elements for that analysis. 3D shells (`/SH3N`) are the wrong family.
 
-## Why OpenRadioss
+A thin 3D sector would also be valid, but it costs more and is not required for round-bar drawing. This reference case uses 2D axisymmetry.
 
-Cold drawing has large plastic strain and sliding friction. OpenRadioss is an explicit nonlinear solver that can run 2D axisymmetric elastoplastic contact.
+| Item | Card | Why |
+|---|---|---|
+| Analysis | `/ANALY` N2D3D=1 | Documented axisymmetric mode |
+| Elements | `/QUAD` + `/PROP/SOLID` Isolid=17, Ismstr=4, Icpre=2 | Fully integrated 2D quads; Icpre=2 is the documented elasto-plastic option |
+| Workpiece | `/MAT/PLAS_TAB` (LAW36) | Tabulated elastoplastic curve from the Altair LAW36 steel example, converted to kg-m-s |
+| Die | `/MAT/LAW1` + `/BCS` | Stationary die; nodes fixed |
+| Contact | `/INTER/TYPE5` + `/SURF/SEG` | 2D node-to-segment contact; `Fric` is the PINN `friction_coefficient`. Starter `INORI2` orients the bore outward from the die solid. `Inacti=0` does not move nodes. `Gap=0` follows the TYPE5 note that a large gap causes energy jumps. |
+| Drawing | `/IMPVEL` on the bar end | Prescribed axial velocity |
+| Axis | `/BCS` TX, TY, RX on Y=0 nodes | Axisymmetric constraint (Hopkinson-bar practice) |
 
-The process is quasi-static. Explicit time stepping is allowed only if energy and force checks show that fake inertia is not driving the answer.
+## Material
 
-## First model
+Mill plastic data is still absent (`config/hardening_map.yaml` `plastic_curve: null`, `calibrated: false`).
 
-First case: round bar, 2D axisymmetric.
+FEA uses `config/materials/stainless_reference_v1.yaml`:
 
-Geometry:
+- Source: Altair `/MAT/LAW36` example `MAT_TABULATED_STEEL_EXAMPLE`, quasi-static FUNCT/1
+- Production calibrated: false
+- PINN `normalized_hardening_coefficient` is not this curve and is not converted to MPa
 
-- Start radius from the reference profile
-- Final radius from `reduction_ratio`
-- Die cone from `die_half_angle_rad`
-- Enough inlet and outlet contact length
-- Rigid or very stiff die
+## Geometry
 
-Circular reduction:
+The workpiece starts in the cylindrical inlet, short of the cone corner, as an undeformed bar of radius `r0`. `/INTER/TYPE5` uses `Gap=0` (Altair: a large TYPE5 gap causes energy jumps). `Inacti=0` does not move nodes. Drawing motion pulls the bar in +Z through the die.
 
-```text
-A_f = A_0 * (1 - reduction_ratio)
-r_f = r_0 * sqrt(1 - reduction_ratio)
-```
+Demo numbers: `reduction_ratio = 0.3`, `initial_radius_m = 0.01` so `r_f = 0.01 * sqrt(0.7) ≈ 0.00837 m`.
 
-Demo Snapshot uses `reduction_ratio = 0.3` and `initial_radius_m = 0.01` from [config/fea_reference_case.yaml](../config/fea_reference_case.yaml):
+## Quality and safety
 
-```text
-r_0 = 0.01 m
-r_f = 0.01 * sqrt(1 - 0.3) = 0.00837 m
-```
+Solver completion is not a safety verdict. `quasi-static-quality-v1` requires normal termination, required files, finite required metrics, and minimum mesh counts. OpenRadioss clips listing `ERROR` at 99.9%; a saturated clip fails the gate because the solver did not report a usable energy balance. No mill kinetic/internal energy ratio cut-off is invented.
 
-## Material mapping
+`fea-criterion-v1` has `required_thresholds: []`. A quality-passing solve is therefore `INCONCLUSIVE` and goes to `MANUAL_REVIEW`. FEA metrics are still stored.
 
-PINN field `normalized_hardening_coefficient` is not MPa.
-
-This version records IDs only:
-
-- `material_profile_id: stainless_reference_v1`
-- `mapping_version: hardening-map-v1`
-
-The curve numbers are not in the repository yet. Do not treat the normalized scalar as a physical unit. A later calibrated card can replace the mapping without changing Evaluation contracts.
-
-## Contact
-
-`friction_coefficient` maps to die/material friction. Contact and penalty settings live in a versioned FEA profile, not as hidden constants. Demo value: `0.08`.
-
-## Mesh
-
-Gmsh Python API will build the 2D axisymmetric mesh.
-
-- Finer near die entry, cone, and exit
-- Coarser away from the deformation zone
-- Deterministic size config
-- Mesh stats and checksum
-
-Mesh convergence is part of validation.
-
-Reference sizes in this version:
-
-- deformation zone `0.00035 m`
-- far field `0.0010 m`
-
-## Solver steps
-
-```text
-1. Create an isolated job directory
-2. Write immutable inputs and config
-3. Generate geometry and mesh
-4. Write OpenRadioss Starter and Engine decks
-5. Run Starter
-6. Check Starter output
-7. Run Engine with timeout
-8. Parse solver status
-9. Collect energy, field, and force output
-10. Store artifacts and checksums
-11. Run postprocess
-```
-
-## Quasi-static checks
-
-Record at least:
-
-- kinetic energy history
-- internal energy history
-- contact energy when available
-- drawing force history
-- deformation response
-
-A job that misses the versioned quality rule is `INCONCLUSIVE`, not `SAFE` or `UNSAFE`.
-
-Do not hard-code one kinetic/internal energy ratio as science. Keep the rule in a versioned quality profile and test it on reference cases. This version names that profile `quasi-static-quality-v1` and does not yet give numeric limits.
-
-## Solver outputs
-
-Keep when available:
-
-- von Mises stress
-- equivalent plastic strain
-- reaction / drawing force
-- displacement
-- energy histories
-- contact status / force
-- critical-region coordinates
-
-Damage is a separate postprocess unless a chosen OpenRadioss failure model is validated for that meaning.
-
-## Safety criterion
-
-```mermaid
-flowchart TD
-  done[OpenRadioss finished] --> result[FEA result metrics and quality]
-  result --> criterion[Safety criterion fea-criterion-v1]
-  criterion --> safe[SAFE]
-  criterion --> unsafe[UNSAFE]
-  criterion --> inconclusive[INCONCLUSIVE]
-```
-
-Thresholds live in [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml). In this version `required_thresholds` is an empty list. The implementation must refuse automatic `SAFE` or `UNSAFE` when required thresholds are absent. Solver exit code is never a safety verdict.
-
-## CLI
+## How to run
 
 ```bash
-python -m cold_drawing_twin.simulation.run \
-  --reduction-ratio 0.30 \
-  --die-angle-rad 0.20 \
-  --friction 0.08 \
-  --hardening 0.70
+bash scripts/install_openradioss.sh
+export OPENRADIOSS_STARTER_BIN=$HOME/OpenRadioss/exec/starter_linux64_gf
+export OPENRADIOSS_ENGINE_BIN=$HOME/OpenRadioss/exec/engine_linux64_gf
+make fea-smoke
 ```
 
-The command runs Gmsh, writes Starter and Engine decks, and runs OpenRadioss when binaries and a calibrated material card are present. It always prints quality, metrics, criterion version, and verdict. With empty thresholds the criterion verdict is `INCONCLUSIVE`.
+Artifacts land in `simulation/workspaces/<job-id>/`: starter deck, engine deck, solver logs, parsed `result.json`.
 
-## Validation matrix
+Parser unit tests under `tests/fea/fixtures/` are labeled fixtures. They are not actual solves.
 
-- Mesh coarse / medium / fine
-- Time or mass-scaling sensitivity if used
-- Friction sensitivity
-- Reduction-ratio direction checks
-- Die-angle sensitivity
-- Hardening sensitivity
-- Energy quality
-- Repeatability with pinned solver and config
+GitHub Actions workflow `fea-integration.yml` is manual (`workflow_dispatch`) and runs the real solver when invoked.
+
+## Actual smoke execution
+
+On a local OpenRadioss `latest-20260728` Linux GNU build, `make fea-smoke` reached **NORMAL TERMINATION**.
+
+Parsed from listing + `th_to_csv` + `anim_to_vtk` (not placeholders):
+
+- pull-end outer radius ≈ 8.54 mm versus geometric `r_f` ≈ 8.37 mm
+- drawing reaction on the pull nodes on the order of 10⁴ N
+- von Mises and equivalent plastic strain present on workpiece quads
+
+The listing `ERROR` column saturates at 99.9% after contact engages. That is a documented `/INTER/TYPE5` energy-accounting limitation, not a mill fracture threshold. The quality gate therefore **fails** and the criterion stays `INCONCLUSIVE` / `MANUAL_REVIEW`. Metrics are still written to `result.json`.
+
+`Inacti=3` was rejected: it moved the nose node across the inlet clearance and destroyed the bar at t=0.
