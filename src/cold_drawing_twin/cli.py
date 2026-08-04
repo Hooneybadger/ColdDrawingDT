@@ -143,7 +143,7 @@ def cmd_factory_stage(_args: argparse.Namespace) -> int:
 
 def cmd_fetch_pinn(_args: argparse.Namespace) -> int:
     settings = load_settings()
-    dest = Path(settings.pinn_model_dir)
+    dest = Path(settings.pinn_model_dir).resolve()
     dest.parent.mkdir(parents=True, exist_ok=True)
     sibling = REPO_ROOT.parent / "ColdDrawingPinn" / "artifacts" / "hf_release" / "cold-drawing-pinn-poc-v0.1.1"
     if sibling.exists() and (sibling / "pinn.pt").exists():

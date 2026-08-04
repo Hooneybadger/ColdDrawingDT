@@ -45,7 +45,7 @@ class ReleasedPinnAdapter:
     """Call the Hugging Face bundle. Do not reimplement model math."""
 
     def __init__(self, model_dir: Path, contract_version: str | None = None) -> None:
-        self.model_dir = Path(model_dir)
+        self.model_dir = Path(model_dir).resolve()
         self.contract_version = contract_version or str(pinn_contract()["model"]["release"])
 
     def predict(self, features: ProcessFeatures) -> PinnResult:
