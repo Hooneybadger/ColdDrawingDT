@@ -20,7 +20,11 @@ def get_session():
     session = container.open()
     try:
         yield session
+        pending = list(session.info.get("fea_jobs") or [])
         session.commit()
+        from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs
+
+        dispatch_fea_jobs(container.settings, pending)
     except Exception:
         session.rollback()
         raise
@@ -164,6 +168,9 @@ def get_fea_job(job_id: str, session: Session = Depends(get_session)):
         "material_mapping_version": row.material_mapping_version,
         "safety_criterion_version": row.safety_criterion_version,
         "criterion_verdict": row.criterion_verdict,
+        "quality": row.quality,
+        "work_dir": row.work_dir,
+        "artifacts": row.artifacts,
         "error": row.error,
     }
 

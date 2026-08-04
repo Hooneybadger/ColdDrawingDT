@@ -14,6 +14,8 @@ app.conf.update(
     worker_prefetch_multiplier=1,
     task_reject_on_worker_lost=True,
     task_default_queue="fea.default",
+    task_time_limit=settings.fea_job_timeout_s + 60,
+    task_soft_time_limit=settings.fea_job_timeout_s + 30,
     task_queues={
         "fea.default": {},
         "fea.priority": {},

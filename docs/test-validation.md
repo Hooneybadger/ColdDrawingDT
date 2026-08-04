@@ -49,7 +49,7 @@ Postprocess:
 - OPC UA source -> AAS update
 - AAS update -> Timescale history
 - Snapshot -> real PINN
-- Queue -> worker lifecycle
+- Queue -> worker lifecycle (Celery publish after commit; worker skips non-`QUEUED`)
 - Gmsh -> OpenRadioss smoke case
 - FEA result -> Decision store
 - Decision -> Digital Twin result

@@ -36,6 +36,7 @@ class EvaluationService:
         events: EventBus,
         enqueue_fea: Enqueue | None = None,
         now: Callable[[], datetime] | None = None,
+        defer_enqueue: bool = False,
     ) -> None:
         self.session = session
         self.twin = twin
@@ -43,6 +44,8 @@ class EvaluationService:
         self.events = events
         self.enqueue_fea = enqueue_fea
         self.now = now or utc_now
+        self.defer_enqueue = defer_enqueue
+        self.queued_fea_ids: list[str] = []
 
     def start_operational(self, asset_id: str, expected_state_version: str | None = None) -> EvaluationRow:
         row = self.twin.require(asset_id)
@@ -230,7 +233,11 @@ class EvaluationService:
                 {"job_id": job.job_id, "status": job.status, "evaluation_id": evaluation.evaluation_id},
             )
             if self.enqueue_fea:
-                self.enqueue_fea(job.job_id)
+                if self.defer_enqueue:
+                    self.queued_fea_ids.append(job.job_id)
+                    self.session.info.setdefault("fea_jobs", []).append(job.job_id)
+                else:
+                    self.enqueue_fea(job.job_id)
         self.session.flush()
         return evaluation
 
@@ -247,7 +254,17 @@ class EvaluationService:
         )
         existing = (
             self.session.query(FeaJobRow)
-            .filter(FeaJobRow.idempotency_key == key, FeaJobRow.status == FeaJobStatus.SUCCEEDED.value)
+            .filter(
+                FeaJobRow.idempotency_key == key,
+                FeaJobRow.status.in_(
+                    (
+                        FeaJobStatus.QUEUED.value,
+                        FeaJobStatus.RUNNING.value,
+                        FeaJobStatus.POSTPROCESSING.value,
+                    )
+                ),
+            )
+            .order_by(FeaJobRow.created_at.desc())
             .first()
         )
         if existing is not None:

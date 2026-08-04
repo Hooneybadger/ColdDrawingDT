@@ -96,6 +96,7 @@ class FeaJobRow(Base):
     work_dir: Mapped[str | None] = mapped_column(Text, nullable=True)
     quality: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     metrics: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    artifacts: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     criterion_verdict: Mapped[str | None] = mapped_column(String(32), nullable=True)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

@@ -10,6 +10,7 @@ from pathlib import Path
 from cold_drawing_twin.domain.features import ProcessFeatures
 from cold_drawing_twin.inference.pinn.adapter import PinnUnavailable, ReleasedPinnAdapter
 from cold_drawing_twin.orchestration.container import build_container
+from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids
 from cold_drawing_twin.paths import REPO_ROOT
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow
 from cold_drawing_twin.settings import load_settings
@@ -68,7 +69,9 @@ def cmd_demo_fast(_args: argparse.Namespace) -> int:
     session = container.open()
     _twin, _events, evaluation = container.services(session)
     row = evaluation.start_operational(PRIMARY, "state-0001")
+    pending = pending_fea_job_ids(session)
     session.commit()
+    dispatch_fea_jobs(container.settings, pending)
     print(_format_evaluation(session, row))
     session.close()
     return 0 if row.state in {"FINALIZED", "MANUAL_REVIEW", "FEA_QUEUED"} else 1
@@ -81,7 +84,9 @@ def cmd_demo_fea(_args: argparse.Namespace) -> int:
     session = container.open()
     _twin, _events, evaluation = container.services(session)
     row = evaluation.start_operational(PRIMARY)
+    pending = pending_fea_job_ids(session)
     session.commit()
+    dispatch_fea_jobs(container.settings, pending)
     print(_format_evaluation(session, row))
     session.close()
     return 0

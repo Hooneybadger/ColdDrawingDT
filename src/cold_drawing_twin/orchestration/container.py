@@ -39,7 +39,14 @@ class AppContainer:
             def enqueue(job_id: str, _session=session, _twin=twin, _events=events) -> None:
                 run_fea_job(_session, job_id, self.settings, _events, _twin)
 
-        evaluation = EvaluationService(session, twin, self.pinn, events, enqueue_fea=enqueue)
+        evaluation = EvaluationService(
+            session,
+            twin,
+            self.pinn,
+            events,
+            enqueue_fea=enqueue,
+            defer_enqueue=self.settings.fea_execution == "celery",
+        )
         return twin, events, evaluation
 
 

@@ -44,6 +44,8 @@ GPU host:
 
 OpenRadioss may run in the worker container or on a solver host the worker calls. That choice needs an ADR when implemented.
 
+Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It commits the `QUEUED` job row, then publishes to RabbitMQ.
+
 ## Volumes
 
 Keep separate:

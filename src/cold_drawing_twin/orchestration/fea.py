@@ -23,6 +23,24 @@ from cold_drawing_twin.simulation.run import run_case
 from cold_drawing_twin.twin.store import TwinStore
 
 
+def pending_fea_job_ids(session: Session) -> list[str]:
+    return list(session.info.get("fea_jobs") or [])
+
+
+def dispatch_fea_jobs(settings: Settings, job_ids: list[str]) -> None:
+    """Publish FEA jobs only after the job row is committed.
+
+    Inline execution runs the solver inside EvaluationService. Celery
+    workers must not start before COMMIT or they miss the row.
+    """
+    if settings.fea_execution != "celery" or not job_ids:
+        return
+    from workers.fea_tasks import enqueue_fea_job
+
+    for job_id in job_ids:
+        enqueue_fea_job(job_id)
+
+
 def run_fea_job(session: Session, job_id: str, settings: Settings, events: EventBus, twin: TwinStore) -> FeaJobRow:
     job = session.get(FeaJobRow, job_id)
     if job is None:
@@ -31,6 +49,8 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     snapshot = session.get(SnapshotRow, job.snapshot_id)
     if evaluation is None or snapshot is None:
         raise KeyError("evaluation or snapshot missing")
+    if job.status != FeaJobStatus.QUEUED.value:
+        return job
     operational = evaluation.mode == EvaluationMode.OPERATIONAL.value
     job.status = FeaJobStatus.RUNNING.value
     job.updated_at = utc_now()
@@ -47,6 +67,12 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     job.quality = {"pass": result["quality_pass"], "reason": result["quality_reason"]}
     job.criterion_verdict = result["criterion_verdict"]
     job.error = result["solver_error"]
+    job.artifacts = {
+        "work_dir": str(work_dir),
+        "result_json": str(work_dir / "result.json"),
+        "starter": (result.get("decks") or {}).get("starter"),
+        "engine": (result.get("decks") or {}).get("engine"),
+    }
     job.updated_at = utc_now()
 
     solver_status = result["solver_status"]
