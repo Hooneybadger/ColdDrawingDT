@@ -129,6 +129,18 @@ class EventRow(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
 
+class FeaOutboxRow(Base):
+    """Publish intent for a QUEUED FEA job. Written in the same transaction as the job."""
+
+    __tablename__ = "fea_outbox"
+
+    outbox_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    job_id: Mapped[str] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
 def make_engine(url: str):
     if url.startswith("sqlite:///"):
         from pathlib import Path

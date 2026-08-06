@@ -9,9 +9,9 @@ from cold_drawing_twin.orchestration.fea import (
     dispatch_fea_jobs,
     pending_fea_job_ids,
     run_fea_job,
-    unpublished_queued_fea_job_ids,
 )
-from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow
+from cold_drawing_twin.orchestration.outbox import unpublished_outbox_job_ids
+from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow, FeaOutboxRow
 from cold_drawing_twin.settings import Settings
 from tests.conftest import DEMO, PRIMARY, make_pinn
 
@@ -133,14 +133,37 @@ def test_publish_failure_leaves_queued_and_requeue_republishes(tmp_path, monkeyp
     pending = pending_fea_job_ids(session)
     session.commit()
     failed = dispatch_fea_jobs(settings, pending)
+    session.expire_all()
     job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
     assert job.status == "QUEUED"
     assert failed == pending
-    assert unpublished_queued_fea_job_ids(session) == pending
+    assert unpublished_outbox_job_ids(session) == pending
     recorded: list[str] = []
     monkeypatch.setattr("workers.fea_tasks.enqueue_fea_job", lambda job_id, priority=False: recorded.append(job_id))
-    again = dispatch_fea_jobs(settings, unpublished_queued_fea_job_ids(session))
+    again = dispatch_fea_jobs(settings)
     assert recorded == pending
     assert again == []
+    session.expire_all()
     session.refresh(job)
+    assert job.status == "QUEUED"
+    outbox = session.query(FeaOutboxRow).filter_by(job_id=job.job_id).one()
+    assert outbox.published_at is not None
+
+
+def test_successful_publish_does_not_republish_queued_job(tmp_path, monkeypatch):
+    recorded: list[str] = []
+    monkeypatch.setattr("workers.fea_tasks.enqueue_fea_job", lambda job_id, priority=False: recorded.append(job_id))
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    session.commit()
+    assert dispatch_fea_jobs(settings) == []
+    first = list(recorded)
+    assert first
+    assert dispatch_fea_jobs(settings) == []
+    assert recorded == first
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
     assert job.status == "QUEUED"

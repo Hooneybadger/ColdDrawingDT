@@ -31,6 +31,7 @@ from cold_drawing_twin.observability.metrics import (
     pinn_results_total,
 )
 from cold_drawing_twin.orchestration.events import EventBus
+from cold_drawing_twin.orchestration.outbox import ensure_unpublished_outbox
 from cold_drawing_twin.persistence.models import DecisionRow, EvaluationRow, FeaJobRow, ScenarioRow, SnapshotRow
 from cold_drawing_twin.twin.store import TwinStore
 
@@ -244,6 +245,7 @@ class EvaluationService:
             )
             if self.enqueue_fea:
                 if self.defer_enqueue:
+                    ensure_unpublished_outbox(self.session, job.job_id)
                     self.queued_fea_ids.append(job.job_id)
                     self.session.info.setdefault("fea_jobs", []).append(job.job_id)
                 else:
@@ -278,6 +280,10 @@ class EvaluationService:
             .first()
         )
         if existing is not None:
+            if self.defer_enqueue:
+                ensure_unpublished_outbox(self.session, existing.job_id)
+                self.queued_fea_ids.append(existing.job_id)
+                self.session.info.setdefault("fea_jobs", []).append(existing.job_id)
             return existing
         job = FeaJobRow(
             job_id=new_id("fea"),
