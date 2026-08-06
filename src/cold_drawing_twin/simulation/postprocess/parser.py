@@ -99,7 +99,7 @@ def parse_solver_identity(text: str) -> dict[str, Any]:
     if version_match:
         version = version_match.group(1)
     else:
-        dated = re.search(r"(latest-\d{8}|\d{8})", text)
+        dated = re.search(r"(latest-\d{8})", text, re.I)
         if dated:
             version = dated.group(1)
     return {

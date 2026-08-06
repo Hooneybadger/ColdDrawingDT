@@ -73,3 +73,11 @@ def test_parse_solver_identity_empty_listing():
     identity = parse_solver_identity("")
     assert identity["version"] is None
     assert identity["source"] is None
+
+
+def test_parse_solver_identity_ignores_bare_eight_digit_noise():
+    text = "** OpenRadioss Engine **\n some cycle table 58667872\n NORMAL TERMINATION\n"
+    identity = parse_solver_identity(text)
+    assert identity["version"] is None
+    assert identity["banner"]
+    assert identity["source"] == "listing"
