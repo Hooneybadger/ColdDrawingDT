@@ -134,4 +134,4 @@ simulation/
 
 Solver success creates an FEA result object. A separate versioned criterion then returns `SAFE`, `UNSAFE`, or `INCONCLUSIVE`. `INCONCLUSIVE` goes to Manual review.
 
-This version's criterion file has no numeric thresholds yet, so an automatic SAFE/UNSAFE from FEA must not be claimed. See [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml).
+This version's criterion evaluator is not implemented (`automatic_verdict_enabled: false`). Filling `required_thresholds` cannot produce automatic SAFE/UNSAFE. See [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml).

@@ -106,7 +106,7 @@ docker compose up -d
 | OpenRadioss on every CI run | Not implemented (manual `fea-integration.yml`) |
 | Reference LAW36 steel card `stainless_reference_v1` | Reference implementation |
 | Mill-calibrated plastic curve | Production calibration required |
-| FEA automatic SAFE/UNSAFE thresholds | Production calibration required (`required_thresholds: []`) |
+| FEA automatic SAFE/UNSAFE thresholds | Not implemented (`evaluator: unimplemented`; `required_thresholds: []`) |
 | Omniverse Kit runtime / WebRTC | Not implemented in this repository (host-side) |
 
 PINN `normalized_hardening_coefficient` is not a megapascal material property.

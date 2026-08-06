@@ -30,6 +30,6 @@ make fea-smoke
 
 `make test-pinn` runs in-domain inference through `predict.py` and `pinn.pt`. Missing bundle files fail that target. Default `make test` does not require the files.
 
-Automatic FEA SAFE/UNSAFE cannot pass while `required_thresholds` is empty.
+Automatic FEA SAFE/UNSAFE cannot pass: the criterion evaluator is not implemented, and `required_thresholds` is empty.
 
 Operator/senior Kit apps poll the HTTP API. They do not write Decisions.
