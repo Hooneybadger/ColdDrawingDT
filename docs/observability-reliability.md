@@ -36,7 +36,7 @@ Not emitted in this version. Do not treat them as live:
 - `decision_end_to_end_seconds`
 - 3D stream sessions, GPU use, GPU memory
 
-A transactional outbox for FEA publish is also not implemented. See [deployment.md](deployment.md).
+A transactional outbox for FEA publish is implemented as `fea_outbox`. See [deployment.md](deployment.md).
 
 ## Alerts
 
@@ -85,7 +85,7 @@ Decision
 |---|---|
 | Source stale | Manual review |
 | PINN unavailable | Manual review in `routing-v1` |
-| Queue unavailable | Job stays `QUEUED`; `make fea-requeue` republishes. A transactional outbox is not implemented. |
+| Queue unavailable | Job stays `QUEUED` with unpublished `fea_outbox`; `make fea-requeue` publishes those rows. |
 | Solver failed | Manual review |
 | Postprocess failed | Manual review |
 | Omniverse unavailable | View degraded; stored Decision stays authority |

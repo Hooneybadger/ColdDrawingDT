@@ -10,7 +10,8 @@ from pathlib import Path
 from cold_drawing_twin.domain.features import ProcessFeatures
 from cold_drawing_twin.inference.pinn.adapter import PinnUnavailable, ReleasedPinnAdapter
 from cold_drawing_twin.orchestration.container import build_container
-from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids, unpublished_queued_fea_job_ids
+from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids
+from cold_drawing_twin.orchestration.outbox import unpublished_outbox_job_ids
 from cold_drawing_twin.paths import REPO_ROOT
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow
 from cold_drawing_twin.settings import load_settings
@@ -169,15 +170,15 @@ def cmd_fetch_pinn(_args: argparse.Namespace) -> int:
 
 
 def cmd_fea_requeue(_args: argparse.Namespace) -> int:
-    """Republish QUEUED FEA jobs after a broker publish miss. Not a transactional outbox."""
+    """Publish unpublished FEA outbox rows after a broker miss."""
     container = build_container()
     session = container.open()
-    job_ids = unpublished_queued_fea_job_ids(session)
+    job_ids = unpublished_outbox_job_ids(session)
     session.close()
-    failed = dispatch_fea_jobs(container.settings, job_ids)
-    print(json.dumps({"queued": job_ids, "publish_failed": failed}, indent=2))
+    failed = dispatch_fea_jobs(container.settings)
+    print(json.dumps({"unpublished_outbox": job_ids, "publish_failed": failed}, indent=2))
     if container.settings.fea_execution != "celery":
-        print("FEA_EXECUTION is not celery; QUEUED rows stay for an inline worker to claim.", file=sys.stderr)
+        print("FEA_EXECUTION is not celery; outbox rows are not published.", file=sys.stderr)
     return 1 if failed else 0
 
 

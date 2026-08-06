@@ -44,9 +44,9 @@ GPU host:
 
 OpenRadioss may run in the worker container or on a solver host the worker calls. That choice needs an ADR when implemented.
 
-Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It commits the `QUEUED` job row, then publishes to RabbitMQ. Two workers claim with `UPDATE ... WHERE status=QUEUED`. If publish fails after commit, the row stays `QUEUED`; `make fea-requeue` republishes those rows.
+Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It writes the `QUEUED` job row and an unpublished `fea_outbox` row in one transaction, commits, then publishes the outbox to RabbitMQ. Two workers claim with `UPDATE ... WHERE status=QUEUED`. If publish fails, the outbox stays unpublished; `make fea-requeue` publishes those rows only. Already published `QUEUED` jobs are not republished.
 
-A transactional outbox (write the publish intent in the same database transaction as the job row) is the usual production follow-on. This version does not ship that table. Kafka, Kubernetes, and Temporal are also out of scope here.
+Kafka, Kubernetes, and Temporal are out of scope here.
 
 ## Volumes
 

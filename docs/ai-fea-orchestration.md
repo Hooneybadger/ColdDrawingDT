@@ -85,7 +85,7 @@ Worker rules for long jobs:
 
 - Late acknowledgement
 - Low prefetch
-- Persist the job row and **commit** before the worker may start
+- Persist the job row and unpublished `fea_outbox` row, then **commit**, then publish
 - Idempotent tasks (a second delivery of a non-`QUEUED` job is a no-op)
 - Subprocess timeout and process-group cleanup
 - Celery `task_time_limit` sits above `fea_job_timeout_s`

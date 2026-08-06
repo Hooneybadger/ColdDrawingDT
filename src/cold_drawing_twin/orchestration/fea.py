@@ -21,6 +21,11 @@ from cold_drawing_twin.domain.types import (
 from cold_drawing_twin.orchestration.events import EventBus
 from cold_drawing_twin.observability.metrics import fea_job_duration_seconds, fea_jobs_total
 from cold_drawing_twin.orchestration.evaluation import EvaluationService
+from cold_drawing_twin.orchestration.outbox import (
+    mark_outbox_published,
+    record_outbox_error,
+    unpublished_outbox_job_ids,
+)
 from cold_drawing_twin.persistence.models import EvaluationRow, FeaJobRow, SnapshotRow
 from cold_drawing_twin.settings import Settings
 from cold_drawing_twin.simulation.run import run_case
@@ -34,6 +39,7 @@ def pending_fea_job_ids(session: Session) -> list[str]:
 
 
 def unpublished_queued_fea_job_ids(session: Session) -> list[str]:
+    """QUEUED jobs. Prefer unpublished_outbox_job_ids for broker republish."""
     rows = (
         session.query(FeaJobRow)
         .filter(FeaJobRow.status == FeaJobStatus.QUEUED.value)
@@ -43,25 +49,35 @@ def unpublished_queued_fea_job_ids(session: Session) -> list[str]:
     return [row.job_id for row in rows]
 
 
-def dispatch_fea_jobs(settings: Settings, job_ids: list[str]) -> list[str]:
-    """Publish FEA jobs only after the job row is committed.
+def dispatch_fea_jobs(settings: Settings, job_ids: list[str] | None = None) -> list[str]:
+    """Publish unpublished outbox rows after COMMIT.
 
     Inline execution runs the solver inside EvaluationService. Celery
     workers must not start before COMMIT or they miss the row.
-    Broker publish failure leaves the row QUEUED; use fea-requeue.
     """
-    unpublished: list[str] = []
-    if settings.fea_execution != "celery" or not job_ids:
-        return unpublished
+    if settings.fea_execution != "celery":
+        return []
     from workers.fea_tasks import enqueue_fea_job
 
-    for job_id in job_ids:
-        try:
-            enqueue_fea_job(job_id)
-        except Exception:
-            LOGGER.exception("failed to publish FEA job %s; row stays QUEUED", job_id)
-            unpublished.append(job_id)
-    return unpublished
+    from cold_drawing_twin.persistence.models import make_session_factory
+
+    session = make_session_factory(settings.database_url)()
+    unpublished: list[str] = []
+    try:
+        ids = job_ids if job_ids is not None else unpublished_outbox_job_ids(session)
+        for job_id in ids:
+            try:
+                enqueue_fea_job(job_id)
+                mark_outbox_published(session, job_id)
+                session.commit()
+            except Exception as exc:
+                LOGGER.exception("failed to publish FEA job %s; outbox stays unpublished", job_id)
+                record_outbox_error(session, job_id, str(exc))
+                session.commit()
+                unpublished.append(job_id)
+        return unpublished
+    finally:
+        session.close()
 
 
 def claim_queued_fea_job(session: Session, job_id: str) -> FeaJobRow | None:

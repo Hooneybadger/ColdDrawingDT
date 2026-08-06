@@ -23,14 +23,13 @@ def get_session():
     session = container.open()
     try:
         yield session
-        pending = list(session.info.get("fea_jobs") or [])
         session.commit()
         from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs
 
         try:
-            dispatch_fea_jobs(container.settings, pending)
+            dispatch_fea_jobs(container.settings)
         except Exception:
-            LOGGER.exception("FEA publish after commit failed; jobs remain QUEUED for fea-requeue")
+            LOGGER.exception("FEA publish after commit failed; unpublished outbox remains for fea-requeue")
     except Exception:
         session.rollback()
         raise
