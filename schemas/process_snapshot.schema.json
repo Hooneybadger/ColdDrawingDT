@@ -2,10 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ProcessSnapshot",
   "type": "object",
-  "required": [
+    "required": [
     "snapshot_id",
     "asset_id",
     "captured_at",
+    "source_timestamp",
     "features"
   ],
   "properties": {
@@ -17,7 +18,18 @@
     },
     "captured_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When the backend froze this immutable Snapshot."
+    },
+    "source_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "OPC UA / measurement time copied from the Digital Twin."
+    },
+    "ingest_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the backend ingested the live Twin state used for this Snapshot."
     },
     "source_state_version": {
       "type": "string"

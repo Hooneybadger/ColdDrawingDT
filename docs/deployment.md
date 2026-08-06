@@ -88,3 +88,7 @@ Readiness, not container start order alone, decides availability.
 ## Why Compose first
 
 The first site is one factory. Reproducible service isolation matters now. Kubernetes waits until high availability, multi-node scheduling, or many GPU/FEA sessions are a real need.
+
+## Existing database volumes
+
+SQLite tests call `create_all`. An existing PostgreSQL volume created before Snapshot `source_timestamp` / `ingest_timestamp` gets those columns from `make_session_factory` (`ALTER TABLE` plus backfill of `source_timestamp` from `captured_at`). That is a startup ensure, not a migration framework.

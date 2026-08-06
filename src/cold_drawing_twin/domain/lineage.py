@@ -38,6 +38,19 @@ def idempotency_hash(
     return sha256(payload.encode("utf-8")).hexdigest()
 
 
+def snapshot_payload(snapshot: Any) -> dict[str, Any]:
+    """Times on an immutable Snapshot. source_timestamp is the measurement clock."""
+    return {
+        "snapshot_id": snapshot.snapshot_id,
+        "asset_id": snapshot.asset_id,
+        "captured_at": iso(snapshot.captured_at),
+        "source_timestamp": iso(snapshot.source_timestamp),
+        "ingest_timestamp": iso(getattr(snapshot, "ingest_timestamp", None)),
+        "source_state_version": snapshot.source_state_version,
+        "features": snapshot.features,
+    }
+
+
 def lineage_record(
     *,
     asset_id: str,

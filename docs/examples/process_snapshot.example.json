@@ -2,6 +2,8 @@
   "snapshot_id": "snap-0001",
   "asset_id": "BG.MIEUM.DRW.04",
   "captured_at": "2026-09-14T16:00:00Z",
+  "source_timestamp": "2026-09-14T15:59:58Z",
+  "ingest_timestamp": "2026-09-14T15:59:59Z",
   "source_state_version": "state-0001",
   "features": {
     "reduction_ratio": 0.3,

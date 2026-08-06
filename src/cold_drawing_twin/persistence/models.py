@@ -48,6 +48,8 @@ class SnapshotRow(Base):
     snapshot_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     asset_id: Mapped[str] = mapped_column(String(64), index=True)
     captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    source_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ingest_timestamp: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     source_state_version: Mapped[str] = mapped_column(String(64))
     features: Mapped[dict[str, Any]] = mapped_column(JSON)
     mode: Mapped[str] = mapped_column(String(32))
@@ -140,6 +142,7 @@ def make_engine(url: str):
 def make_session_factory(url: str):
     engine = make_engine(url)
     Base.metadata.create_all(engine)
+    _ensure_snapshot_timestamps(engine)
     if url.startswith("postgresql"):
         with engine.begin() as conn:
             conn.exec_driver_sql("CREATE EXTENSION IF NOT EXISTS timescaledb")
@@ -150,3 +153,27 @@ def make_session_factory(url: str):
             except Exception:
                 pass
     return sessionmaker(bind=engine, expire_on_commit=False, future=True)
+
+
+def _ensure_snapshot_timestamps(engine) -> None:
+    """Add Snapshot time columns on existing volumes. Not a migration framework."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    if "snapshots" not in inspector.get_table_names():
+        return
+    columns = {column["name"] for column in inspector.get_columns("snapshots")}
+    dialect = engine.dialect.name
+    timestamp_type = "TIMESTAMP WITH TIME ZONE" if dialect == "postgresql" else "TIMESTAMP"
+    statements: list[str] = []
+    if "source_timestamp" not in columns:
+        statements.append(f"ALTER TABLE snapshots ADD COLUMN source_timestamp {timestamp_type}")
+    if "ingest_timestamp" not in columns:
+        statements.append(f"ALTER TABLE snapshots ADD COLUMN ingest_timestamp {timestamp_type}")
+    if not statements:
+        return
+    with engine.begin() as conn:
+        for statement in statements:
+            conn.execute(text(statement))
+        if "source_timestamp" not in columns:
+            conn.execute(text("UPDATE snapshots SET source_timestamp = captured_at WHERE source_timestamp IS NULL"))
