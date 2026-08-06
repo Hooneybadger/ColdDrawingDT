@@ -3,7 +3,7 @@
   "title": "Cold Drawing Digital Twin",
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 2,
+    "version": 3,
   "panels": [
     {
       "type": "stat",
@@ -64,6 +64,24 @@
       "title": "FEA job duration",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
       "targets": [{ "expr": "rate(fea_job_duration_seconds_sum[5m])", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Twin age seconds",
+      "gridPos": {"h": 6, "w": 12, "x": 0, "y": 20},
+      "targets": [{ "expr": "max(twin_state_age_seconds)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "FEA queue depth",
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 20},
+      "targets": [{ "expr": "fea_queue_depth", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "FEA running",
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 20},
+      "targets": [{ "expr": "fea_running_jobs", "refId": "A" }]
     }
   ]
 }
