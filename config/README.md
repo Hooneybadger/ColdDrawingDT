@@ -9,7 +9,7 @@ Do not copy the same numbers into application constants.
 | `pinn_contract.yaml` | Released PINN names and ranges | v0.1.1 |
 | `routing_policy.yaml` | PINN vs FEA vs Manual review | routing-v1 |
 | `fea_reference_case.yaml` | Geometry, mesh, contact, material IDs | fea-reference-v2 |
-| `fea_safety_criterion.yaml` | Engineering acceptance policy | fea-criterion-v1, empty thresholds |
+| `fea_safety_criterion.yaml` | Engineering acceptance policy | fea-criterion-v1, evaluator unimplemented, empty thresholds |
 | `factory_layout.yaml` | Hall size and Asset coordinates | 23 placed Assets plus 3 cranes |
 | `asset_registry.yaml` | Asset ID, AAS ID, OpenUSD prim | 26 IDs |
 | `freshness.yaml` | Maximum age for required source data | freshness-v1 |

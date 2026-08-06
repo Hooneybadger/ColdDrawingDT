@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version writes and, when binaries are installed, runs a 2D axisymmetric cold-drawing reference case. Empty `required_thresholds` still block automatic SAFE/UNSAFE.
+This version writes and, when binaries are installed, runs a 2D axisymmetric cold-drawing reference case. The criterion evaluator is not implemented. Filling `required_thresholds` cannot produce automatic SAFE/UNSAFE.
 
 ## Formulation
 
@@ -40,7 +40,7 @@ Demo numbers: `reduction_ratio = 0.3`, `initial_radius_m = 0.01` so `r_f = 0.01 
 
 Solver completion is not a safety verdict. `quasi-static-quality-v1` requires normal termination, required files, finite required metrics, and minimum mesh counts. OpenRadioss clips listing `ERROR` at 99.9%; a saturated clip fails the gate because the solver did not report a usable energy balance. No mill kinetic/internal energy ratio cut-off is invented.
 
-`fea-criterion-v1` has `required_thresholds: []`. A quality-passing solve is therefore `INCONCLUSIVE` and goes to `MANUAL_REVIEW`. FEA metrics are still stored.
+`fea-criterion-v1` sets `automatic_verdict_enabled: false` and `evaluator: unimplemented`. `required_thresholds` is empty. A quality-passing solve is therefore `INCONCLUSIVE` and goes to `MANUAL_REVIEW`. FEA metrics are still stored. Listing numbers in YAML cannot turn this evaluator on.
 
 ## How to run
 
@@ -71,6 +71,6 @@ Parsed from listing + `th_to_csv` + `anim_to_vtk` (not placeholders), **fea-refe
 
 `Isolid=17` was rejected: a no-contact run still saturated listing `ERROR` at 99.9% while internal energy grew without matching external work. That is a 2D Q4 formulation failure on this solver build, not a mill fracture threshold.
 
-TYPE5 still reports `CONTACT ENERGY = 0` in the T01 file. Quality uses listing `ERROR` saturation, required files, and finite required metrics. Empty `required_thresholds` still force `INCONCLUSIVE` / `MANUAL_REVIEW` after a quality-passing solve.
+TYPE5 still reports `CONTACT ENERGY = 0` in the T01 file. Quality uses listing `ERROR` saturation, required files, and finite required metrics. The unimplemented criterion still forces `INCONCLUSIVE` / `MANUAL_REVIEW` after a quality-passing solve.
 
 `Inacti=3` was rejected: it moved the nose node across the inlet clearance and destroyed the bar at t=0.
