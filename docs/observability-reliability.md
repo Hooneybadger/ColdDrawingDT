@@ -6,7 +6,7 @@ Prometheus scrapes `/metrics`. Grafana loads `deploy/grafana/dashboards/cold-dra
 
 ## Implemented
 
-These counters and histograms increment in the API and evaluation process:
+These counters, histograms, and gauges come from the API and evaluation process:
 
 | Series | When |
 |---|---|
@@ -20,6 +20,9 @@ These counters and histograms increment in the API and evaluation process:
 | `fea_job_duration_seconds` | Wall time of `run_case` |
 | `decisions_total{verdict}` | Decision row insert |
 | `manual_review_total{reason}` | Manual-review Decision (`reason` is the verdict) |
+| `twin_state_age_seconds{asset_id}` | Set on `/metrics` scrape from Twin `source_timestamp` |
+| `fea_queue_depth` | Set on `/metrics` scrape: count of `QUEUED` jobs |
+| `fea_running_jobs` | Set on `/metrics` scrape: count of `RUNNING` jobs |
 
 No numeric SLOs are claimed here. Empty Grafana panels mean the process has not served that path yet.
 
@@ -27,11 +30,9 @@ No numeric SLOs are claimed here. Empty Grafana panels mean the process has not 
 
 Not emitted in this version. Do not treat them as live:
 
-- `twin_state_age_seconds`
 - `twin_sync_failures_total`
 - OPC UA reconnect / bad-quality dedicated counters (quality is the Twin `status` label today)
 - physics-residual histogram
-- `fea_queue_depth`
 - Starter vs Engine failure split, mesh element count, energy-quality result count as separate series
 - `decision_end_to_end_seconds`
 - 3D stream sessions, GPU use, GPU memory

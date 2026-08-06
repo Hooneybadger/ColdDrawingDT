@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from prometheus_client import Counter, Histogram
+from datetime import timezone
+
+from prometheus_client import Counter, Gauge, Histogram
+from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 
 pinn_inference_duration_seconds = Histogram(
@@ -27,6 +30,13 @@ evaluations_blocked_total = Counter(
     ["reason"],
 )
 http_requests_total = Counter("http_requests_total", "HTTP requests", ["path", "method", "status"])
+twin_state_age_seconds = Gauge(
+    "twin_state_age_seconds",
+    "Age of Twin source_timestamp at scrape time",
+    ["asset_id"],
+)
+fea_queue_depth = Gauge("fea_queue_depth", "FEA jobs in QUEUED")
+fea_running_jobs = Gauge("fea_running_jobs", "FEA jobs in RUNNING")
 
 
 class MetricsMiddleware(BaseHTTPMiddleware):
@@ -34,6 +44,28 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         http_requests_total.labels(request.url.path, request.method, str(response.status_code)).inc()
         return response
+
+
+def scrape_runtime_gauges(session: Session) -> None:
+    """Set gauges from the database at scrape time. Does not invent values."""
+    from cold_drawing_twin.domain.lineage import utc_now
+    from cold_drawing_twin.domain.types import FeaJobStatus
+    from cold_drawing_twin.persistence.models import AssetStateRow, FeaJobRow
+
+    now = utc_now()
+    for row in session.query(AssetStateRow).all():
+        source = row.source_timestamp
+        if source is None:
+            continue
+        if source.tzinfo is None:
+            source = source.replace(tzinfo=timezone.utc)
+        twin_state_age_seconds.labels(row.asset_id).set((now - source).total_seconds())
+    fea_queue_depth.set(
+        session.query(FeaJobRow).filter(FeaJobRow.status == FeaJobStatus.QUEUED.value).count()
+    )
+    fea_running_jobs.set(
+        session.query(FeaJobRow).filter(FeaJobRow.status == FeaJobStatus.RUNNING.value).count()
+    )
 
 
 def install_metrics(app) -> None:

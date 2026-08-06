@@ -21,3 +21,38 @@ def test_fast_path_increments_decision_and_pinn_counters(settings):
     assert after_decisions >= before_decisions + 1
     assert after_pinn >= before_pinn + 1
     assert after_twin >= before_twin + 1
+
+
+def test_scrape_sets_twin_age_and_queue_depth(tmp_path):
+    from datetime import timedelta
+
+    from cold_drawing_twin.observability.metrics import scrape_runtime_gauges
+    from cold_drawing_twin.settings import Settings
+
+    settings = Settings(
+        database_url=f"sqlite:///{tmp_path / 'gauges.db'}",
+        fea_execution="celery",
+        basyx_enabled=False,
+        openradioss_work_dir=tmp_path / "fea",
+        openradioss_starter_bin="",
+        openradioss_engine_bin="",
+        pinn_model_dir=tmp_path / "missing-pinn",
+        _env_file=None,
+    )
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(
+        PRIMARY,
+        DEMO,
+        source_timestamp=datetime.now(timezone.utc) - timedelta(seconds=5),
+        quality="GOOD",
+    )
+    evaluation.start_operational(PRIMARY)
+    scrape_runtime_gauges(session)
+    age = REGISTRY.get_sample_value("twin_state_age_seconds", {"asset_id": PRIMARY})
+    depth = REGISTRY.get_sample_value("fea_queue_depth")
+    running = REGISTRY.get_sample_value("fea_running_jobs")
+    assert age is not None and age >= 5
+    assert depth == 1.0
+    assert running == 0.0
