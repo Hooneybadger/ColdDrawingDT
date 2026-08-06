@@ -3,19 +3,67 @@
   "title": "Cold Drawing Digital Twin",
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "panels": [
     {
       "type": "stat",
       "title": "Decisions",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0},
       "targets": [{ "expr": "sum(decisions_total)", "refId": "A" }]
     },
     {
       "type": "stat",
+      "title": "Manual review",
+      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 0},
+      "targets": [{ "expr": "sum(manual_review_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
       "title": "FEA jobs",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 0},
       "targets": [{ "expr": "sum(fea_jobs_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "PINN results",
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 0},
+      "targets": [{ "expr": "sum(pinn_results_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "PINN failures",
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 6},
+      "targets": [{ "expr": "sum(pinn_failures_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Evaluations blocked",
+      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 6},
+      "targets": [{ "expr": "sum(evaluations_blocked_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Twin updates",
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 6},
+      "targets": [{ "expr": "sum(twin_updates_total)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "HTTP requests",
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 6},
+      "targets": [{ "expr": "sum(http_requests_total)", "refId": "A" }]
+    },
+    {
+      "type": "graph",
+      "title": "PINN inference duration",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "targets": [{ "expr": "rate(pinn_inference_duration_seconds_sum[5m])", "refId": "A" }]
+    },
+    {
+      "type": "graph",
+      "title": "FEA job duration",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "targets": [{ "expr": "rate(fea_job_duration_seconds_sum[5m])", "refId": "A" }]
     }
   ]
 }

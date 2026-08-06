@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime
+from time import perf_counter
 
 from sqlalchemy.orm import Session
 
@@ -20,6 +21,15 @@ from cold_drawing_twin.domain.types import (
     RoutingAction,
 )
 from cold_drawing_twin.inference.pinn.adapter import PinnUnavailable
+from cold_drawing_twin.observability.metrics import (
+    decisions_total,
+    evaluations_blocked_total,
+    fea_jobs_total,
+    manual_review_total,
+    pinn_failures_total,
+    pinn_inference_duration_seconds,
+    pinn_results_total,
+)
 from cold_drawing_twin.orchestration.events import EventBus
 from cold_drawing_twin.persistence.models import DecisionRow, EvaluationRow, FeaJobRow, ScenarioRow, SnapshotRow
 from cold_drawing_twin.twin.store import TwinStore
@@ -130,16 +140,23 @@ class EvaluationService:
 
         missing = missing_required(features) or quality != "GOOD"
         stale = is_stale(source_timestamp, now=now)
+        if missing:
+            evaluations_blocked_total.labels("missing_or_quality").inc()
+        if stale:
+            evaluations_blocked_total.labels("stale").inc()
         pinn_result: PinnResult | None = None
         pinn_invalid = False
         if not missing and not stale:
             evaluation.state = EvaluationState.PINN_RUNNING.value
             evaluation.updated_at = now
             self.events.emit("EVALUATION_STATE_CHANGED", {"evaluation_id": evaluation.evaluation_id, "state": evaluation.state})
+            started = perf_counter()
             try:
                 pinn_result = self.pinn.predict(features)
             except PinnUnavailable:
                 pinn_invalid = True
+                pinn_failures_total.labels("unavailable").inc()
+            pinn_inference_duration_seconds.observe(perf_counter() - started)
             if pinn_result is not None:
                 evaluation.pinn_result = {
                     "verdict": pinn_result.verdict,
@@ -150,8 +167,10 @@ class EvaluationService:
                     "model_version": pinn_result.model_version,
                     "supported_range": pinn_result.supported_range,
                 }
+                pinn_results_total.labels(pinn_result.verdict, pinn_result.model_version).inc()
                 if pinn_result.verdict not in {"SAFE", "UNSAFE", "NEED_FEA"}:
                     pinn_invalid = True
+                    pinn_failures_total.labels("invalid_verdict").inc()
         else:
             pinn_invalid = True
 
@@ -278,6 +297,7 @@ class EvaluationService:
         self.session.add(job)
         self.twin.record_fea_job(evaluation.asset_id, job.job_id, active=True, operational=operational)
         self.session.flush()
+        fea_jobs_total.labels(FeaJobStatus.QUEUED.value).inc()
         return job
 
     def _finalize(
@@ -312,6 +332,9 @@ class EvaluationService:
             "timestamp": iso(decision.created_at),
         }
         decision.lineage = lineage
+        decisions_total.labels(verdict.value).inc()
+        if status == DecisionStatus.MANUAL_REVIEW:
+            manual_review_total.labels(verdict.value).inc()
         evaluation.state = (
             EvaluationState.MANUAL_REVIEW.value
             if status == DecisionStatus.MANUAL_REVIEW

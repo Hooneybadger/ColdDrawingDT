@@ -9,6 +9,7 @@ from cold_drawing_twin.config_files import asset_registry
 from cold_drawing_twin.domain.features import ProcessFeatures, features_from_mapping
 from cold_drawing_twin.domain.ids import new_id
 from cold_drawing_twin.domain.lineage import utc_now
+from cold_drawing_twin.observability.metrics import twin_updates_total
 from cold_drawing_twin.persistence.models import AssetStateRow, MeasurementRow
 from cold_drawing_twin.twin.basyx import BasyxClient
 
@@ -72,6 +73,8 @@ class TwinStore:
                 )
             self.basyx.upsert_asset(asset_id, _row_dict(row))
         self.session.flush()
+        if operational:
+            twin_updates_total.labels(asset_id, quality).inc()
         return row
 
     def record_evaluation(

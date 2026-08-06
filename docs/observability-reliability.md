@@ -2,54 +2,50 @@
 
 Terms: [glossary](glossary.md).
 
-Prometheus scrapes `/metrics`. Grafana loads `deploy/grafana/dashboards/cold-drawing.json`.
+Prometheus scrapes `/metrics`. Grafana loads `deploy/grafana/dashboards/cold-drawing.json`. That dashboard queries only series this process emits.
 
-## Signals
+## Implemented
 
-### Digital Twin
+These counters and histograms increment in the API and evaluation process:
 
-- `twin_state_age_seconds{asset_id}`
-- `twin_updates_total{asset_id,status}`
+| Series | When |
+|---|---|
+| `http_requests_total{path,method,status}` | After each HTTP response |
+| `twin_updates_total{asset_id,status}` | Operational Twin write (`status` is OPC UA quality) |
+| `pinn_inference_duration_seconds` | Around `PinnAdapter.predict` |
+| `pinn_results_total{verdict,model_version}` | Parsed PINN result |
+| `pinn_failures_total{reason}` | `unavailable` or `invalid_verdict` |
+| `evaluations_blocked_total{reason}` | `missing_or_quality` or `stale` |
+| `fea_jobs_total{status}` | New `QUEUED`, claimed `RUNNING`, solver terminal status |
+| `fea_job_duration_seconds` | Wall time of `run_case` |
+| `decisions_total{verdict}` | Decision row insert |
+| `manual_review_total{reason}` | Manual-review Decision (`reason` is the verdict) |
+
+No numeric SLOs are claimed here. Empty Grafana panels mean the process has not served that path yet.
+
+## Planned
+
+Not emitted in this version. Do not treat them as live:
+
+- `twin_state_age_seconds`
 - `twin_sync_failures_total`
-- OPC UA reconnect count and bad-quality count
-
-### PINN
-
-- `pinn_inference_duration_seconds`
-- `pinn_results_total{verdict,model_version}`
-- `pinn_failures_total{reason}`
-- physics-residual distribution
-
-### FEA
-
+- OPC UA reconnect / bad-quality dedicated counters (quality is the Twin `status` label today)
+- physics-residual histogram
 - `fea_queue_depth`
-- `fea_job_duration_seconds`
-- `fea_jobs_total{status}`
-- Starter and Engine failure count
-- mesh element count
-- energy-quality result count
-
-### Decision
-
-- `decisions_total{verdict}`
-- `manual_review_total{reason}`
+- Starter vs Engine failure split, mesh element count, energy-quality result count as separate series
 - `decision_end_to_end_seconds`
+- 3D stream sessions, GPU use, GPU memory
 
-### 3D stream
-
-- active sessions
-- session start time
-- stream disconnects
-- server GPU use and memory
+A transactional outbox for FEA publish is also not implemented. See [deployment.md](deployment.md).
 
 ## Alerts
 
-High priority:
+High priority when wired to a real Prometheus rule file (not shipped here):
 
 - Stale critical Digital Twin
 - Repeated OPC UA quality failure
 - PINN file missing or checksum mismatch
-- FEA queue above operating limit
+- FEA queue above an operating limit the site sets
 - Repeated FEA failure or timeout
 - Database write failure
 
