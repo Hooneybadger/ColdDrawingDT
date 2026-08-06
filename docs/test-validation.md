@@ -58,7 +58,7 @@ Postprocess:
 - OPC UA source -> AAS update
 - AAS update -> Timescale history
 - Snapshot -> real PINN (`make test-pinn` / `pinn-integration.yml`; fails if `predict.py` or `pinn.pt` is missing)
-- Queue -> worker lifecycle (Celery outbox after commit; atomic `QUEUED` claim; `fea-requeue` unpublished outbox)
+- Queue -> worker lifecycle (Celery outbox after commit; atomic `QUEUED` claim; lease reclaim; `fea-requeue` unpublished outbox)
 - Gmsh -> OpenRadioss smoke case
 - FEA result -> Decision store
 - Decision -> Digital Twin result
