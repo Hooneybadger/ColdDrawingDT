@@ -89,7 +89,7 @@ Decision
 |---|---|
 | Source stale | Manual review |
 | PINN unavailable | Manual review in `routing-v1` |
-| Queue unavailable | Persist failed or pending and alert |
+| Queue unavailable | Job stays `QUEUED`; `make fea-requeue` republishes. A transactional outbox is not implemented. |
 | Solver failed | Manual review |
 | Postprocess failed | Manual review |
 | Omniverse unavailable | View degraded; stored Decision stays authority |

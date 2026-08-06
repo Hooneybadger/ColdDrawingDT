@@ -1,7 +1,7 @@
 PYTHONPATH := src:.
 PYTHON ?= python3
 
-.PHONY: test test-pinn contracts model-verify fea-smoke demo-fast demo-fea demo-system seed-opcua factory-stage demo-stream fetch-pinn api
+.PHONY: test test-pinn contracts model-verify fea-smoke fea-requeue demo-fast demo-fea demo-system seed-opcua factory-stage demo-stream fetch-pinn api
 
 contracts:
 	$(PYTHON) scripts/validate_contracts.py
@@ -21,6 +21,9 @@ model-verify:
 
 fea-smoke:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli fea-smoke
+
+fea-requeue:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli fea-requeue
 
 demo-fast:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli demo-fast

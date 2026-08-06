@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -12,6 +14,7 @@ from cold_drawing_twin.persistence.models import DecisionRow, EvaluationRow, Fea
 from cold_drawing_twin.twin.store import TwinStore
 
 router = APIRouter()
+LOGGER = logging.getLogger(__name__)
 
 
 def get_session():
@@ -24,7 +27,10 @@ def get_session():
         session.commit()
         from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs
 
-        dispatch_fea_jobs(container.settings, pending)
+        try:
+            dispatch_fea_jobs(container.settings, pending)
+        except Exception:
+            LOGGER.exception("FEA publish after commit failed; jobs remain QUEUED for fea-requeue")
     except Exception:
         session.rollback()
         raise
