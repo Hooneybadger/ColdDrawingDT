@@ -21,7 +21,7 @@ def unpublished_outbox_job_ids(session: Session) -> list[str]:
     return seen
 
 
-def ensure_unpublished_outbox(session: Session, job_id: str) -> FeaOutboxRow:
+def ensure_unpublished_outbox(session: Session, job_id: str, *, force_new: bool = False) -> FeaOutboxRow:
     unpublished = (
         session.query(FeaOutboxRow)
         .filter(FeaOutboxRow.job_id == job_id, FeaOutboxRow.published_at.is_(None))
@@ -29,9 +29,10 @@ def ensure_unpublished_outbox(session: Session, job_id: str) -> FeaOutboxRow:
     )
     if unpublished is not None:
         return unpublished
-    tracked = session.query(FeaOutboxRow).filter(FeaOutboxRow.job_id == job_id).first()
-    if tracked is not None:
-        return tracked
+    if not force_new:
+        tracked = session.query(FeaOutboxRow).filter(FeaOutboxRow.job_id == job_id).first()
+        if tracked is not None:
+            return tracked
     row = FeaOutboxRow(
         outbox_id=new_id("outbox"),
         job_id=job_id,

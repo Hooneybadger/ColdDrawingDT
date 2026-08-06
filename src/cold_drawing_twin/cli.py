@@ -10,7 +10,7 @@ from pathlib import Path
 from cold_drawing_twin.domain.features import ProcessFeatures
 from cold_drawing_twin.inference.pinn.adapter import PinnUnavailable, ReleasedPinnAdapter
 from cold_drawing_twin.orchestration.container import build_container
-from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids
+from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids, reclaim_expired_running_fea_jobs
 from cold_drawing_twin.orchestration.outbox import unpublished_outbox_job_ids
 from cold_drawing_twin.paths import REPO_ROOT
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow
@@ -182,6 +182,20 @@ def cmd_fea_requeue(_args: argparse.Namespace) -> int:
     return 1 if failed else 0
 
 
+def cmd_fea_reclaim(_args: argparse.Namespace) -> int:
+    """Expire RUNNING FEA leases. Empty work_dir returns QUEUED; started jobs go INCONCLUSIVE."""
+    container = build_container()
+    session = container.open()
+    twin, events, _evaluation = container.services(session)
+    result = reclaim_expired_running_fea_jobs(session, container.settings, events, twin)
+    unpublished = result["requeued"]
+    session.commit()
+    session.close()
+    failed = dispatch_fea_jobs(container.settings, unpublished)
+    print(json.dumps({**result, "publish_failed": failed}, indent=2))
+    return 1 if failed else 0
+
+
 def cmd_fea_smoke(_args: argparse.Namespace) -> int:
     result = run_case(DEMO, Path("simulation/workspaces/fea-smoke"), "fea-smoke", smoke=True)
     print(json.dumps(result, indent=2, default=str))
@@ -279,6 +293,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("fetch-pinn").set_defaults(func=cmd_fetch_pinn)
     sub.add_parser("fea-smoke").set_defaults(func=cmd_fea_smoke)
     sub.add_parser("fea-requeue").set_defaults(func=cmd_fea_requeue)
+    sub.add_parser("fea-reclaim").set_defaults(func=cmd_fea_reclaim)
     validate = sub.add_parser("fea-validate")
     validate.add_argument("--work-dir", type=Path, default=None)
     validate.add_argument("--output", type=Path, default=None)
