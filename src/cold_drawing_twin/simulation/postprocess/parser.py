@@ -29,6 +29,7 @@ def parse_solver_outputs(work_dir: Path) -> dict[str, Any]:
     """
     listing_text = _concat_listings(work_dir)
     termination = parse_termination(listing_text)
+    identity = parse_solver_identity(listing_text)
     energies = parse_energy_listing(listing_text)
     th = parse_time_history_csv(work_dir)
     fields = parse_field_files(work_dir)
@@ -53,6 +54,7 @@ def parse_solver_outputs(work_dir: Path) -> dict[str, Any]:
         "parser": "openradioss_listing_v1",
         "placeholder": False,
         "termination": termination,
+        "solver_identity": identity,
         "histories": {
             "kinetic_energy": th.get("kinetic_energy") or energies.get("kinetic_energy") or [],
             "internal_energy": th.get("internal_energy") or energies.get("internal_energy") or [],
@@ -80,6 +82,32 @@ def parse_termination(text: str) -> dict[str, Any]:
     else:
         status = "MISSING"
     return {"status": status, "normal": status == "NORMAL_TERMINATION"}
+
+
+def parse_solver_identity(text: str) -> dict[str, Any]:
+    """Read a version string from listing text. Missing text stays None."""
+    if not text.strip():
+        return {"solver": "OpenRadioss", "version": None, "banner": None, "source": None}
+    banner_match = re.search(r".*(OpenRadioss|RADIOSS).{0,80}", text, re.I)
+    banner = banner_match.group(0).strip() if banner_match else None
+    version = None
+    version_match = re.search(
+        r"(?:VERSION|REV(?:ISION)?)\s*[:=]\s*([0-9A-Za-z._-]+)",
+        text,
+        re.I,
+    )
+    if version_match:
+        version = version_match.group(1)
+    else:
+        dated = re.search(r"(latest-\d{8}|\d{8})", text)
+        if dated:
+            version = dated.group(1)
+    return {
+        "solver": "OpenRadioss",
+        "version": version,
+        "banner": banner,
+        "source": "listing",
+    }
 
 
 def parse_energy_listing(text: str) -> dict[str, list[float]]:

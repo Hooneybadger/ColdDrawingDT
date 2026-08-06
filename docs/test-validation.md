@@ -82,14 +82,15 @@ Use Drawing 4 and the demo Snapshot numbers unless a case says otherwise.
 
 FEA:
 
-- Mesh convergence
-- Quasi-static energy quality
-- Simple reference problem when possible
-- Sensitivity direction checks
+- Mesh checksum repeatability for the same Snapshot and mesh counts (`make fea-validate`)
+- Mesh refinement structure (element count and checksum change). Not a published convergence study.
+- Quasi-static energy quality (gate on listing ERROR saturation)
+- Geometry sensitivity direction from the mapping (higher reduction -> smaller `rf`)
+- Solver identity from listing when a listing exists
 
 System:
 
-- Repeat the same Snapshot and config; compare checksums and metrics inside a stated tolerance
+- Repeat the same Snapshot and config; compare checksums and metrics inside a stated tolerance (tolerance not set; report copies stored metrics only)
 
 ## Performance later
 

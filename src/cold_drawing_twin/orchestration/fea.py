@@ -107,6 +107,9 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     result = run_case(features, work_dir, job.job_id, run_solver=True, settings=settings)
     fea_job_duration_seconds.observe(perf_counter() - started)
     job.metrics = result["metrics"]
+    identity = (result.get("metrics") or {}).get("solver_identity") or {}
+    if identity.get("version"):
+        job.solver_version = str(identity["version"])
     job.quality = {"pass": result["quality_pass"], "reason": result["quality_reason"]}
     job.criterion_verdict = result["criterion_verdict"]
     job.error = result["solver_error"]

@@ -55,6 +55,8 @@ Artifacts land in `simulation/workspaces/<job-id>/`: starter deck, engine deck, 
 
 Parser unit tests under `tests/fea/fixtures/` are labeled fixtures. They are not actual solves.
 
+`make fea-validate` writes a mesh-repeatability checksum, a mesh-refinement **structure** (more elements, different checksum), and a geometry sensitivity **direction** (higher reduction -> smaller mapped `rf`) without requiring the Engine. If `simulation/workspaces/fea-smoke/result.json` exists, the report copies radius, reaction, and energy from that file. It does not invent a solve.
+
 GitHub Actions workflow `fea-integration.yml` is manual (`workflow_dispatch`) and runs the real solver when invoked.
 
 ## Actual smoke execution

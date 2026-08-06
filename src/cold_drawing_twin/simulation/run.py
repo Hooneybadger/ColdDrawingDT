@@ -105,12 +105,17 @@ def run_case(
         "parser": parsed.get("parser"),
         "placeholder": False,
         "termination": parsed.get("termination"),
+        "solver_identity": parsed.get("solver_identity"),
     }
     verdict, criterion_reason = apply_criterion(quality_ok=ok, metrics=metrics)
     result = {
         "job_id": job_id,
         "solver_status": solver_status,
         "solver_error": solver_error,
+        "solver_binaries": {
+            "starter": settings.openradioss_starter_bin or None,
+            "engine": settings.openradioss_engine_bin or None,
+        },
         "quality_pass": ok,
         "quality_reason": quality_reason,
         "criterion_verdict": verdict.value,
