@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from cold_drawing_twin.config_files import routing_policy
@@ -22,38 +24,74 @@ from cold_drawing_twin.settings import Settings
 from cold_drawing_twin.simulation.run import run_case
 from cold_drawing_twin.twin.store import TwinStore
 
+LOGGER = logging.getLogger(__name__)
+
 
 def pending_fea_job_ids(session: Session) -> list[str]:
     return list(session.info.get("fea_jobs") or [])
 
 
-def dispatch_fea_jobs(settings: Settings, job_ids: list[str]) -> None:
+def unpublished_queued_fea_job_ids(session: Session) -> list[str]:
+    rows = (
+        session.query(FeaJobRow)
+        .filter(FeaJobRow.status == FeaJobStatus.QUEUED.value)
+        .order_by(FeaJobRow.created_at.asc())
+        .all()
+    )
+    return [row.job_id for row in rows]
+
+
+def dispatch_fea_jobs(settings: Settings, job_ids: list[str]) -> list[str]:
     """Publish FEA jobs only after the job row is committed.
 
     Inline execution runs the solver inside EvaluationService. Celery
     workers must not start before COMMIT or they miss the row.
+    Broker publish failure leaves the row QUEUED; use fea-requeue.
     """
+    unpublished: list[str] = []
     if settings.fea_execution != "celery" or not job_ids:
-        return
+        return unpublished
     from workers.fea_tasks import enqueue_fea_job
 
     for job_id in job_ids:
-        enqueue_fea_job(job_id)
+        try:
+            enqueue_fea_job(job_id)
+        except Exception:
+            LOGGER.exception("failed to publish FEA job %s; row stays QUEUED", job_id)
+            unpublished.append(job_id)
+    return unpublished
 
 
-def run_fea_job(session: Session, job_id: str, settings: Settings, events: EventBus, twin: TwinStore) -> FeaJobRow:
+def claim_queued_fea_job(session: Session, job_id: str) -> FeaJobRow | None:
+    """Atomically take QUEUED -> RUNNING. A second worker gets None."""
     job = session.get(FeaJobRow, job_id)
     if job is None:
         raise KeyError(job_id)
+    now = utc_now()
+    result = session.execute(
+        update(FeaJobRow)
+        .where(FeaJobRow.job_id == job_id, FeaJobRow.status == FeaJobStatus.QUEUED.value)
+        .values(status=FeaJobStatus.RUNNING.value, updated_at=now)
+    )
+    session.flush()
+    session.refresh(job)
+    if result.rowcount != 1:
+        return None
+    return job
+
+
+def run_fea_job(session: Session, job_id: str, settings: Settings, events: EventBus, twin: TwinStore) -> FeaJobRow:
+    job = claim_queued_fea_job(session, job_id)
+    if job is None:
+        existing = session.get(FeaJobRow, job_id)
+        if existing is None:
+            raise KeyError(job_id)
+        return existing
     evaluation = session.get(EvaluationRow, job.evaluation_id)
     snapshot = session.get(SnapshotRow, job.snapshot_id)
     if evaluation is None or snapshot is None:
         raise KeyError("evaluation or snapshot missing")
-    if job.status != FeaJobStatus.QUEUED.value:
-        return job
     operational = evaluation.mode == EvaluationMode.OPERATIONAL.value
-    job.status = FeaJobStatus.RUNNING.value
-    job.updated_at = utc_now()
     evaluation.state = EvaluationState.FEA_RUNNING.value
     evaluation.updated_at = job.updated_at
     events.emit("FEA_JOB_STATE_CHANGED", {"job_id": job.job_id, "status": job.status})

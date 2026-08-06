@@ -10,7 +10,7 @@ from pathlib import Path
 from cold_drawing_twin.domain.features import ProcessFeatures
 from cold_drawing_twin.inference.pinn.adapter import PinnUnavailable, ReleasedPinnAdapter
 from cold_drawing_twin.orchestration.container import build_container
-from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids
+from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids, unpublished_queued_fea_job_ids
 from cold_drawing_twin.paths import REPO_ROOT
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow
 from cold_drawing_twin.settings import load_settings
@@ -168,6 +168,19 @@ def cmd_fetch_pinn(_args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fea_requeue(_args: argparse.Namespace) -> int:
+    """Republish QUEUED FEA jobs after a broker publish miss. Not a transactional outbox."""
+    container = build_container()
+    session = container.open()
+    job_ids = unpublished_queued_fea_job_ids(session)
+    session.close()
+    failed = dispatch_fea_jobs(container.settings, job_ids)
+    print(json.dumps({"queued": job_ids, "publish_failed": failed}, indent=2))
+    if container.settings.fea_execution != "celery":
+        print("FEA_EXECUTION is not celery; QUEUED rows stay for an inline worker to claim.", file=sys.stderr)
+    return 1 if failed else 0
+
+
 def cmd_fea_smoke(_args: argparse.Namespace) -> int:
     result = run_case(DEMO, Path("simulation/workspaces/fea-smoke"), "fea-smoke", smoke=True)
     print(json.dumps(result, indent=2, default=str))
@@ -247,6 +260,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("factory-stage").set_defaults(func=cmd_factory_stage)
     sub.add_parser("fetch-pinn").set_defaults(func=cmd_fetch_pinn)
     sub.add_parser("fea-smoke").set_defaults(func=cmd_fea_smoke)
+    sub.add_parser("fea-requeue").set_defaults(func=cmd_fea_requeue)
     args = parser.parse_args(argv)
     return args.func(args)
 

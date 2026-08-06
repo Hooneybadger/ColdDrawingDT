@@ -4,7 +4,13 @@ from fastapi.testclient import TestClient
 
 from cold_drawing_twin.api.app import create_app
 from cold_drawing_twin.orchestration.container import build_container
-from cold_drawing_twin.orchestration.fea import dispatch_fea_jobs, pending_fea_job_ids, run_fea_job
+from cold_drawing_twin.orchestration.fea import (
+    claim_queued_fea_job,
+    dispatch_fea_jobs,
+    pending_fea_job_ids,
+    run_fea_job,
+    unpublished_queued_fea_job_ids,
+)
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow
 from cold_drawing_twin.settings import Settings
 from tests.conftest import DEMO, PRIMARY, make_pinn
@@ -93,3 +99,48 @@ def test_http_need_fea_returns_queued_when_celery(tmp_path, monkeypatch):
     job = client.get(f"/fea-jobs/{body['fea_job_id']}").json()
     assert job["status"] == "QUEUED"
     assert job["work_dir"] is None
+
+
+def test_claim_queued_job_is_single_winner(tmp_path):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    assert job.status == "QUEUED"
+    first = claim_queued_fea_job(session, job.job_id)
+    second = claim_queued_fea_job(session, job.job_id)
+    assert first is not None
+    assert first.status == "RUNNING"
+    assert second is None
+    session.refresh(job)
+    assert job.status == "RUNNING"
+
+
+def test_publish_failure_leaves_queued_and_requeue_republishes(tmp_path, monkeypatch):
+    def boom(job_id, priority=False):
+        raise RuntimeError("broker down")
+
+    monkeypatch.setattr("workers.fea_tasks.enqueue_fea_job", boom)
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    pending = pending_fea_job_ids(session)
+    session.commit()
+    failed = dispatch_fea_jobs(settings, pending)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    assert job.status == "QUEUED"
+    assert failed == pending
+    assert unpublished_queued_fea_job_ids(session) == pending
+    recorded: list[str] = []
+    monkeypatch.setattr("workers.fea_tasks.enqueue_fea_job", lambda job_id, priority=False: recorded.append(job_id))
+    again = dispatch_fea_jobs(settings, unpublished_queued_fea_job_ids(session))
+    assert recorded == pending
+    assert again == []
+    session.refresh(job)
+    assert job.status == "QUEUED"
