@@ -68,6 +68,7 @@ make factory-stage
 python -m pip install -e ".[dev]"
 make fetch-pinn
 make test
+make test-pinn
 make seed-opcua
 make demo-fast
 make demo-fea

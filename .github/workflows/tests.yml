@@ -48,4 +48,4 @@ jobs:
       - name: Pytest
         env:
           PYTHONPATH: src:.
-        run: python -m pytest -q
+        run: make test

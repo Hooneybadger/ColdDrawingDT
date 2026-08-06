@@ -1,0 +1,31 @@
+# Optional released PINN in-domain run. Not part of the default Tests workflow.
+# A green run calls predict.py and pinn.pt. Missing files fail; they are not skipped.
+
+name: PINN integration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  released-pinn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install application and CPU torch
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,pinn]"
+      - name: Fetch released PINN bundle
+        run: make fetch-pinn
+      - name: Released in-domain PINN
+        env:
+          PYTHONPATH: src:.
+        run: make test-pinn
