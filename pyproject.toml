@@ -42,5 +42,6 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 markers = [
     "integration: optional services such as BaSyx",
+    "pinn_release: released predict.py + pinn.pt; fails if the bundle is missing",
 ]
 filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,14 +1,17 @@
 PYTHONPATH := src:.
 PYTHON ?= python3
 
-.PHONY: test contracts model-verify fea-smoke demo-fast demo-fea demo-system seed-opcua factory-stage demo-stream fetch-pinn api
+.PHONY: test test-pinn contracts model-verify fea-smoke demo-fast demo-fea demo-system seed-opcua factory-stage demo-stream fetch-pinn api
 
 contracts:
 	$(PYTHON) scripts/validate_contracts.py
 	$(PYTHON) scripts/render_factory_layout.py
 
 test:
-	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m pytest -q
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m pytest -q -m "not pinn_release"
+
+test-pinn:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m pytest -q -m pinn_release
 
 fetch-pinn:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli fetch-pinn

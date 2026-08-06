@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version runs contract checks and pytest. Default CI does not run OpenRadioss. Parser tests use labeled fixtures. `fea-integration.yml` is a manual workflow for an actual solver smoke.
+This version runs contract checks and pytest. Default CI does not run OpenRadioss and does not call `predict.py`. Parser tests use labeled fixtures. `fea-integration.yml` and `pinn-integration.yml` are manual workflows for actual solver and released PINN runs.
 
 ## Current checks
 
@@ -11,6 +11,15 @@ python -m pip install -r requirements-ci.txt
 python scripts/validate_contracts.py
 python -m pip install -e ".[dev]"
 make test
+```
+
+`make test` excludes `pinn_release`. That marker calls the released `predict.py` + `pinn.pt` bundle and **fails** if the files are missing (it does not skip as success).
+
+```bash
+make fetch-pinn
+python -m pip install -e ".[dev,pinn]"
+make test-pinn
+make model-verify
 ```
 
 ## Unit tests
@@ -48,7 +57,7 @@ Postprocess:
 
 - OPC UA source -> AAS update
 - AAS update -> Timescale history
-- Snapshot -> real PINN
+- Snapshot -> real PINN (`make test-pinn` / `pinn-integration.yml`; fails if `predict.py` or `pinn.pt` is missing)
 - Queue -> worker lifecycle (Celery publish after commit; worker skips non-`QUEUED`)
 - Gmsh -> OpenRadioss smoke case
 - FEA result -> Decision store

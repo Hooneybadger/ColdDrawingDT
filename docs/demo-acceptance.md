@@ -7,6 +7,7 @@ python -m pip install -e ".[dev]"
 python scripts/validate_contracts.py
 make test
 make fetch-pinn
+make test-pinn
 make seed-opcua
 make demo-fast
 make demo-fea
@@ -26,6 +27,8 @@ make fea-smoke
 `make fea-smoke` without binaries writes decks and exits non-zero. That is not a mocked success.
 
 `make demo-fea` uses `ReleasedPinnAdapter` and an out-of-domain feature vector so PINN returns `NEED_FEA`. It does not use `StaticPinnAdapter`.
+
+`make test-pinn` runs in-domain inference through `predict.py` and `pinn.pt`. Missing bundle files fail that target. Default `make test` does not require the files.
 
 Automatic FEA SAFE/UNSAFE cannot pass while `required_thresholds` is empty.
 
