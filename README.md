@@ -97,7 +97,7 @@ docker compose up -d
 | Item | State |
 |---|---|
 | HTTP API, Twin store, Snapshot, routing-v1 | Implemented |
-| FEA job queue (`FEA_EXECUTION=celery` commit-then-publish, outbox, atomic claim, `fea-requeue`) | Implemented |
+| FEA job queue (`FEA_EXECUTION=celery` commit-then-publish, outbox, atomic claim, lease heartbeat, `fea-requeue`) | Implemented |
 | Transactional outbox for FEA publish | Implemented (`fea_outbox`) |
 | Released PINN adapter (`predict.py` + `pinn.pt`) | Implemented |
 | OPC UA map as source of truth, source timestamp, quality | Implemented |
