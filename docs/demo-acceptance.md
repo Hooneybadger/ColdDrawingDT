@@ -22,9 +22,12 @@ bash scripts/install_openradioss.sh
 export OPENRADIOSS_STARTER_BIN=$HOME/OpenRadioss/exec/starter_linux64_gf
 export OPENRADIOSS_ENGINE_BIN=$HOME/OpenRadioss/exec/engine_linux64_gf
 make fea-smoke
+make fea-validate
 ```
 
 `make fea-smoke` without binaries writes decks and exits non-zero. That is not a mocked success.
+
+`make fea-validate` does not need the Engine. Missing `result.json` leaves solver metrics absent.
 
 `make demo-fea` uses `ReleasedPinnAdapter` and an out-of-domain feature vector so PINN returns `NEED_FEA`. It does not use `StaticPinnAdapter`.
 

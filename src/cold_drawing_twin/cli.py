@@ -195,6 +195,23 @@ def cmd_fea_smoke(_args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fea_validate(args: argparse.Namespace) -> int:
+    import tempfile
+
+    from cold_drawing_twin.simulation.validation import build_validation_report
+
+    work_dir = Path(args.work_dir) if args.work_dir else None
+    with tempfile.TemporaryDirectory(prefix="fea-validate-") as scratch:
+        report = build_validation_report(Path(scratch), work_dir)
+    text = json.dumps(report, indent=2, default=str)
+    if args.output:
+        Path(args.output).write_text(text + "\n", encoding="utf-8")
+    print(text)
+    mesh_ok = report["mesh_repeatability"]["same_checksum"] and report["mesh_refinement_structure"]["fine_has_more_elements"]
+    geom_ok = report["geometry_sensitivity_direction"]["higher_reduction_smaller_rf"]
+    return 0 if mesh_ok and geom_ok else 1
+
+
 def _format_evaluation(session, row) -> str:
     decision = (
         session.query(DecisionRow).filter(DecisionRow.evaluation_id == row.evaluation_id).order_by(DecisionRow.created_at.desc()).first()
@@ -261,6 +278,10 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("fetch-pinn").set_defaults(func=cmd_fetch_pinn)
     sub.add_parser("fea-smoke").set_defaults(func=cmd_fea_smoke)
     sub.add_parser("fea-requeue").set_defaults(func=cmd_fea_requeue)
+    validate = sub.add_parser("fea-validate")
+    validate.add_argument("--work-dir", type=Path, default=None)
+    validate.add_argument("--output", type=Path, default=None)
+    validate.set_defaults(func=cmd_fea_validate)
     args = parser.parse_args(argv)
     return args.func(args)
 
