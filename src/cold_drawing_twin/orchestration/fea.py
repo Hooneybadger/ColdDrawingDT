@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import logging
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
 
 from sqlalchemy import update
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from cold_drawing_twin.config_files import routing_policy
 from cold_drawing_twin.domain.features import features_from_mapping
@@ -83,11 +84,67 @@ def dispatch_fea_jobs(settings: Settings, job_ids: list[str] | None = None) -> l
 
 
 LEASE_GRACE_S = 60
+LEASE_HEARTBEAT_S = 30.0
 
 
 def _lease_seconds(settings: Settings | None = None) -> int:
     timeout = settings.fea_job_timeout_s if settings is not None else 600
     return int(timeout) + LEASE_GRACE_S
+
+
+def _heartbeat_interval_s(lease_s: int) -> float:
+    return min(LEASE_HEARTBEAT_S, max(lease_s / 4.0, 0.05))
+
+
+def renew_fea_lease(
+    session: Session,
+    job_id: str,
+    generation: int,
+    *,
+    lease_s: int,
+    now: datetime | None = None,
+) -> bool:
+    """Extend lease_expires_at when this worker still owns the RUNNING row."""
+    current = now or utc_now()
+    result = session.execute(
+        update(FeaJobRow)
+        .where(
+            FeaJobRow.job_id == job_id,
+            FeaJobRow.status == FeaJobStatus.RUNNING.value,
+            FeaJobRow.claim_generation == generation,
+        )
+        .values(
+            lease_expires_at=current + timedelta(seconds=lease_s),
+            updated_at=current,
+        )
+    )
+    session.flush()
+    return result.rowcount == 1
+
+
+def _lease_heartbeat_loop(
+    bind,
+    job_id: str,
+    generation: int,
+    lease_s: int,
+    interval_s: float,
+    stop: threading.Event,
+) -> None:
+    factory = sessionmaker(bind=bind, expire_on_commit=False, future=True)
+    while True:
+        heartbeat = factory()
+        try:
+            owned = renew_fea_lease(heartbeat, job_id, generation, lease_s=lease_s)
+            heartbeat.commit()
+            if not owned:
+                return
+        except Exception:
+            LOGGER.exception("FEA lease heartbeat failed for %s", job_id)
+            heartbeat.rollback()
+        finally:
+            heartbeat.close()
+        if stop.wait(interval_s):
+            return
 
 
 def claim_queued_fea_job(session: Session, job_id: str, *, lease_s: int | None = None) -> FeaJobRow | None:
@@ -115,8 +172,18 @@ def claim_queued_fea_job(session: Session, job_id: str, *, lease_s: int | None =
     return job
 
 
-def run_fea_job(session: Session, job_id: str, settings: Settings, events: EventBus, twin: TwinStore) -> FeaJobRow:
-    job = claim_queued_fea_job(session, job_id, lease_s=_lease_seconds(settings))
+def run_fea_job(
+    session: Session,
+    job_id: str,
+    settings: Settings,
+    events: EventBus,
+    twin: TwinStore,
+    *,
+    lease_s: int | None = None,
+    heartbeat_interval_s: float | None = None,
+) -> FeaJobRow:
+    lease = lease_s if lease_s is not None else _lease_seconds(settings)
+    job = claim_queued_fea_job(session, job_id, lease_s=lease)
     if job is None:
         existing = session.get(FeaJobRow, job_id)
         if existing is None:
@@ -137,9 +204,25 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     work_dir = Path(settings.openradioss_work_dir) / job.job_id
     job.work_dir = str(work_dir)
     session.flush()
+    # Other processes can only see RUNNING / work_dir / the lease after COMMIT.
+    # Starter and Engine each use fea_job_timeout_s, so wall time can exceed one lease.
+    session.commit()
+    interval = heartbeat_interval_s if heartbeat_interval_s is not None else _heartbeat_interval_s(lease)
+    stop = threading.Event()
+    heartbeat = threading.Thread(
+        target=_lease_heartbeat_loop,
+        args=(session.get_bind(), job_id, generation, lease, interval, stop),
+        name=f"fea-lease-{job_id}",
+        daemon=True,
+    )
+    heartbeat.start()
     features = features_from_mapping(snapshot.features)
     started = perf_counter()
-    result = run_case(features, work_dir, job.job_id, run_solver=True, settings=settings)
+    try:
+        result = run_case(features, work_dir, job.job_id, run_solver=True, settings=settings)
+    finally:
+        stop.set()
+        heartbeat.join(timeout=max(1.0, interval + 1.0))
     fea_job_duration_seconds.observe(perf_counter() - started)
     session.refresh(job)
     if int(job.claim_generation or 0) != generation:

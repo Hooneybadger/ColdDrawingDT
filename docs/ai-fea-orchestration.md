@@ -89,6 +89,7 @@ Worker rules for long jobs:
 - Idempotent tasks (a second delivery of a non-`QUEUED` job is a no-op)
 - Subprocess timeout and process-group cleanup
 - Celery `task_time_limit` sits above `fea_job_timeout_s`
+- Commit `RUNNING` with `work_dir` before the solver, then heartbeat the lease until it returns
 
 HTTP and `make demo-fea` with `FEA_EXECUTION=celery` return `FEA_QUEUED` without waiting for OpenRadioss. The worker writes the Decision. `FEA_EXECUTION=inline` (local default) still runs the solver in-process after the job row is flushed.
 

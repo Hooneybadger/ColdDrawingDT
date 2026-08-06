@@ -1,3 +1,5 @@
+import threading
+import time
 from datetime import datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
@@ -9,6 +11,7 @@ from cold_drawing_twin.orchestration.fea import (
     dispatch_fea_jobs,
     pending_fea_job_ids,
     reclaim_expired_running_fea_jobs,
+    renew_fea_lease,
     run_fea_job,
 )
 from cold_drawing_twin.orchestration.outbox import unpublished_outbox_job_ids
@@ -230,3 +233,113 @@ def test_lost_lease_drops_late_worker_result(tmp_path, monkeypatch):
     again = run_fea_job(session, job.job_id, settings, events, twin)
     assert again.status == "RUNNING"
     assert session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).first() is None
+
+
+def test_renew_lease_requires_matching_generation(tmp_path):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    claimed = claim_queued_fea_job(session, job.job_id, lease_s=30)
+    generation = int(claimed.claim_generation)
+    original_expiry = claimed.lease_expires_at
+    later = datetime.now(timezone.utc) + timedelta(seconds=10)
+    assert renew_fea_lease(session, job.job_id, generation, lease_s=30, now=later) is True
+    session.refresh(job)
+
+    def as_utc(value: datetime | None) -> datetime | None:
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value
+
+    assert as_utc(job.lease_expires_at) == later + timedelta(seconds=30)
+    assert as_utc(job.lease_expires_at) != as_utc(original_expiry)
+    job.claim_generation = generation + 1
+    session.flush()
+    assert renew_fea_lease(session, job.job_id, generation, lease_s=30) is False
+    session.refresh(job)
+    assert as_utc(job.lease_expires_at) == later + timedelta(seconds=30)
+
+
+def test_worker_commits_running_before_solver(tmp_path, monkeypatch):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    seen: dict[str, str | None] = {}
+    original = run_fea_job.__globals__["run_case"]
+
+    def inspect_run_case(*args, **kwargs):
+        other = container.open()
+        try:
+            visible = other.get(FeaJobRow, job.job_id)
+            seen["status"] = visible.status if visible is not None else None
+            seen["work_dir"] = visible.work_dir if visible is not None else None
+        finally:
+            other.close()
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr("cold_drawing_twin.orchestration.fea.run_case", inspect_run_case)
+    run_fea_job(session, job.job_id, settings, events, twin)
+    assert seen["status"] == "RUNNING"
+    assert seen["work_dir"]
+
+
+def test_heartbeat_keeps_live_solver_off_reclaim(tmp_path, monkeypatch):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    seen: dict[str, dict[str, list[str]]] = {}
+    renewed = threading.Event()
+    original = run_fea_job.__globals__["run_case"]
+    real_renew = renew_fea_lease
+
+    def tracking_renew(*args, **kwargs):
+        ok = real_renew(*args, **kwargs)
+        if ok:
+            renewed.set()
+        return ok
+
+    def slow_run_case(*args, **kwargs):
+        assert renewed.wait(timeout=2.0)
+        time.sleep(0.25)
+        other = container.open()
+        try:
+            other_twin, other_events, _evaluation = container.services(other)
+            seen["reclaim"] = reclaim_expired_running_fea_jobs(
+                other,
+                settings,
+                other_events,
+                other_twin,
+                now=datetime.now(timezone.utc) + timedelta(seconds=2.8),
+            )
+            other.commit()
+        finally:
+            other.close()
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr("cold_drawing_twin.orchestration.fea.renew_fea_lease", tracking_renew)
+    monkeypatch.setattr("cold_drawing_twin.orchestration.fea.run_case", slow_run_case)
+    finished = run_fea_job(
+        session,
+        job.job_id,
+        settings,
+        events,
+        twin,
+        lease_s=3,
+        heartbeat_interval_s=0.08,
+    )
+    assert seen["reclaim"] == {"requeued": [], "timed_out": []}
+    assert finished.status != "TIMEOUT"
