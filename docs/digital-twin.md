@@ -61,6 +61,8 @@ Worked example: [examples/process_snapshot.example.json](examples/process_snapsh
   "snapshot_id": "snap-0001",
   "asset_id": "BG.MIEUM.DRW.04",
   "captured_at": "2026-09-14T16:00:00Z",
+  "source_timestamp": "2026-09-14T15:59:58Z",
+  "ingest_timestamp": "2026-09-14T15:59:59Z",
   "source_state_version": "state-0001",
   "features": {
     "reduction_ratio": 0.3,
@@ -70,6 +72,17 @@ Worked example: [examples/process_snapshot.example.json](examples/process_snapsh
   }
 }
 ```
+
+Clocks:
+
+| Field | Meaning |
+|---|---|
+| `source_timestamp` | OPC UA / measurement time |
+| `ingest_timestamp` | Backend ingest of that Twin state |
+| `captured_at` | When this immutable Snapshot was frozen |
+| Decision `created_at` | When the Decision row was written |
+
+Lineage on both the fast path and the FEA path must keep the original `source_timestamp`. A Scenario copies it from the base Snapshot. Do not substitute `captured_at`.
 
 ## Freshness
 

@@ -6,10 +6,10 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from cold_drawing_twin.config_files import fea_criterion, fea_reference, routing_policy, site_policy
-from cold_drawing_twin.domain.features import ProcessFeatures, features_from_mapping, in_supported_range
+from cold_drawing_twin.domain.features import ProcessFeatures, features_from_mapping
 from cold_drawing_twin.domain.freshness import is_stale, missing_required
 from cold_drawing_twin.domain.ids import new_id
-from cold_drawing_twin.domain.lineage import idempotency_hash, iso, lineage_record, utc_now
+from cold_drawing_twin.domain.lineage import idempotency_hash, iso, lineage_record, snapshot_payload, utc_now
 from cold_drawing_twin.domain.routing import PinnResult, route
 from cold_drawing_twin.domain.types import (
     DecisionStatus,
@@ -57,6 +57,7 @@ class EvaluationService:
             features=features,
             source_state_version=row.state_version,
             source_timestamp=row.source_timestamp,
+            ingest_timestamp=row.ingest_timestamp,
             mode=EvaluationMode.OPERATIONAL,
             operational=True,
             quality=row.quality,
@@ -73,7 +74,8 @@ class EvaluationService:
             asset_id=base.asset_id,
             features=features,
             source_state_version=base.source_state_version,
-            source_timestamp=base.captured_at,
+            source_timestamp=base.source_timestamp,
+            ingest_timestamp=base.ingest_timestamp,
             mode=EvaluationMode.SCENARIO,
             operational=False,
             quality="GOOD",
@@ -97,6 +99,7 @@ class EvaluationService:
         features: ProcessFeatures,
         source_state_version: str,
         source_timestamp: datetime,
+        ingest_timestamp: datetime | None,
         mode: EvaluationMode,
         operational: bool,
         quality: str,
@@ -106,6 +109,8 @@ class EvaluationService:
             snapshot_id=new_id("snap"),
             asset_id=asset_id,
             captured_at=now,
+            source_timestamp=source_timestamp,
+            ingest_timestamp=ingest_timestamp,
             source_state_version=source_state_version,
             features=features.as_dict(),
             mode=mode.value,
@@ -131,16 +136,10 @@ class EvaluationService:
             evaluation.state = EvaluationState.PINN_RUNNING.value
             evaluation.updated_at = now
             self.events.emit("EVALUATION_STATE_CHANGED", {"evaluation_id": evaluation.evaluation_id, "state": evaluation.state})
-            if not in_supported_range(features):
-                try:
-                    pinn_result = self.pinn.predict(features)
-                except PinnUnavailable:
-                    pinn_invalid = True
-            else:
-                try:
-                    pinn_result = self.pinn.predict(features)
-                except PinnUnavailable:
-                    pinn_invalid = True
+            try:
+                pinn_result = self.pinn.predict(features)
+            except PinnUnavailable:
+                pinn_invalid = True
             if pinn_result is not None:
                 evaluation.pinn_result = {
                     "verdict": pinn_result.verdict,
@@ -168,19 +167,11 @@ class EvaluationService:
         evaluation.routing_action = action.value
         model_version = pinn_result.model_version if pinn_result else "unavailable"
         routing_version = routing_policy()["version"]
-        snapshot_payload = {
-            "snapshot_id": snapshot.snapshot_id,
-            "asset_id": snapshot.asset_id,
-            "captured_at": iso(snapshot.captured_at),
-            "source_state_version": snapshot.source_state_version,
-            "source_timestamp": iso(source_timestamp),
-            "features": snapshot.features,
-        }
         lineage = lineage_record(
             asset_id=asset_id,
             state_version=source_state_version,
-            source_timestamp=source_timestamp,
-            snapshot=snapshot_payload,
+            source_timestamp=snapshot.source_timestamp,
+            snapshot=snapshot_payload(snapshot),
             pinn=evaluation.pinn_result,
             pinn_input=features.as_dict(),
             routing_policy_version=routing_version,

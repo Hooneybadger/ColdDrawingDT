@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from cold_drawing_twin.config_files import routing_policy
 from cold_drawing_twin.domain.features import features_from_mapping
-from cold_drawing_twin.domain.lineage import lineage_record, utc_now
+from cold_drawing_twin.domain.lineage import lineage_record, snapshot_payload, utc_now
 from cold_drawing_twin.domain.types import (
     DecisionStatus,
     DecisionVerdict,
@@ -149,13 +149,8 @@ def _finalize_from_fea(
     lineage = lineage_record(
         asset_id=evaluation.asset_id,
         state_version=snapshot.source_state_version,
-        source_timestamp=snapshot.captured_at,
-        snapshot={
-            "snapshot_id": snapshot.snapshot_id,
-            "asset_id": snapshot.asset_id,
-            "features": snapshot.features,
-            "source_state_version": snapshot.source_state_version,
-        },
+        source_timestamp=snapshot.source_timestamp,
+        snapshot=snapshot_payload(snapshot),
         pinn=evaluation.pinn_result,
         pinn_input=snapshot.features,
         routing_policy_version=routing_policy()["version"],

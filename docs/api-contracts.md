@@ -19,6 +19,19 @@ Do not send an unnamed four-value list outside the PINN process.
 
 Source: [config/pinn_contract.yaml](../config/pinn_contract.yaml) and [schemas/process_snapshot.schema.json](../schemas/process_snapshot.schema.json).
 
+## Snapshot times
+
+[examples/process_snapshot.example.json](examples/process_snapshot.example.json) keeps four clocks:
+
+| Field | Clock |
+|---|---|
+| `source_timestamp` | OPC UA / measurement time |
+| `ingest_timestamp` | Backend ingest of Twin state |
+| `captured_at` | Snapshot freeze time |
+| Decision `created_at` | Decision write time |
+
+Fast-path and FEA Lineage both store the Snapshot `source_timestamp`. They must not replace it with `captured_at`.
+
 ## Evaluation request
 
 The client names the Asset. The server copies live values from the Digital Twin. The client does not submit safety-critical feature values for a live Evaluation.

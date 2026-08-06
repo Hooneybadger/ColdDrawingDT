@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from cold_drawing_twin.domain.features import ProcessFeatures
+from cold_drawing_twin.domain.lineage import iso
 from cold_drawing_twin.inference.pinn.adapter import ReleasedPinnAdapter
 from cold_drawing_twin.orchestration.container import build_container
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow, SnapshotRow
@@ -12,7 +13,8 @@ def test_e2e_fast_safe(settings):
     container = build_container(settings=settings, pinn=make_pinn("SAFE"))
     session = container.open()
     twin, _events, evaluation = container.services(session)
-    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    source = datetime.now(timezone.utc) - timedelta(seconds=5)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=source, quality="GOOD")
     row = evaluation.start_operational(PRIMARY)
     decision = session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).one()
     assert row.state == "FINALIZED"
@@ -27,6 +29,13 @@ def test_e2e_fast_safe(settings):
     assert lineage["routing"]["action"] == "ACCEPT"
     assert lineage["decision"]["decision_id"] == decision.decision_id
     assert lineage["fea"] is None
+    snapshot = session.get(SnapshotRow, row.snapshot_id)
+    twin_row = twin.require(PRIMARY)
+    assert lineage["source_timestamp"] == iso(snapshot.source_timestamp)
+    assert lineage["source_timestamp"] == iso(twin_row.source_timestamp)
+    assert lineage["snapshot"]["source_timestamp"] == iso(twin_row.source_timestamp)
+    assert lineage["snapshot"]["captured_at"] == iso(snapshot.captured_at)
+    assert lineage["snapshot"]["captured_at"] != lineage["source_timestamp"]
 
 
 def test_e2e_unsafe_no_extra_fea(settings):
@@ -44,13 +53,21 @@ def test_e2e_need_fea_inconclusive_without_solver(settings):
     container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
     session = container.open()
     twin, _events, evaluation = container.services(session)
-    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    source = datetime.now(timezone.utc) - timedelta(seconds=5)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=source, quality="GOOD")
     row = evaluation.start_operational(PRIMARY)
     decision = session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).one()
     assert decision.status == "MANUAL_REVIEW"
     assert decision.verdict == "INCONCLUSIVE"
     assert decision.fea_job_id is not None
     assert decision.lineage["fea"]["job_id"] == decision.fea_job_id
+    snapshot = session.get(SnapshotRow, row.snapshot_id)
+    twin_row = twin.require(PRIMARY)
+    assert decision.lineage["source_timestamp"] == iso(snapshot.source_timestamp)
+    assert decision.lineage["source_timestamp"] == iso(twin_row.source_timestamp)
+    assert decision.lineage["snapshot"]["source_timestamp"] == iso(twin_row.source_timestamp)
+    assert decision.lineage["snapshot"]["captured_at"] == iso(snapshot.captured_at)
+    assert decision.lineage["snapshot"]["captured_at"] != decision.lineage["source_timestamp"]
 
 
 def test_e2e_need_fea_from_released_adapter_out_of_range(settings):
@@ -135,7 +152,7 @@ def test_scenario_does_not_change_live_features(settings):
     twin.put_process_state(
         PRIMARY,
         DEMO,
-        source_timestamp=datetime.now(timezone.utc),
+        source_timestamp=datetime.now(timezone.utc) - timedelta(seconds=5),
         quality="GOOD",
         state_version="state-live",
     )
@@ -150,3 +167,6 @@ def test_scenario_does_not_change_live_features(settings):
     assert current.features["reduction_ratio"] == 0.3
     assert current.state_version == "state-live"
     assert scenario.overrides["reduction_ratio"] == 0.4
+    child = session.get(SnapshotRow, _row.snapshot_id)
+    assert iso(child.source_timestamp) == iso(snapshot.source_timestamp)
+    assert iso(child.source_timestamp) != iso(child.captured_at)
