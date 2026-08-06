@@ -44,7 +44,7 @@ GPU host:
 
 OpenRadioss may run in the worker container or on a solver host the worker calls. That choice needs an ADR when implemented.
 
-Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It writes the `QUEUED` job row and an unpublished `fea_outbox` row in one transaction, commits, then publishes the outbox to RabbitMQ. Two workers claim with `UPDATE ... WHERE status=QUEUED`. If publish fails, the outbox stays unpublished; `make fea-requeue` publishes those rows only. Already published `QUEUED` jobs are not republished.
+Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It writes the `QUEUED` job row and an unpublished `fea_outbox` row in one transaction, commits, then publishes the outbox to RabbitMQ. Two workers claim with `UPDATE ... WHERE status=QUEUED`. If publish fails, the outbox stays unpublished; `make fea-requeue` publishes those rows only. If a worker dies while `RUNNING`, `make fea-reclaim` inspects the lease. No `work_dir` returns the row to `QUEUED` and writes a new unpublished outbox row. A started work directory becomes `TIMEOUT` / `INCONCLUSIVE` so a second Engine is not launched on the same files. A late worker whose `claim_generation` no longer matches drops its result.
 
 Kafka, Kubernetes, and Temporal are out of scope here.
 
@@ -93,4 +93,4 @@ The first site is one factory. Reproducible service isolation matters now. Kuber
 
 ## Existing database volumes
 
-SQLite tests call `create_all`. An existing PostgreSQL volume created before Snapshot `source_timestamp` / `ingest_timestamp` gets those columns from `make_session_factory` (`ALTER TABLE` plus backfill of `source_timestamp` from `captured_at`). That is a startup ensure, not a migration framework.
+SQLite tests call `create_all`. An existing PostgreSQL volume created before Snapshot `source_timestamp` / `ingest_timestamp` gets those columns from `make_session_factory` (`ALTER TABLE` plus backfill of `source_timestamp` from `captured_at`). FEA lease columns (`lease_expires_at`, `claim_generation`) are added the same way. That is a startup ensure, not a migration framework.

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
 
@@ -8,6 +8,7 @@ from cold_drawing_twin.orchestration.fea import (
     claim_queued_fea_job,
     dispatch_fea_jobs,
     pending_fea_job_ids,
+    reclaim_expired_running_fea_jobs,
     run_fea_job,
 )
 from cold_drawing_twin.orchestration.outbox import unpublished_outbox_job_ids
@@ -167,3 +168,65 @@ def test_successful_publish_does_not_republish_queued_job(tmp_path, monkeypatch)
     assert recorded == first
     job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
     assert job.status == "QUEUED"
+
+
+def test_expired_lease_without_work_dir_returns_to_queued(tmp_path):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    claimed = claim_queued_fea_job(session, job.job_id)
+    assert claimed is not None
+    claimed.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
+    session.flush()
+    result = reclaim_expired_running_fea_jobs(session, settings, events, twin)
+    session.refresh(job)
+    assert job.status == "QUEUED"
+    assert result["requeued"] == [job.job_id]
+    assert unpublished_outbox_job_ids(session) == [job.job_id]
+
+
+def test_expired_lease_with_work_dir_is_inconclusive(tmp_path):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    claimed = claim_queued_fea_job(session, job.job_id)
+    claimed.work_dir = str(tmp_path / "started")
+    claimed.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
+    session.flush()
+    result = reclaim_expired_running_fea_jobs(session, settings, events, twin)
+    session.refresh(job)
+    assert job.status == "TIMEOUT"
+    assert result["timed_out"] == [job.job_id]
+    decision = session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).one()
+    assert decision.verdict == "INCONCLUSIVE"
+
+
+def test_lost_lease_drops_late_worker_result(tmp_path, monkeypatch):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+
+    original = run_fea_job.__globals__["run_case"]
+
+    def bump_generation(*args, **kwargs):
+        current = session.get(FeaJobRow, job.job_id)
+        current.claim_generation = int(current.claim_generation or 0) + 1
+        session.flush()
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr("cold_drawing_twin.orchestration.fea.run_case", bump_generation)
+    again = run_fea_job(session, job.job_id, settings, events, twin)
+    assert again.status == "RUNNING"
+    assert session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).first() is None

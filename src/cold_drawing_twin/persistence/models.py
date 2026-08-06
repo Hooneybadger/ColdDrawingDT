@@ -103,6 +103,8 @@ class FeaJobRow(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    claim_generation: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class DecisionRow(Base):
@@ -155,6 +157,7 @@ def make_session_factory(url: str):
     engine = make_engine(url)
     Base.metadata.create_all(engine)
     _ensure_snapshot_timestamps(engine)
+    _ensure_fea_lease_columns(engine)
     if url.startswith("postgresql"):
         with engine.begin() as conn:
             conn.exec_driver_sql("CREATE EXTENSION IF NOT EXISTS timescaledb")
@@ -189,3 +192,25 @@ def _ensure_snapshot_timestamps(engine) -> None:
             conn.execute(text(statement))
         if "source_timestamp" not in columns:
             conn.execute(text("UPDATE snapshots SET source_timestamp = captured_at WHERE source_timestamp IS NULL"))
+
+
+def _ensure_fea_lease_columns(engine) -> None:
+    """Add FEA lease columns on existing volumes. Not a migration framework."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    if "fea_jobs" not in inspector.get_table_names():
+        return
+    columns = {column["name"] for column in inspector.get_columns("fea_jobs")}
+    dialect = engine.dialect.name
+    timestamp_type = "TIMESTAMP WITH TIME ZONE" if dialect == "postgresql" else "TIMESTAMP"
+    statements: list[str] = []
+    if "lease_expires_at" not in columns:
+        statements.append(f"ALTER TABLE fea_jobs ADD COLUMN lease_expires_at {timestamp_type}")
+    if "claim_generation" not in columns:
+        statements.append("ALTER TABLE fea_jobs ADD COLUMN claim_generation INTEGER DEFAULT 0")
+    if not statements:
+        return
+    with engine.begin() as conn:
+        for statement in statements:
+            conn.execute(text(statement))

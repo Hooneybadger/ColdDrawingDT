@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
 
@@ -22,6 +23,7 @@ from cold_drawing_twin.orchestration.events import EventBus
 from cold_drawing_twin.observability.metrics import fea_job_duration_seconds, fea_jobs_total
 from cold_drawing_twin.orchestration.evaluation import EvaluationService
 from cold_drawing_twin.orchestration.outbox import (
+    ensure_unpublished_outbox,
     mark_outbox_published,
     record_outbox_error,
     unpublished_outbox_job_ids,
@@ -80,16 +82,31 @@ def dispatch_fea_jobs(settings: Settings, job_ids: list[str] | None = None) -> l
         session.close()
 
 
-def claim_queued_fea_job(session: Session, job_id: str) -> FeaJobRow | None:
+LEASE_GRACE_S = 60
+
+
+def _lease_seconds(settings: Settings | None = None) -> int:
+    timeout = settings.fea_job_timeout_s if settings is not None else 600
+    return int(timeout) + LEASE_GRACE_S
+
+
+def claim_queued_fea_job(session: Session, job_id: str, *, lease_s: int | None = None) -> FeaJobRow | None:
     """Atomically take QUEUED -> RUNNING. A second worker gets None."""
     job = session.get(FeaJobRow, job_id)
     if job is None:
         raise KeyError(job_id)
     now = utc_now()
+    generation = int(job.claim_generation or 0) + 1
+    lease_expires = now + timedelta(seconds=lease_s if lease_s is not None else _lease_seconds())
     result = session.execute(
         update(FeaJobRow)
         .where(FeaJobRow.job_id == job_id, FeaJobRow.status == FeaJobStatus.QUEUED.value)
-        .values(status=FeaJobStatus.RUNNING.value, updated_at=now)
+        .values(
+            status=FeaJobStatus.RUNNING.value,
+            updated_at=now,
+            claim_generation=generation,
+            lease_expires_at=lease_expires,
+        )
     )
     session.flush()
     session.refresh(job)
@@ -99,12 +116,13 @@ def claim_queued_fea_job(session: Session, job_id: str) -> FeaJobRow | None:
 
 
 def run_fea_job(session: Session, job_id: str, settings: Settings, events: EventBus, twin: TwinStore) -> FeaJobRow:
-    job = claim_queued_fea_job(session, job_id)
+    job = claim_queued_fea_job(session, job_id, lease_s=_lease_seconds(settings))
     if job is None:
         existing = session.get(FeaJobRow, job_id)
         if existing is None:
             raise KeyError(job_id)
         return existing
+    generation = int(job.claim_generation or 0)
     evaluation = session.get(EvaluationRow, job.evaluation_id)
     snapshot = session.get(SnapshotRow, job.snapshot_id)
     if evaluation is None or snapshot is None:
@@ -118,10 +136,15 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
 
     work_dir = Path(settings.openradioss_work_dir) / job.job_id
     job.work_dir = str(work_dir)
+    session.flush()
     features = features_from_mapping(snapshot.features)
     started = perf_counter()
     result = run_case(features, work_dir, job.job_id, run_solver=True, settings=settings)
     fea_job_duration_seconds.observe(perf_counter() - started)
+    session.refresh(job)
+    if int(job.claim_generation or 0) != generation:
+        LOGGER.warning("FEA job %s lost its lease; dropping this worker result", job_id)
+        return job
     job.metrics = result["metrics"]
     identity = (result.get("metrics") or {}).get("solver_identity") or {}
     if identity.get("version"):
@@ -250,3 +273,72 @@ def _finalize_from_fea(
     job.updated_at = utc_now()
     twin.record_fea_job(evaluation.asset_id, job.job_id, active=False, operational=operational)
     session.flush()
+
+
+def _as_utc(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value
+
+
+def _lease_expired(job: FeaJobRow, now: datetime, timeout_s: int) -> bool:
+    expires = _as_utc(job.lease_expires_at)
+    if expires is not None:
+        return expires <= now
+    updated = _as_utc(job.updated_at)
+    if updated is None:
+        return True
+    return (now - updated).total_seconds() > timeout_s + LEASE_GRACE_S
+
+
+def reclaim_expired_running_fea_jobs(
+    session: Session,
+    settings: Settings,
+    events: EventBus,
+    twin: TwinStore,
+    *,
+    now: datetime | None = None,
+) -> dict[str, list[str]]:
+    """Recover RUNNING jobs whose lease expired. Does not invent a solver result."""
+    current = now or utc_now()
+    timeout_s = int(settings.fea_job_timeout_s)
+    running = session.query(FeaJobRow).filter(FeaJobRow.status == FeaJobStatus.RUNNING.value).all()
+    requeued: list[str] = []
+    timed_out: list[str] = []
+    for job in running:
+        if not _lease_expired(job, current, timeout_s):
+            continue
+        job.claim_generation = int(job.claim_generation or 0) + 1
+        job.lease_expires_at = None
+        if not job.work_dir:
+            job.status = FeaJobStatus.QUEUED.value
+            job.updated_at = current
+            ensure_unpublished_outbox(session, job.job_id, force_new=True)
+            requeued.append(job.job_id)
+            continue
+        job.status = FeaJobStatus.TIMEOUT.value
+        job.error = "lease expired while RUNNING"
+        job.updated_at = current
+        evaluation = session.get(EvaluationRow, job.evaluation_id)
+        snapshot = session.get(SnapshotRow, job.snapshot_id)
+        if evaluation is None or snapshot is None:
+            timed_out.append(job.job_id)
+            continue
+        operational = evaluation.mode == EvaluationMode.OPERATIONAL.value
+        _finalize_from_fea(
+            session,
+            evaluation,
+            snapshot,
+            job,
+            DecisionVerdict.INCONCLUSIVE,
+            DecisionStatus.MANUAL_REVIEW,
+            EvaluationState.MANUAL_REVIEW,
+            twin,
+            events,
+            operational,
+        )
+        timed_out.append(job.job_id)
+    session.flush()
+    return {"requeued": requeued, "timed_out": timed_out}
