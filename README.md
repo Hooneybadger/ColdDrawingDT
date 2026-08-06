@@ -108,6 +108,8 @@ docker compose up -d
 | Reference LAW36 steel card `stainless_reference_v1` | Reference implementation |
 | Mill-calibrated plastic curve | Production calibration required |
 | FEA automatic SAFE/UNSAFE thresholds | Not implemented (`evaluator: unimplemented`; `required_thresholds: []`) |
+| Prometheus counters that the process actually increments | Implemented |
+| Twin age, FEA queue depth, GPU, stream sessions as live series | Not implemented |
 | Omniverse Kit runtime / WebRTC | Not implemented in this repository (host-side) |
 
 PINN `normalized_hardening_coefficient` is not a megapascal material property.

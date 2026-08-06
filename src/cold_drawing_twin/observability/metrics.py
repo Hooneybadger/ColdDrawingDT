@@ -14,9 +14,18 @@ pinn_results_total = Counter(
 )
 pinn_failures_total = Counter("pinn_failures_total", "PINN failures", ["reason"])
 fea_jobs_total = Counter("fea_jobs_total", "FEA jobs", ["status"])
+fea_job_duration_seconds = Histogram(
+    "fea_job_duration_seconds",
+    "FEA job wall time including preprocess and solver",
+)
 decisions_total = Counter("decisions_total", "Decisions", ["verdict"])
 manual_review_total = Counter("manual_review_total", "Manual review", ["reason"])
 twin_updates_total = Counter("twin_updates_total", "Twin updates", ["asset_id", "status"])
+evaluations_blocked_total = Counter(
+    "evaluations_blocked_total",
+    "Evaluations blocked before an automatic Decision",
+    ["reason"],
+)
 http_requests_total = Counter("http_requests_total", "HTTP requests", ["path", "method", "status"])
 
 

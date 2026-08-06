@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from time import perf_counter
 
 from sqlalchemy import update
 from sqlalchemy.orm import Session
@@ -18,6 +19,7 @@ from cold_drawing_twin.domain.types import (
     FeaJobStatus,
 )
 from cold_drawing_twin.orchestration.events import EventBus
+from cold_drawing_twin.observability.metrics import fea_job_duration_seconds, fea_jobs_total
 from cold_drawing_twin.orchestration.evaluation import EvaluationService
 from cold_drawing_twin.persistence.models import EvaluationRow, FeaJobRow, SnapshotRow
 from cold_drawing_twin.settings import Settings
@@ -96,11 +98,14 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     evaluation.updated_at = job.updated_at
     events.emit("FEA_JOB_STATE_CHANGED", {"job_id": job.job_id, "status": job.status})
     session.flush()
+    fea_jobs_total.labels(FeaJobStatus.RUNNING.value).inc()
 
     work_dir = Path(settings.openradioss_work_dir) / job.job_id
     job.work_dir = str(work_dir)
     features = features_from_mapping(snapshot.features)
+    started = perf_counter()
     result = run_case(features, work_dir, job.job_id, run_solver=True, settings=settings)
+    fea_job_duration_seconds.observe(perf_counter() - started)
     job.metrics = result["metrics"]
     job.quality = {"pass": result["quality_pass"], "reason": result["quality_reason"]}
     job.criterion_verdict = result["criterion_verdict"]
@@ -121,6 +126,7 @@ def run_fea_job(session: Session, job_id: str, settings: Settings, events: Event
     else:
         job.status = FeaJobStatus.SUCCEEDED.value
 
+    fea_jobs_total.labels(job.status).inc()
     events.emit("FEA_JOB_STATE_CHANGED", {"job_id": job.job_id, "status": job.status})
 
     if job.status in {FeaJobStatus.FAILED.value, FeaJobStatus.TIMEOUT.value}:

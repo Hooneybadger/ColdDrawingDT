@@ -39,7 +39,7 @@ flowchart TD
 | FEA job lifecycle | Database row plus queue |
 | FEA raw files | On-site artifact store |
 | Spatial factory | OpenUSD |
-| Metrics | Prometheus |
+| Metrics | Prometheus series listed as Implemented in [observability-reliability.md](observability-reliability.md) |
 
 ## Two check paths
 
