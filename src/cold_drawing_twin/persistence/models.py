@@ -48,8 +48,9 @@ class SnapshotRow(Base):
     snapshot_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     asset_id: Mapped[str] = mapped_column(String(64), index=True)
     captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    source_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    source_timestamp: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     ingest_timestamp: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    source_timestamp_provenance: Mapped[str] = mapped_column(String(32), default="measurement")
     source_state_version: Mapped[str] = mapped_column(String(64))
     features: Mapped[dict[str, Any]] = mapped_column(JSON)
     mode: Mapped[str] = mapped_column(String(32))
@@ -174,6 +175,8 @@ def _ensure_snapshot_timestamps(engine) -> None:
     """Add Snapshot time columns on existing volumes. Not a migration framework."""
     from sqlalchemy import inspect, text
 
+    from cold_drawing_twin.domain.lineage import SOURCE_TIMESTAMP_MEASUREMENT, SOURCE_TIMESTAMP_UNKNOWN
+
     inspector = inspect(engine)
     if "snapshots" not in inspector.get_table_names():
         return
@@ -181,17 +184,42 @@ def _ensure_snapshot_timestamps(engine) -> None:
     dialect = engine.dialect.name
     timestamp_type = "TIMESTAMP WITH TIME ZONE" if dialect == "postgresql" else "TIMESTAMP"
     statements: list[str] = []
-    if "source_timestamp" not in columns:
+    added_source = "source_timestamp" not in columns
+    if added_source:
         statements.append(f"ALTER TABLE snapshots ADD COLUMN source_timestamp {timestamp_type}")
     if "ingest_timestamp" not in columns:
         statements.append(f"ALTER TABLE snapshots ADD COLUMN ingest_timestamp {timestamp_type}")
-    if not statements:
-        return
+    added_provenance = "source_timestamp_provenance" not in columns
+    if added_provenance:
+        statements.append("ALTER TABLE snapshots ADD COLUMN source_timestamp_provenance VARCHAR(32)")
+    if statements:
+        with engine.begin() as conn:
+            for statement in statements:
+                conn.execute(text(statement))
     with engine.begin() as conn:
-        for statement in statements:
-            conn.execute(text(statement))
-        if "source_timestamp" not in columns:
-            conn.execute(text("UPDATE snapshots SET source_timestamp = captured_at WHERE source_timestamp IS NULL"))
+        if added_source:
+            conn.execute(
+                text(
+                    "UPDATE snapshots SET source_timestamp_provenance = :unknown "
+                    "WHERE source_timestamp_provenance IS NULL"
+                ),
+                {"unknown": SOURCE_TIMESTAMP_UNKNOWN},
+            )
+        elif added_provenance:
+            conn.execute(
+                text(
+                    "UPDATE snapshots SET source_timestamp_provenance = :unknown "
+                    "WHERE source_timestamp IS NULL"
+                ),
+                {"unknown": SOURCE_TIMESTAMP_UNKNOWN},
+            )
+            conn.execute(
+                text(
+                    "UPDATE snapshots SET source_timestamp_provenance = :measurement "
+                    "WHERE source_timestamp IS NOT NULL AND source_timestamp_provenance IS NULL"
+                ),
+                {"measurement": SOURCE_TIMESTAMP_MEASUREMENT},
+            )
 
 
 def _ensure_fea_lease_columns(engine) -> None:

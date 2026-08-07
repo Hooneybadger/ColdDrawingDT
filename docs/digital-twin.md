@@ -77,12 +77,15 @@ Clocks:
 
 | Field | Meaning |
 |---|---|
-| `source_timestamp` | OPC UA / measurement time |
+| `source_timestamp` | OPC UA / measurement time. Null on a legacy Snapshot that predates this field. |
+| `source_timestamp_provenance` | `measurement` if `source_timestamp` is a copied equipment clock. `unknown` if the historical source time was never stored. |
 | `ingest_timestamp` | Backend ingest of that Twin state |
 | `captured_at` | When this immutable Snapshot was frozen |
 | Decision `created_at` | When the Decision row was written |
 
-Lineage on both the fast path and the FEA path must keep the original `source_timestamp`. A Scenario copies it from the base Snapshot. Do not substitute `captured_at`.
+Lineage on both the fast path and the FEA path must keep the original `source_timestamp` when it is known. A Scenario copies it from the base Snapshot. Do not substitute `captured_at`. Do not present `unknown` provenance as a verified OPC UA timestamp.
+
+Startup `ALTER TABLE` adds the time columns on old volumes. It does **not** copy `captured_at` into `source_timestamp`. That copy would look like a measurement clock. Schema migration tooling (Alembic) is still future work.
 
 ## Freshness
 

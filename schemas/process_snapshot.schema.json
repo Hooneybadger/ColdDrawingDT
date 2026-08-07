@@ -22,9 +22,13 @@
       "description": "When the backend froze this immutable Snapshot."
     },
     "source_timestamp": {
+      "type": ["string", "null"],
+      "description": "OPC UA / measurement time copied from the Digital Twin. Null means the source time is unknown."
+    },
+    "source_timestamp_provenance": {
       "type": "string",
-      "format": "date-time",
-      "description": "OPC UA / measurement time copied from the Digital Twin."
+      "enum": ["measurement", "unknown"],
+      "description": "measurement is a copied equipment clock. unknown is a legacy Snapshot from before this field existed. Do not treat unknown as an OPC UA timestamp."
     },
     "ingest_timestamp": {
       "type": "string",

@@ -36,6 +36,8 @@ def test_e2e_fast_safe(settings):
     assert lineage["snapshot"]["source_timestamp"] == iso(twin_row.source_timestamp)
     assert lineage["snapshot"]["captured_at"] == iso(snapshot.captured_at)
     assert lineage["snapshot"]["captured_at"] != lineage["source_timestamp"]
+    assert lineage["snapshot"]["source_timestamp_provenance"] == "measurement"
+    assert snapshot.source_timestamp_provenance == "measurement"
 
 
 def test_e2e_unsafe_no_extra_fea(settings):
@@ -68,6 +70,7 @@ def test_e2e_need_fea_inconclusive_without_solver(settings):
     assert decision.lineage["snapshot"]["source_timestamp"] == iso(twin_row.source_timestamp)
     assert decision.lineage["snapshot"]["captured_at"] == iso(snapshot.captured_at)
     assert decision.lineage["snapshot"]["captured_at"] != decision.lineage["source_timestamp"]
+    assert decision.lineage["snapshot"]["source_timestamp_provenance"] == "measurement"
 
 
 def test_e2e_need_fea_from_released_adapter_out_of_range(settings):

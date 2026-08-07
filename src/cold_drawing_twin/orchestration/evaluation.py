@@ -10,7 +10,15 @@ from cold_drawing_twin.config_files import fea_criterion, fea_reference, routing
 from cold_drawing_twin.domain.features import ProcessFeatures, features_from_mapping
 from cold_drawing_twin.domain.freshness import is_stale, missing_required
 from cold_drawing_twin.domain.ids import new_id
-from cold_drawing_twin.domain.lineage import idempotency_hash, iso, lineage_record, snapshot_payload, utc_now
+from cold_drawing_twin.domain.lineage import (
+    SOURCE_TIMESTAMP_MEASUREMENT,
+    SOURCE_TIMESTAMP_UNKNOWN,
+    idempotency_hash,
+    iso,
+    lineage_record,
+    snapshot_payload,
+    utc_now,
+)
 from cold_drawing_twin.domain.routing import PinnResult, route
 from cold_drawing_twin.domain.types import (
     DecisionStatus,
@@ -109,7 +117,7 @@ class EvaluationService:
         asset_id: str,
         features: ProcessFeatures,
         source_state_version: str,
-        source_timestamp: datetime,
+        source_timestamp: datetime | None,
         ingest_timestamp: datetime | None,
         mode: EvaluationMode,
         operational: bool,
@@ -122,6 +130,9 @@ class EvaluationService:
             captured_at=now,
             source_timestamp=source_timestamp,
             ingest_timestamp=ingest_timestamp,
+            source_timestamp_provenance=(
+                SOURCE_TIMESTAMP_MEASUREMENT if source_timestamp is not None else SOURCE_TIMESTAMP_UNKNOWN
+            ),
             source_state_version=source_state_version,
             features=features.as_dict(),
             mode=mode.value,

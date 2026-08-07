@@ -4,6 +4,9 @@ from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Any
 
+SOURCE_TIMESTAMP_MEASUREMENT = "measurement"
+SOURCE_TIMESTAMP_UNKNOWN = "unknown"
+
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -39,12 +42,16 @@ def idempotency_hash(
 
 
 def snapshot_payload(snapshot: Any) -> dict[str, Any]:
-    """Times on an immutable Snapshot. source_timestamp is the measurement clock."""
+    """Times on an immutable Snapshot. source_timestamp is the measurement clock when known."""
+    provenance = getattr(snapshot, "source_timestamp_provenance", None) or (
+        SOURCE_TIMESTAMP_MEASUREMENT if getattr(snapshot, "source_timestamp", None) is not None else SOURCE_TIMESTAMP_UNKNOWN
+    )
     return {
         "snapshot_id": snapshot.snapshot_id,
         "asset_id": snapshot.asset_id,
         "captured_at": iso(snapshot.captured_at),
         "source_timestamp": iso(snapshot.source_timestamp),
+        "source_timestamp_provenance": provenance,
         "ingest_timestamp": iso(getattr(snapshot, "ingest_timestamp", None)),
         "source_state_version": snapshot.source_state_version,
         "features": snapshot.features,

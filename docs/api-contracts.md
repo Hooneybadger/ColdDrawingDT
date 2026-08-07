@@ -21,16 +21,17 @@ Source: [config/pinn_contract.yaml](../config/pinn_contract.yaml) and [schemas/p
 
 ## Snapshot times
 
-[examples/process_snapshot.example.json](examples/process_snapshot.example.json) keeps four clocks:
+[examples/process_snapshot.example.json](examples/process_snapshot.example.json) keeps these clocks:
 
 | Field | Clock |
 |---|---|
-| `source_timestamp` | OPC UA / measurement time |
+| `source_timestamp` | OPC UA / measurement time, or null when unknown |
+| `source_timestamp_provenance` | `measurement` or `unknown` |
 | `ingest_timestamp` | Backend ingest of Twin state |
 | `captured_at` | Snapshot freeze time |
 | Decision `created_at` | Decision write time |
 
-Fast-path and FEA Lineage both store the Snapshot `source_timestamp`. They must not replace it with `captured_at`.
+Fast-path and FEA Lineage both store the Snapshot `source_timestamp`. They must not replace it with `captured_at`. A null `source_timestamp` with provenance `unknown` is a legacy row, not a verified equipment clock.
 
 ## Evaluation request
 

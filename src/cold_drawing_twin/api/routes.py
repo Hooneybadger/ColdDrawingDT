@@ -222,6 +222,7 @@ def _evaluation_body(session: Session, row: EvaluationRow) -> dict:
             "asset_id": snapshot.asset_id,
             "captured_at": iso(snapshot.captured_at),
             "source_timestamp": iso(snapshot.source_timestamp),
+            "source_timestamp_provenance": snapshot.source_timestamp_provenance,
             "ingest_timestamp": iso(snapshot.ingest_timestamp),
             "source_state_version": snapshot.source_state_version,
             "features": snapshot.features,

@@ -3,6 +3,7 @@
   "asset_id": "BG.MIEUM.DRW.04",
   "captured_at": "2026-09-14T16:00:00Z",
   "source_timestamp": "2026-09-14T15:59:58Z",
+  "source_timestamp_provenance": "measurement",
   "ingest_timestamp": "2026-09-14T15:59:59Z",
   "source_state_version": "state-0001",
   "features": {
