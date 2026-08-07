@@ -44,7 +44,15 @@ GPU host:
 
 OpenRadioss may run in the worker container or on a solver host the worker calls. That choice needs an ADR when implemented.
 
-Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It writes the `QUEUED` job row and an unpublished `fea_outbox` row in one transaction, commits, then publishes the outbox to RabbitMQ. Two workers claim with `UPDATE ... WHERE status=QUEUED`. If publish fails, the outbox stays unpublished; `make fea-requeue` publishes those rows only. After claim the worker writes `work_dir`, commits `RUNNING`, then renews `lease_expires_at` while the solver runs. Starter and Engine each use `fea_job_timeout_s`, so wall time can exceed one timeout. If a worker dies while `RUNNING`, `make fea-reclaim` inspects the lease. No `work_dir` returns the row to `QUEUED` and writes a new unpublished outbox row. A started work directory becomes `TIMEOUT` / `INCONCLUSIVE` so a second Engine is not launched on the same files. A late worker whose `claim_generation` no longer matches drops its result.
+Set `FEA_EXECUTION=celery` on `api` and `fea-worker` (already in `compose.yaml`). The API process must not run the Engine. It writes the `QUEUED` job row and an unpublished `fea_outbox` row in one transaction, commits, then publishes the outbox to RabbitMQ. Two workers claim with `UPDATE ... WHERE status=QUEUED`. If publish fails, the outbox stays unpublished; `make fea-requeue` publishes those rows only.
+
+Timeouts are not one number:
+
+- `fea_job_timeout_s` (`FEA_JOB_TIMEOUT_S`) is the maximum for **one** OpenRadioss phase. Starter and Engine each get that budget.
+- Celery soft/hard limits are computed from both phases plus conversion and a small orchestration grace (`fea_task_soft_limit_s` / `fea_task_hard_limit_s`). A healthy Starter that uses most of its phase budget must still leave time for Engine.
+- After claim the worker writes `work_dir`, commits `RUNNING`, then renews `lease_expires_at` (heartbeat) while the solver runs. The initial lease matches the Celery hard limit.
+- A Celery **soft** timeout on a `RUNNING` job becomes `TIMEOUT` / `INCONCLUSIVE` / `MANUAL_REVIEW`. It does not write SAFE.
+- A Celery **hard** kill cannot finalize. `make fea-reclaim` inspects the lease. No `work_dir` returns the row to `QUEUED` and writes a new unpublished outbox row. A started work directory becomes `TIMEOUT` / `INCONCLUSIVE` so a second Engine is not launched on the same files. A late worker whose `claim_generation` no longer matches drops its result.
 
 Kafka, Kubernetes, and Temporal are out of scope here.
 

@@ -13,6 +13,7 @@ from cold_drawing_twin.orchestration.fea import (
     reclaim_expired_running_fea_jobs,
     renew_fea_lease,
     run_fea_job,
+    timeout_running_fea_job,
 )
 from cold_drawing_twin.orchestration.outbox import unpublished_outbox_job_ids
 from cold_drawing_twin.persistence.models import DecisionRow, FeaJobRow, FeaOutboxRow
@@ -343,3 +344,34 @@ def test_heartbeat_keeps_live_solver_off_reclaim(tmp_path, monkeypatch):
     )
     assert seen["reclaim"] == {"requeued": [], "timed_out": []}
     assert finished.status != "TIMEOUT"
+
+
+def test_worker_outer_timeout_is_inconclusive_not_safe(tmp_path):
+    settings = _celery_settings(tmp_path)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    row = evaluation.start_operational(PRIMARY)
+    job = session.query(FeaJobRow).filter_by(evaluation_id=row.evaluation_id).one()
+    claimed = claim_queued_fea_job(session, job.job_id, lease_s=30)
+    claimed.work_dir = str(tmp_path / "started")
+    session.flush()
+    wrote = timeout_running_fea_job(
+        session,
+        claimed,
+        events,
+        twin,
+        error="Celery soft time limit while RUNNING",
+    )
+    session.refresh(job)
+    decision = session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).one()
+    assert wrote is True
+    assert job.status == "TIMEOUT"
+    assert decision.verdict == "INCONCLUSIVE"
+    assert decision.status == "MANUAL_REVIEW"
+    assert decision.verdict != "SAFE"
+    again = timeout_running_fea_job(session, job, events, twin, error="repeat")
+    assert again is False
+    assert session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).count() == 1
+
