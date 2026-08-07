@@ -63,6 +63,15 @@ required FEA -> FAILED or TIMEOUT or INCONCLUSIVE -> MANUAL_REVIEW
 
 See [examples/decision.example.json](examples/decision.example.json) and [examples/decision_fea.example.json](examples/decision_fea.example.json).
 
+Timeouts are separate:
+
+- `fea_job_timeout_s` is one OpenRadioss phase (Starter or Engine)
+- Celery soft/hard limits cover both phases plus conversion
+- The FEA lease and heartbeat say whether the worker is still alive
+- `make fea-reclaim` recovers a dead `RUNNING` job from the lease
+
+Equipment `source_quality` is not FEA numerical quality and not the unimplemented safety criterion.
+
 ## Layer jobs
 
 ### Edge adapter

@@ -98,6 +98,7 @@ docker compose up -d
 |---|---|
 | HTTP API, Twin store, Snapshot, routing-v1 | Implemented |
 | FEA job queue (`FEA_EXECUTION=celery` commit-then-publish, outbox, atomic claim, lease heartbeat, `fea-requeue`) | Implemented |
+| Celery worker limit vs OpenRadioss phase timeout | Implemented (task limit covers Starter and Engine) |
 | Transactional outbox for FEA publish | Implemented (`fea_outbox`) |
 | Released PINN adapter (`predict.py` + `pinn.pt`) | Implemented |
 | OPC UA map as source of truth, source timestamp, quality | Implemented |
