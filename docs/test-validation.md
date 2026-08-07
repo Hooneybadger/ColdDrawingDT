@@ -2,7 +2,9 @@
 
 Terms: [glossary](glossary.md).
 
-This version runs contract checks and pytest. Default CI does not run OpenRadioss and does not call `predict.py`. Parser tests use labeled fixtures. `fea-integration.yml` and `pinn-integration.yml` are manual workflows for actual solver and released PINN runs.
+`make test-pinn` / `pinn-integration.yml` fetch the released bundle and call `predict.py`. Missing `predict.py` or `pinn.pt` fails the job.
+
+`fea-integration.yml` installs OpenRadioss, runs `make fea-smoke` (Starter and Engine), then `scripts/summarize_fea_result.py`. That script fails if `result.json` is missing, `solver_status` is not `SUCCEEDED`, or termination is not `NORMAL_TERMINATION`. `criterion_verdict=INCONCLUSIVE` is expected and does not fail the job. `quality_pass` is printed from `result.json`; it is evidence, not a safety verdict.
 
 ## Current checks
 

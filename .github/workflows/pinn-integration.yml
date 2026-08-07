@@ -25,6 +25,11 @@ jobs:
           python -m pip install -e ".[dev,pinn]"
       - name: Fetch released PINN bundle
         run: make fetch-pinn
+      - name: Require predict.py and pinn.pt
+        run: |
+          test -f models/cold-drawing-pinn-poc/predict.py
+          test -f models/cold-drawing-pinn-poc/pinn.pt
+          ls -l models/cold-drawing-pinn-poc/predict.py models/cold-drawing-pinn-poc/pinn.pt
       - name: Released in-domain PINN
         env:
           PYTHONPATH: src:.
