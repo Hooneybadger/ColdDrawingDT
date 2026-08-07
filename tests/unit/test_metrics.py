@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
+from fastapi.testclient import TestClient
 from prometheus_client import REGISTRY
 
+from cold_drawing_twin.api.app import create_app
 from cold_drawing_twin.orchestration.container import build_container
 from cold_drawing_twin.simulation.solver.openradioss import SolverError
 from tests.conftest import DEMO, PRIMARY, make_pinn
@@ -103,3 +105,45 @@ def test_fea_timeout_manual_review_reason(settings, monkeypatch):
     evaluation.start_operational(PRIMARY)
     after = REGISTRY.get_sample_value("manual_review_total", {"reason": "fea_timeout"}) or 0.0
     assert after >= before + 1
+
+
+def test_http_metrics_use_route_template_not_resource_ids(settings):
+    container = build_container(settings=settings, pinn=make_pinn("SAFE"))
+    session = container.open()
+    twin, _events, _evaluation = container.services(session)
+    twin.put_process_state(
+        PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD", state_version="state-0001"
+    )
+    session.commit()
+    client = TestClient(create_app(container))
+    first = client.post(
+        f"/assets/{PRIMARY}/evaluations",
+        json={"mode": "OPERATIONAL", "expected_state_version": "state-0001"},
+    )
+    twin.put_process_state(
+        PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD", state_version="state-0002"
+    )
+    session.commit()
+    second = client.post(
+        f"/assets/{PRIMARY}/evaluations",
+        json={"mode": "OPERATIONAL", "expected_state_version": "state-0002"},
+    )
+    assert first.status_code == 200
+    assert second.status_code == 200
+    id_one = first.json()["evaluation_id"]
+    id_two = second.json()["evaluation_id"]
+    assert id_one != id_two
+    labels = {"path": "/evaluations/{evaluation_id}", "method": "GET", "status": "200"}
+    before = REGISTRY.get_sample_value("http_requests_total", labels) or 0.0
+    assert client.get(f"/evaluations/{id_one}").status_code == 200
+    assert client.get(f"/evaluations/{id_two}").status_code == 200
+    after = REGISTRY.get_sample_value("http_requests_total", labels) or 0.0
+    assert after >= before + 2
+    raw_one = REGISTRY.get_sample_value(
+        "http_requests_total", {"path": f"/evaluations/{id_one}", "method": "GET", "status": "200"}
+    )
+    raw_two = REGISTRY.get_sample_value(
+        "http_requests_total", {"path": f"/evaluations/{id_two}", "method": "GET", "status": "200"}
+    )
+    assert raw_one is None
+    assert raw_two is None

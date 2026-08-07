@@ -10,7 +10,7 @@ These counters, histograms, and gauges come from the API and evaluation process:
 
 | Series | When |
 |---|---|
-| `http_requests_total{path,method,status}` | After each HTTP response |
+| `http_requests_total{path,method,status}` | After each HTTP response. `path` is the FastAPI route template (`/evaluations/{evaluation_id}`), not the raw URL with IDs. |
 | `twin_updates_total{asset_id,status}` | Operational Twin write (`status` is OPC UA quality) |
 | `pinn_inference_duration_seconds` | Around `PinnAdapter.predict` |
 | `pinn_results_total{verdict,model_version}` | Parsed PINN result |
