@@ -35,6 +35,30 @@ Use these names in every document.
 | `INCONCLUSIVE` | FEA ran but numerical quality or metrics are not enough. |
 | `MANUAL_REVIEW` | Automatic Decision is blocked. A person must review. |
 
+## Clocks
+
+These are different times. Do not mix them.
+
+| Name | Meaning |
+|---|---|
+| Source timestamp | OPC UA / measurement time on Twin and Snapshot. Null when unknown. |
+| Source timestamp provenance | `measurement` when the source clock was copied. `unknown` on a legacy Snapshot that never stored it. |
+| Ingest timestamp | Backend ingest of that Twin state. |
+| Snapshot `captured_at` | Immutable freeze time of the Snapshot. Not a substitute for source time. |
+| Decision timestamp | When the Decision row was written. |
+
+## Timeouts
+
+These are different budgets. Do not mix them.
+
+| Name | Meaning |
+|---|---|
+| OpenRadioss phase timeout | `fea_job_timeout_s`. Maximum for one Starter or Engine run. |
+| Celery worker outer timeout | Soft/hard limits covering Starter + Engine + conversion + grace. |
+| FEA lease expiration | When a `RUNNING` job may be reclaimed if the worker is silent. |
+| Lease heartbeat | Worker renews `lease_expires_at` while the solver still runs. |
+| Reclaim | `make fea-reclaim` recovers an expired lease without a second Engine on the same files. |
+
 ## Quality words
 
 These are different clocks and gates. Do not mix them.

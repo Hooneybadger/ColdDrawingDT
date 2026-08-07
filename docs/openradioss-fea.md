@@ -36,6 +36,10 @@ The workpiece starts in the cylindrical inlet, short of the cone corner, as an u
 
 Demo numbers: `reduction_ratio = 0.3`, `initial_radius_m = 0.01` so `r_f = 0.01 * sqrt(0.7) ≈ 0.00837 m`.
 
+## Timeouts
+
+`fea_job_timeout_s` is one OpenRadioss phase. Starter and Engine each get that budget. Celery soft/hard limits cover both phases plus conversion. The FEA lease and heartbeat track worker liveness, not the per-phase solver budget. See [deployment.md](deployment.md).
+
 ## Quality and safety
 
 Solver completion is not a safety verdict. `quasi-static-quality-v1` requires normal termination, required files, finite required metrics, and minimum mesh counts. OpenRadioss clips listing `ERROR` at 99.9%; a saturated clip fails the gate because the solver did not report a usable energy balance. No mill kinetic/internal energy ratio cut-off is invented.
