@@ -51,6 +51,8 @@ class SnapshotRow(Base):
     source_timestamp: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     ingest_timestamp: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     source_timestamp_provenance: Mapped[str] = mapped_column(String(32), default="measurement")
+    source_quality: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    input_quality: Mapped[str | None] = mapped_column(String(32), nullable=True)
     source_state_version: Mapped[str] = mapped_column(String(64))
     features: Mapped[dict[str, Any]] = mapped_column(JSON)
     mode: Mapped[str] = mapped_column(String(32))
@@ -158,6 +160,7 @@ def make_session_factory(url: str):
     engine = make_engine(url)
     Base.metadata.create_all(engine)
     _ensure_snapshot_timestamps(engine)
+    _ensure_snapshot_quality_columns(engine)
     _ensure_fea_lease_columns(engine)
     if url.startswith("postgresql"):
         with engine.begin() as conn:
@@ -220,6 +223,26 @@ def _ensure_snapshot_timestamps(engine) -> None:
                 ),
                 {"measurement": SOURCE_TIMESTAMP_MEASUREMENT},
             )
+
+
+def _ensure_snapshot_quality_columns(engine) -> None:
+    """Add Snapshot quality provenance on existing volumes. Not a migration framework."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    if "snapshots" not in inspector.get_table_names():
+        return
+    columns = {column["name"] for column in inspector.get_columns("snapshots")}
+    statements: list[str] = []
+    if "source_quality" not in columns:
+        statements.append("ALTER TABLE snapshots ADD COLUMN source_quality VARCHAR(32)")
+    if "input_quality" not in columns:
+        statements.append("ALTER TABLE snapshots ADD COLUMN input_quality VARCHAR(32)")
+    if not statements:
+        return
+    with engine.begin() as conn:
+        for statement in statements:
+            conn.execute(text(statement))
 
 
 def _ensure_fea_lease_columns(engine) -> None:

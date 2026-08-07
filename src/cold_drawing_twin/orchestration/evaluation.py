@@ -11,6 +11,8 @@ from cold_drawing_twin.domain.features import ProcessFeatures, features_from_map
 from cold_drawing_twin.domain.freshness import is_stale, missing_required
 from cold_drawing_twin.domain.ids import new_id
 from cold_drawing_twin.domain.lineage import (
+    SNAPSHOT_INPUT_MEASURED,
+    SNAPSHOT_INPUT_SCENARIO_ASSUMED,
     SOURCE_TIMESTAMP_MEASUREMENT,
     SOURCE_TIMESTAMP_UNKNOWN,
     idempotency_hash,
@@ -79,7 +81,8 @@ class EvaluationService:
             ingest_timestamp=row.ingest_timestamp,
             mode=EvaluationMode.OPERATIONAL,
             operational=True,
-            quality=row.quality,
+            source_quality=row.quality,
+            input_quality=SNAPSHOT_INPUT_MEASURED,
         )
 
     def start_scenario(self, base_snapshot_id: str, overrides: dict[str, float]) -> tuple[ScenarioRow, EvaluationRow]:
@@ -97,7 +100,8 @@ class EvaluationService:
             ingest_timestamp=base.ingest_timestamp,
             mode=EvaluationMode.SCENARIO,
             operational=False,
-            quality="GOOD",
+            source_quality=base.source_quality or "UNCERTAIN",
+            input_quality=SNAPSHOT_INPUT_SCENARIO_ASSUMED,
         )
         scenario = ScenarioRow(
             scenario_id=new_id("scn"),
@@ -121,7 +125,8 @@ class EvaluationService:
         ingest_timestamp: datetime | None,
         mode: EvaluationMode,
         operational: bool,
-        quality: str,
+        source_quality: str,
+        input_quality: str,
     ) -> EvaluationRow:
         now = self.now()
         snapshot = SnapshotRow(
@@ -133,6 +138,8 @@ class EvaluationService:
             source_timestamp_provenance=(
                 SOURCE_TIMESTAMP_MEASUREMENT if source_timestamp is not None else SOURCE_TIMESTAMP_UNKNOWN
             ),
+            source_quality=source_quality,
+            input_quality=input_quality,
             source_state_version=source_state_version,
             features=features.as_dict(),
             mode=mode.value,
@@ -150,7 +157,8 @@ class EvaluationService:
         evaluation.state = EvaluationState.SNAPSHOT_READY.value
         self.events.emit("EVALUATION_STATE_CHANGED", {"evaluation_id": evaluation.evaluation_id, "state": evaluation.state})
 
-        missing = missing_required(features) or quality != "GOOD"
+        routing_quality = source_quality if input_quality == SNAPSHOT_INPUT_MEASURED else "GOOD"
+        missing = missing_required(features) or routing_quality != "GOOD"
         stale = is_stale(source_timestamp, now=now)
         if missing:
             evaluations_blocked_total.labels("missing_or_quality").inc()

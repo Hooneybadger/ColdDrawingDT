@@ -38,6 +38,16 @@
     "source_state_version": {
       "type": "string"
     },
+    "source_quality": {
+      "type": ["string", "null"],
+      "enum": ["GOOD", "BAD", "UNCERTAIN", null],
+      "description": "Equipment source quality frozen with the Snapshot. Not FEA numerical quality."
+    },
+    "input_quality": {
+      "type": ["string", "null"],
+      "enum": ["MEASURED", "SCENARIO_ASSUMED", null],
+      "description": "MEASURED is live equipment quality. SCENARIO_ASSUMED means evaluation is a what-if and must not be read as a verified GOOD reading."
+    },
     "features": {
       "type": "object",
       "additionalProperties": false,
