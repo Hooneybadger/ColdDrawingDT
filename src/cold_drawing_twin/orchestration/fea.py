@@ -29,7 +29,8 @@ from cold_drawing_twin.orchestration.outbox import (
     record_outbox_error,
     unpublished_outbox_job_ids,
 )
-from cold_drawing_twin.persistence.models import EvaluationRow, FeaJobRow, SnapshotRow
+from cold_drawing_twin.domain.timeouts import fea_task_hard_limit_s
+from cold_drawing_twin.persistence.models import DecisionRow, EvaluationRow, FeaJobRow, SnapshotRow
 from cold_drawing_twin.settings import Settings
 from cold_drawing_twin.simulation.run import run_case
 from cold_drawing_twin.twin.store import TwinStore
@@ -88,8 +89,10 @@ LEASE_HEARTBEAT_S = 30.0
 
 
 def _lease_seconds(settings: Settings | None = None) -> int:
-    timeout = settings.fea_job_timeout_s if settings is not None else 600
-    return int(timeout) + LEASE_GRACE_S
+    """Initial lease covers the Celery outer budget; heartbeat extends it while RUNNING."""
+    if settings is None:
+        settings = Settings(_env_file=None)
+    return fea_task_hard_limit_s(settings)
 
 
 def _heartbeat_interval_s(lease_s: int) -> float:
@@ -366,6 +369,47 @@ def _as_utc(value: datetime | None) -> datetime | None:
     return value
 
 
+def timeout_running_fea_job(
+    session: Session,
+    job: FeaJobRow,
+    events: EventBus,
+    twin: TwinStore,
+    *,
+    error: str,
+    now: datetime | None = None,
+) -> bool:
+    """TIMEOUT / INCONCLUSIVE / MANUAL_REVIEW. Does not write SAFE or a second Decision."""
+    existing = session.query(DecisionRow).filter(DecisionRow.evaluation_id == job.evaluation_id).first()
+    if existing is not None:
+        return False
+    current = now or utc_now()
+    job.claim_generation = int(job.claim_generation or 0) + 1
+    job.lease_expires_at = None
+    job.status = FeaJobStatus.TIMEOUT.value
+    job.error = error
+    job.updated_at = current
+    evaluation = session.get(EvaluationRow, job.evaluation_id)
+    snapshot = session.get(SnapshotRow, job.snapshot_id)
+    if evaluation is None or snapshot is None:
+        session.flush()
+        return True
+    operational = evaluation.mode == EvaluationMode.OPERATIONAL.value
+    _finalize_from_fea(
+        session,
+        evaluation,
+        snapshot,
+        job,
+        DecisionVerdict.INCONCLUSIVE,
+        DecisionStatus.MANUAL_REVIEW,
+        EvaluationState.MANUAL_REVIEW,
+        twin,
+        events,
+        operational,
+    )
+    session.flush()
+    return True
+
+
 def _lease_expired(job: FeaJobRow, now: datetime, timeout_s: int) -> bool:
     expires = _as_utc(job.lease_expires_at)
     if expires is not None:
@@ -386,41 +430,28 @@ def reclaim_expired_running_fea_jobs(
 ) -> dict[str, list[str]]:
     """Recover RUNNING jobs whose lease expired. Does not invent a solver result."""
     current = now or utc_now()
-    timeout_s = int(settings.fea_job_timeout_s)
+    timeout_s = fea_task_hard_limit_s(settings)
     running = session.query(FeaJobRow).filter(FeaJobRow.status == FeaJobStatus.RUNNING.value).all()
     requeued: list[str] = []
     timed_out: list[str] = []
     for job in running:
         if not _lease_expired(job, current, timeout_s):
             continue
-        job.claim_generation = int(job.claim_generation or 0) + 1
-        job.lease_expires_at = None
         if not job.work_dir:
+            job.claim_generation = int(job.claim_generation or 0) + 1
+            job.lease_expires_at = None
             job.status = FeaJobStatus.QUEUED.value
             job.updated_at = current
             ensure_unpublished_outbox(session, job.job_id, force_new=True)
             requeued.append(job.job_id)
             continue
-        job.status = FeaJobStatus.TIMEOUT.value
-        job.error = "lease expired while RUNNING"
-        job.updated_at = current
-        evaluation = session.get(EvaluationRow, job.evaluation_id)
-        snapshot = session.get(SnapshotRow, job.snapshot_id)
-        if evaluation is None or snapshot is None:
-            timed_out.append(job.job_id)
-            continue
-        operational = evaluation.mode == EvaluationMode.OPERATIONAL.value
-        _finalize_from_fea(
+        timeout_running_fea_job(
             session,
-            evaluation,
-            snapshot,
             job,
-            DecisionVerdict.INCONCLUSIVE,
-            DecisionStatus.MANUAL_REVIEW,
-            EvaluationState.MANUAL_REVIEW,
-            twin,
             events,
-            operational,
+            twin,
+            error="lease expired while RUNNING",
+            now=current,
         )
         timed_out.append(job.job_id)
     session.flush()

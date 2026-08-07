@@ -7,6 +7,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from cold_drawing_twin.domain.timeouts import FEA_CONVERSION_TOOL_TIMEOUT_S
+
 
 class SolverError(RuntimeError):
     def __init__(self, message: str, status: str = "FAILED") -> None:
@@ -64,7 +66,7 @@ def _convert_outputs(engine_bin: str, work_dir: Path, env: dict[str, str]) -> No
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=FEA_CONVERSION_TOOL_TIMEOUT_S,
             )
     anim_tool = _find_tool(parent, "anim_to_vtk")
     if anim_tool is None:
@@ -78,7 +80,7 @@ def _convert_outputs(engine_bin: str, work_dir: Path, env: dict[str, str]) -> No
             check=False,
             capture_output=True,
             text=True,
-            timeout=60,
+            timeout=FEA_CONVERSION_TOOL_TIMEOUT_S,
         )
         stdout = completed.stdout or ""
         if stdout.lstrip().startswith("# vtk"):

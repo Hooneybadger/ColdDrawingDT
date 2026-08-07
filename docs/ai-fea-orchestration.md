@@ -88,8 +88,11 @@ Worker rules for long jobs:
 - Persist the job row and unpublished `fea_outbox` row, then **commit**, then publish
 - Idempotent tasks (a second delivery of a non-`QUEUED` job is a no-op)
 - Subprocess timeout and process-group cleanup
-- Celery `task_time_limit` sits above `fea_job_timeout_s`
+- `fea_job_timeout_s` is one OpenRadioss phase (Starter or Engine), not the whole worker
+- Celery soft/hard limits cover Starter + Engine + conversion + orchestration grace
 - Commit `RUNNING` with `work_dir` before the solver, then heartbeat the lease until it returns
+- Soft task timeout on a `RUNNING` job is `TIMEOUT` / `INCONCLUSIVE` / `MANUAL_REVIEW`
+- Hard kill leaves `RUNNING`; `make fea-reclaim` recovers from the expired lease
 
 HTTP and `make demo-fea` with `FEA_EXECUTION=celery` return `FEA_QUEUED` without waiting for OpenRadioss. The worker writes the Decision. `FEA_EXECUTION=inline` (local default) still runs the solver in-process after the job row is flushed.
 
