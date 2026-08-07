@@ -1,8 +1,9 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from prometheus_client import REGISTRY
 
 from cold_drawing_twin.orchestration.container import build_container
+from cold_drawing_twin.simulation.solver.openradioss import SolverError
 from tests.conftest import DEMO, PRIMARY, make_pinn
 
 
@@ -56,3 +57,49 @@ def test_scrape_sets_twin_age_and_queue_depth(tmp_path):
     assert age is not None and age >= 5
     assert depth == 1.0
     assert running == 0.0
+
+
+def test_manual_review_reason_is_cause_not_verdict(settings):
+    before_stale = REGISTRY.get_sample_value("manual_review_total", {"reason": "stale"}) or 0.0
+    before_verdict = REGISTRY.get_sample_value("manual_review_total", {"reason": "MANUAL_REVIEW"}) or 0.0
+    container = build_container(settings=settings, pinn=make_pinn("SAFE"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(
+        PRIMARY,
+        DEMO,
+        source_timestamp=datetime.now(timezone.utc) - timedelta(minutes=10),
+        quality="GOOD",
+    )
+    evaluation.start_operational(PRIMARY)
+    after_stale = REGISTRY.get_sample_value("manual_review_total", {"reason": "stale"}) or 0.0
+    after_verdict = REGISTRY.get_sample_value("manual_review_total", {"reason": "MANUAL_REVIEW"}) or 0.0
+    assert after_stale >= before_stale + 1
+    assert after_verdict == before_verdict
+
+
+def test_bad_quality_manual_review_reason(settings):
+    before = REGISTRY.get_sample_value("manual_review_total", {"reason": "bad_quality"}) or 0.0
+    container = build_container(settings=settings, pinn=make_pinn("SAFE"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="BAD")
+    evaluation.start_operational(PRIMARY)
+    after = REGISTRY.get_sample_value("manual_review_total", {"reason": "bad_quality"}) or 0.0
+    assert after >= before + 1
+
+
+def test_fea_timeout_manual_review_reason(settings, monkeypatch):
+    before = REGISTRY.get_sample_value("manual_review_total", {"reason": "fea_timeout"}) or 0.0
+
+    def boom(*_args, **_kwargs):
+        raise SolverError("engine exceeded 1s", "TIMEOUT")
+
+    monkeypatch.setattr("cold_drawing_twin.simulation.run.run_openradioss", boom)
+    container = build_container(settings=settings, pinn=make_pinn("NEED_FEA"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="GOOD")
+    evaluation.start_operational(PRIMARY)
+    after = REGISTRY.get_sample_value("manual_review_total", {"reason": "fea_timeout"}) or 0.0
+    assert after >= before + 1

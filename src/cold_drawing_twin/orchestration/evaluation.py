@@ -158,14 +158,19 @@ class EvaluationService:
         self.events.emit("EVALUATION_STATE_CHANGED", {"evaluation_id": evaluation.evaluation_id, "state": evaluation.state})
 
         routing_quality = source_quality if input_quality == SNAPSHOT_INPUT_MEASURED else "GOOD"
-        missing = missing_required(features) or routing_quality != "GOOD"
+        missing_input = missing_required(features)
+        bad_quality = routing_quality != "GOOD"
+        missing = missing_input or bad_quality
         stale = is_stale(source_timestamp, now=now)
-        if missing:
-            evaluations_blocked_total.labels("missing_or_quality").inc()
+        if missing_input:
+            evaluations_blocked_total.labels("missing_input").inc()
+        elif bad_quality:
+            evaluations_blocked_total.labels("bad_quality").inc()
         if stale:
             evaluations_blocked_total.labels("stale").inc()
         pinn_result: PinnResult | None = None
         pinn_invalid = False
+        pinn_unavailable = False
         if not missing and not stale:
             evaluation.state = EvaluationState.PINN_RUNNING.value
             evaluation.updated_at = now
@@ -175,6 +180,7 @@ class EvaluationService:
                 pinn_result = self.pinn.predict(features)
             except PinnUnavailable:
                 pinn_invalid = True
+                pinn_unavailable = True
                 pinn_failures_total.labels("unavailable").inc()
             pinn_inference_duration_seconds.observe(perf_counter() - started)
             if pinn_result is not None:
@@ -242,6 +248,16 @@ class EvaluationService:
                 operational,
             )
         elif action == RoutingAction.MANUAL_REVIEW:
+            if missing_input:
+                review_reason = "missing_input"
+            elif bad_quality:
+                review_reason = "bad_quality"
+            elif stale:
+                review_reason = "stale"
+            elif pinn_unavailable:
+                review_reason = "pinn_unavailable"
+            else:
+                review_reason = "pinn_invalid"
             self._finalize(
                 evaluation,
                 snapshot,
@@ -252,6 +268,7 @@ class EvaluationService:
                 None,
                 lineage,
                 operational,
+                review_reason=review_reason,
             )
             evaluation.state = EvaluationState.MANUAL_REVIEW.value
         elif action == RoutingAction.REQUIRES_FEA:
@@ -336,6 +353,7 @@ class EvaluationService:
         fea_job_id: str | None,
         lineage: dict,
         operational: bool,
+        review_reason: str | None = None,
     ) -> DecisionRow:
         decision = DecisionRow(
             decision_id=new_id("dec"),
@@ -359,7 +377,7 @@ class EvaluationService:
         decision.lineage = lineage
         decisions_total.labels(verdict.value).inc()
         if status == DecisionStatus.MANUAL_REVIEW:
-            manual_review_total.labels(verdict.value).inc()
+            manual_review_total.labels(review_reason or "unspecified").inc()
         evaluation.state = (
             EvaluationState.MANUAL_REVIEW.value
             if status == DecisionStatus.MANUAL_REVIEW

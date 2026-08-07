@@ -15,11 +15,11 @@ These counters, histograms, and gauges come from the API and evaluation process:
 | `pinn_inference_duration_seconds` | Around `PinnAdapter.predict` |
 | `pinn_results_total{verdict,model_version}` | Parsed PINN result |
 | `pinn_failures_total{reason}` | `unavailable` or `invalid_verdict` |
-| `evaluations_blocked_total{reason}` | `missing_or_quality` or `stale` |
+| `evaluations_blocked_total{reason}` | `missing_input`, `bad_quality`, or `stale` |
 | `fea_jobs_total{status}` | New `QUEUED`, claimed `RUNNING`, solver terminal status |
 | `fea_job_duration_seconds` | Wall time of `run_case` |
 | `decisions_total{verdict}` | Decision row insert |
-| `manual_review_total{reason}` | Manual-review Decision (`reason` is the verdict) |
+| `manual_review_total{reason}` | Manual-review Decision. `reason` is the cause (`stale`, `bad_quality`, `missing_input`, `pinn_unavailable`, `pinn_invalid`, `fea_failed`, `fea_timeout`, `fea_quality_failed`, `fea_criterion_inconclusive`), not the verdict. |
 | `twin_state_age_seconds{asset_id}` | Set on `/metrics` scrape from Twin `source_timestamp` |
 | `fea_queue_depth` | Set on `/metrics` scrape: count of `QUEUED` jobs |
 | `fea_running_jobs` | Set on `/metrics` scrape: count of `RUNNING` jobs |
