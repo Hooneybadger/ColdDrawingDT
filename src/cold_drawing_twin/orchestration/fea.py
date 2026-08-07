@@ -269,6 +269,7 @@ def run_fea_job(
             twin,
             events,
             operational,
+            review_reason="fea_timeout" if job.status == FeaJobStatus.TIMEOUT.value else "fea_failed",
         )
         return job
 
@@ -277,10 +278,17 @@ def run_fea_job(
     events.emit("EVALUATION_STATE_CHANGED", {"evaluation_id": evaluation.evaluation_id, "state": evaluation.state})
 
     criterion = FeaCriterionVerdict(result["criterion_verdict"])
-    if criterion in {FeaCriterionVerdict.INCONCLUSIVE} or not result["quality_pass"]:
+    review_reason = None
+    if not result["quality_pass"]:
         verdict = DecisionVerdict.INCONCLUSIVE
         status = DecisionStatus.MANUAL_REVIEW
         eval_state = EvaluationState.MANUAL_REVIEW
+        review_reason = "fea_quality_failed"
+    elif criterion in {FeaCriterionVerdict.INCONCLUSIVE}:
+        verdict = DecisionVerdict.INCONCLUSIVE
+        status = DecisionStatus.MANUAL_REVIEW
+        eval_state = EvaluationState.MANUAL_REVIEW
+        review_reason = "fea_criterion_inconclusive"
     elif criterion == FeaCriterionVerdict.SAFE:
         verdict = DecisionVerdict.SAFE
         status = DecisionStatus.FINALIZED
@@ -301,6 +309,7 @@ def run_fea_job(
         twin,
         events,
         operational,
+        review_reason=review_reason,
     )
     return job
 
@@ -316,6 +325,7 @@ def _finalize_from_fea(
     twin: TwinStore,
     events: EventBus,
     operational: bool,
+    review_reason: str | None = None,
 ) -> None:
     service = EvaluationService(session, twin, pinn=None, events=events)
     lineage = lineage_record(
@@ -353,6 +363,7 @@ def _finalize_from_fea(
         job.job_id,
         lineage,
         operational,
+        review_reason=review_reason,
     )
     evaluation.state = eval_state.value
     job.status = FeaJobStatus.FINALIZED.value if job.status == FeaJobStatus.SUCCEEDED.value else job.status
@@ -405,6 +416,7 @@ def timeout_running_fea_job(
         twin,
         events,
         operational,
+        review_reason="fea_timeout",
     )
     session.flush()
     return True
