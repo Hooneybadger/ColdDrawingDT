@@ -42,8 +42,17 @@ fea_running_jobs = Gauge("fea_running_jobs", "FEA jobs in RUNNING")
 class MetricsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         response = await call_next(request)
-        http_requests_total.labels(request.url.path, request.method, str(response.status_code)).inc()
+        http_requests_total.labels(_http_route_label(request), request.method, str(response.status_code)).inc()
         return response
+
+
+def _http_route_label(request) -> str:
+    """Use the FastAPI route template so IDs do not explode Prometheus cardinality."""
+    route = request.scope.get("route")
+    template = getattr(route, "path", None)
+    if isinstance(template, str) and template:
+        return template
+    return request.url.path
 
 
 def scrape_runtime_gauges(session: Session) -> None:
