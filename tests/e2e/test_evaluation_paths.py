@@ -38,6 +38,9 @@ def test_e2e_fast_safe(settings):
     assert lineage["snapshot"]["captured_at"] != lineage["source_timestamp"]
     assert lineage["snapshot"]["source_timestamp_provenance"] == "measurement"
     assert snapshot.source_timestamp_provenance == "measurement"
+    assert snapshot.source_quality == "GOOD"
+    assert snapshot.input_quality == "MEASURED"
+    assert lineage["snapshot"]["source_quality"] == "GOOD"
 
 
 def test_e2e_unsafe_no_extra_fea(settings):
@@ -115,7 +118,11 @@ def test_bad_opcua_quality_blocks_automatic_decision(settings):
     twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="BAD")
     row = evaluation.start_operational(PRIMARY)
     decision = session.query(DecisionRow).filter_by(evaluation_id=row.evaluation_id).one()
+    snapshot = session.get(SnapshotRow, row.snapshot_id)
     assert decision.status == "MANUAL_REVIEW"
+    assert snapshot.source_quality == "BAD"
+    assert snapshot.input_quality == "MEASURED"
+    assert decision.lineage["snapshot"]["source_quality"] == "BAD"
 
 
 def test_pinn_unavailable_is_manual_review(settings):
@@ -173,3 +180,28 @@ def test_scenario_does_not_change_live_features(settings):
     child = session.get(SnapshotRow, _row.snapshot_id)
     assert iso(child.source_timestamp) == iso(snapshot.source_timestamp)
     assert iso(child.source_timestamp) != iso(child.captured_at)
+    assert child.source_quality == snapshot.source_quality == "GOOD"
+    assert child.input_quality == "SCENARIO_ASSUMED"
+    assert snapshot.input_quality == "MEASURED"
+    assert current.quality == "GOOD"
+
+
+def test_scenario_keeps_bad_source_quality_without_rewriting_it(settings):
+    container = build_container(settings=settings, pinn=make_pinn("SAFE"))
+    session = container.open()
+    twin, _events, evaluation = container.services(session)
+    twin.put_process_state(PRIMARY, DEMO, source_timestamp=datetime.now(timezone.utc), quality="BAD")
+    blocked = evaluation.start_operational(PRIMARY)
+    base = session.get(SnapshotRow, blocked.snapshot_id)
+    live_quality = twin.require(PRIMARY).quality
+    scenario, child_row = evaluation.start_scenario(base.snapshot_id, {"reduction_ratio": 0.4})
+    child = session.get(SnapshotRow, child_row.snapshot_id)
+    current = twin.require(PRIMARY)
+    assert base.source_quality == "BAD"
+    assert child.source_quality == "BAD"
+    assert child.input_quality == "SCENARIO_ASSUMED"
+    assert child.source_quality != "GOOD"
+    assert current.quality == live_quality == "BAD"
+    assert scenario.base_snapshot_id == base.snapshot_id
+    assert child_row.routing_action == "ACCEPT"
+    assert session.query(DecisionRow).filter_by(evaluation_id=child_row.evaluation_id).one().verdict == "SAFE"

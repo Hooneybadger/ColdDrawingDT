@@ -33,6 +33,8 @@ Source: [config/pinn_contract.yaml](../config/pinn_contract.yaml) and [schemas/p
 
 Fast-path and FEA Lineage both store the Snapshot `source_timestamp`. They must not replace it with `captured_at`. A null `source_timestamp` with provenance `unknown` is a legacy row, not a verified equipment clock.
 
+`source_quality` is the frozen equipment quality. `input_quality` is `MEASURED` on an operational Snapshot and `SCENARIO_ASSUMED` on a Scenario child. Scenario evaluation may run under that assumption without rewriting the base equipment quality to GOOD.
+
 ## Evaluation request
 
 The client names the Asset. The server copies live values from the Digital Twin. The client does not submit safety-critical feature values for a live Evaluation.

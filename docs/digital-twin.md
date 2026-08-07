@@ -87,6 +87,8 @@ Lineage on both the fast path and the FEA path must keep the original `source_ti
 
 Startup `ALTER TABLE` adds the time columns on old volumes. It does **not** copy `captured_at` into `source_timestamp`. That copy would look like a measurement clock. Schema migration tooling (Alembic) is still future work.
 
+An operational Snapshot also freezes `source_quality` from the live Twin and sets `input_quality` to `MEASURED`. A Scenario child copies `source_quality` from the base Snapshot and sets `input_quality` to `SCENARIO_ASSUMED`. That marker is the what-if assumption. It does not rewrite equipment quality to GOOD and it does not write the live Twin.
+
 ## Freshness
 
 ```text

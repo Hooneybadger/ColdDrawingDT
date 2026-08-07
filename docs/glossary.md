@@ -32,8 +32,19 @@ Use these names in every document.
 | `SAFE` | The check accepted the condition. |
 | `UNSAFE` | The check rejected the condition. |
 | `NEED_FEA` | PINN asks for FEA before a final Decision. |
-| `INCONCLUSIVE` | FEA ran but quality or metrics are not enough. |
+| `INCONCLUSIVE` | FEA ran but numerical quality or metrics are not enough. |
 | `MANUAL_REVIEW` | Automatic Decision is blocked. A person must review. |
+
+## Quality words
+
+These are different clocks and gates. Do not mix them.
+
+| Name | Meaning |
+|---|---|
+| Source quality | Equipment / OPC UA quality frozen on the Snapshot (`GOOD`, `BAD`, `UNCERTAIN`). |
+| Snapshot input quality | `MEASURED` for a live reading. `SCENARIO_ASSUMED` for a what-if that must not be read as a verified GOOD measurement. |
+| FEA numerical quality | Solver output gate (`quasi-static-quality-v1`). Pass is not a safety verdict. |
+| FEA safety criterion | Engineering SAFE/UNSAFE thresholds. Unimplemented in this version. |
 
 ## Process features
 

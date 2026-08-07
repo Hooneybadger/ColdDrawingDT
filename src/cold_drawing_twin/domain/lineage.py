@@ -6,6 +6,8 @@ from typing import Any
 
 SOURCE_TIMESTAMP_MEASUREMENT = "measurement"
 SOURCE_TIMESTAMP_UNKNOWN = "unknown"
+SNAPSHOT_INPUT_MEASURED = "MEASURED"
+SNAPSHOT_INPUT_SCENARIO_ASSUMED = "SCENARIO_ASSUMED"
 
 
 def utc_now() -> datetime:
@@ -54,6 +56,8 @@ def snapshot_payload(snapshot: Any) -> dict[str, Any]:
         "source_timestamp_provenance": provenance,
         "ingest_timestamp": iso(getattr(snapshot, "ingest_timestamp", None)),
         "source_state_version": snapshot.source_state_version,
+        "source_quality": getattr(snapshot, "source_quality", None),
+        "input_quality": getattr(snapshot, "input_quality", None),
         "features": snapshot.features,
     }
 

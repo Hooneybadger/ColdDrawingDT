@@ -225,6 +225,8 @@ def _evaluation_body(session: Session, row: EvaluationRow) -> dict:
             "source_timestamp_provenance": snapshot.source_timestamp_provenance,
             "ingest_timestamp": iso(snapshot.ingest_timestamp),
             "source_state_version": snapshot.source_state_version,
+            "source_quality": snapshot.source_quality,
+            "input_quality": snapshot.input_quality,
             "features": snapshot.features,
         },
         "fea_job_id": None if job is None else job.job_id,
