@@ -13,7 +13,7 @@ python -m pip install -e ".[dev]"
 make test
 ```
 
-`make test` excludes `pinn_release`. That marker calls the released `predict.py` + `pinn.pt` bundle and **fails** if the files are missing (it does not skip as success).
+`make test` excludes `pinn_release`. That marker calls the released `predict.py` + `pinn.pt` bundle and **fails** if the files are missing (it does not skip as success). A valid in-domain verdict may be `SAFE`, `UNSAFE`, or `NEED_FEA`. The routing test uses `FEA_EXECUTION=celery` so `NEED_FEA` queues a job and does not start OpenRadioss.
 
 ```bash
 make fetch-pinn
