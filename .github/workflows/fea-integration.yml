@@ -1,6 +1,7 @@
 # Optional OpenRadioss smoke. This is not part of the default Tests workflow.
 # It downloads published Linux binaries and runs `make fea-smoke`.
 # A green run is an actual solver execution. Parser fixture tests are not this job.
+# INCONCLUSIVE criterion is expected. The job fails only if the solver did not succeed.
 
 name: FEA integration
 
@@ -40,10 +41,12 @@ jobs:
         env:
           PYTHONPATH: src:.
         run: make fea-smoke
+      - name: Print solver evidence
+        run: python scripts/summarize_fea_result.py simulation/workspaces/fea-smoke/result.json
       - name: Upload workspace
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fea-smoke-workspace
           path: simulation/workspaces/fea-smoke
-          if-no-files-found: warn
+          if-no-files-found: error

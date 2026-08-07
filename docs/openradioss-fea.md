@@ -51,6 +51,8 @@ export OPENRADIOSS_ENGINE_BIN=$HOME/OpenRadioss/exec/engine_linux64_gf
 make fea-smoke
 ```
 
+The manual GitHub Actions workflow `.github/workflows/fea-integration.yml` does that install and smoke on `ubuntu-latest`, uploads `simulation/workspaces/fea-smoke`, and prints `result.json` fields. A green run means Starter and Engine actually ran (`solver_status=SUCCEEDED`, `NORMAL_TERMINATION`). `INCONCLUSIVE` is expected. The job does not fail because the unimplemented criterion is inconclusive.
+
 Artifacts land in `simulation/workspaces/<job-id>/`: starter deck, engine deck, solver logs, parsed `result.json`.
 
 Parser unit tests under `tests/fea/fixtures/` are labeled fixtures. They are not actual solves.
