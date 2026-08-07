@@ -6,7 +6,9 @@ from cold_drawing_twin.config_files import freshness_policy
 from cold_drawing_twin.domain.features import FEATURE_ORDER, ProcessFeatures
 
 
-def is_stale(source_timestamp: datetime, now: datetime | None = None, max_age_s: int | None = None) -> bool:
+def is_stale(source_timestamp: datetime | None, now: datetime | None = None, max_age_s: int | None = None) -> bool:
+    if source_timestamp is None:
+        return True
     current = now or datetime.now(timezone.utc)
     if source_timestamp.tzinfo is None:
         source_timestamp = source_timestamp.replace(tzinfo=timezone.utc)

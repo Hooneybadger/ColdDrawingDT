@@ -101,4 +101,4 @@ The first site is one factory. Reproducible service isolation matters now. Kuber
 
 ## Existing database volumes
 
-SQLite tests call `create_all`. An existing PostgreSQL volume created before Snapshot `source_timestamp` / `ingest_timestamp` gets those columns from `make_session_factory` (`ALTER TABLE` plus backfill of `source_timestamp` from `captured_at`). FEA lease columns (`lease_expires_at`, `claim_generation`) are added the same way. That is a startup ensure, not a migration framework.
+SQLite tests call `create_all`. An existing PostgreSQL volume created before Snapshot `source_timestamp` / `ingest_timestamp` gets those columns from `make_session_factory` (`ALTER TABLE`). Legacy rows keep `source_timestamp` null and `source_timestamp_provenance=unknown`. The startup helper does not copy `captured_at` into `source_timestamp`. FEA lease columns (`lease_expires_at`, `claim_generation`) are added the same way. That is a startup ensure, not a migration framework.
