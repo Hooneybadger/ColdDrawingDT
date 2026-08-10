@@ -105,7 +105,7 @@ docker compose up -d
 | AAS V3 ProcessState / EvaluationState / SimulationState | Implemented |
 | OpenRadioss 2D axisymmetric drawing decks + parsers + quality gate | Implemented |
 | `make fea-smoke` actual Engine solve | Reference implementation (NORMAL TERMINATION; Isolid=2; listing ERROR not saturated) |
-| OpenRadioss on every CI run | Not implemented (manual `fea-integration.yml`) |
+| OpenRadioss on every CI run | Implemented (`fea-integration.yml` on push/PR) |
 | Reference LAW36 steel card `stainless_reference_v1` | Reference implementation |
 | Mill-calibrated plastic curve | Production calibration required |
 | FEA automatic SAFE/UNSAFE thresholds | Not implemented (`evaluator: unimplemented`; `required_thresholds: []`) |
