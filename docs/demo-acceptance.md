@@ -35,6 +35,6 @@ make fea-validate
 
 Automatic FEA SAFE/UNSAFE cannot pass: the criterion evaluator is not implemented, and `required_thresholds` is empty.
 
-Manual `pinn-integration.yml` and `fea-integration.yml` are `workflow_dispatch` jobs for real `predict.py` and OpenRadioss evidence. They are not part of default `make test`.
+`pinn-integration.yml` is a `workflow_dispatch` job for real `predict.py` evidence. `fea-integration.yml` runs OpenRadioss on every push/PR to `main`. Neither is part of default `make test`.
 
 Operator/senior Kit apps poll the HTTP API. They do not write Decisions.
