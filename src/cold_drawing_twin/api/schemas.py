@@ -21,3 +21,20 @@ class ProcessStateBody(BaseModel):
     normalized_hardening_coefficient: float
     state_version: str | None = None
     quality: str = "GOOD"
+
+
+class StreamGpuBody(BaseModel):
+    index: str
+    utilization_ratio: float
+    memory_used_bytes: int
+    memory_total_bytes: int
+
+
+class StreamSessionCreate(BaseModel):
+    role: str
+    client: str
+    asset_id: str
+
+
+class StreamHeartbeat(BaseModel):
+    gpu: StreamGpuBody | None = None

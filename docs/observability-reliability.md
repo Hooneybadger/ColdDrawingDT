@@ -23,6 +23,11 @@ These counters, histograms, and gauges come from the API and evaluation process:
 | `twin_state_age_seconds{asset_id}` | Set on `/metrics` scrape from Twin `source_timestamp` |
 | `fea_queue_depth` | Set on `/metrics` scrape: count of `QUEUED` jobs |
 | `fea_running_jobs` | Set on `/metrics` scrape: count of `RUNNING` jobs |
+| `stream_sessions{role,client}` | Active Kit or browser stream sessions (`operator` / `senior`, `kit` / `browser`) |
+| `gpu_devices` | NVIDIA GPUs from session heartbeat or local `nvidia-smi`. Zero when none are visible. |
+| `gpu_utilization_ratio{gpu}` | 0-1 utilization for a reported GPU index |
+| `gpu_memory_used_bytes{gpu}` | Used memory for a reported GPU index |
+| `gpu_memory_total_bytes{gpu}` | Total memory for a reported GPU index |
 
 No numeric SLOs are claimed here. Empty Grafana panels mean the process has not served that path yet.
 
@@ -35,7 +40,6 @@ Not emitted in this version. Do not treat them as live:
 - physics-residual histogram
 - Starter vs Engine failure split, mesh element count, energy-quality result count as separate series
 - `decision_end_to_end_seconds`
-- 3D stream sessions, GPU use, GPU memory
 
 A transactional outbox for FEA publish is implemented as `fea_outbox`. See [deployment.md](deployment.md).
 

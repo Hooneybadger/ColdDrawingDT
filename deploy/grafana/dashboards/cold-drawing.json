@@ -3,7 +3,7 @@
   "title": "Cold Drawing Digital Twin",
   "timezone": "browser",
   "schemaVersion": 39,
-    "version": 3,
+  "version": 4,
   "panels": [
     {
       "type": "stat",
@@ -82,6 +82,30 @@
       "title": "FEA running",
       "gridPos": {"h": 6, "w": 6, "x": 18, "y": 20},
       "targets": [{ "expr": "fea_running_jobs", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Stream sessions",
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 26},
+      "targets": [{ "expr": "sum(stream_sessions)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "GPU devices",
+      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 26},
+      "targets": [{ "expr": "gpu_devices", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "GPU utilization",
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 26},
+      "targets": [{ "expr": "max(gpu_utilization_ratio)", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "GPU memory used",
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 26},
+      "targets": [{ "expr": "sum(gpu_memory_used_bytes)", "refId": "A" }]
     }
   ]
 }

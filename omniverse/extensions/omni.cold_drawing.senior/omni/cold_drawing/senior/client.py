@@ -41,3 +41,9 @@ class TwinApiClient:
 
     def fea_job(self, job_id: str) -> dict:
         return self.get_json(f"/fea-jobs/{job_id}")
+
+    def start_stream(self, asset_id: str, role: str = "senior", client: str = "kit") -> dict:
+        return self.post_json("/stream/sessions", {"role": role, "client": client, "asset_id": asset_id})
+
+    def heartbeat_stream(self, session_id: str, gpu: dict | None = None) -> dict:
+        return self.post_json(f"/stream/sessions/{session_id}/heartbeat", {"gpu": gpu})

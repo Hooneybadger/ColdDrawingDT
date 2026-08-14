@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 import json
 
 from cold_drawing_twin.display import operator_view
@@ -20,3 +20,23 @@ class OperatorClient:
 
     def status(self) -> dict:
         return operator_view(self.fetch_state())
+
+    def start_stream(self, role: str = "operator", client: str = "kit") -> dict:
+        payload = json.dumps({"role": role, "client": client, "asset_id": self.asset_id}).encode("utf-8")
+        request = Request(
+            self.base_url + "/stream/sessions",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        with urlopen(request, timeout=5) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    def heartbeat_stream(self, session_id: str, gpu: dict | None = None) -> dict:
+        payload = json.dumps({"gpu": gpu}).encode("utf-8")
+        request = Request(
+            self.base_url + f"/stream/sessions/{session_id}/heartbeat",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        with urlopen(request, timeout=5) as response:
+            return json.loads(response.read().decode("utf-8"))

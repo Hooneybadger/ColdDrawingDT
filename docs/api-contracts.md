@@ -138,9 +138,16 @@ POST /scenarios
 GET  /scenarios/{scenario_id}
 GET  /fea-jobs/{job_id}
 GET  /decisions/{decision_id}
+POST /stream/sessions
+GET  /stream/sessions
+GET  /stream/sessions/{session_id}
+POST /stream/sessions/{session_id}/heartbeat
+DELETE /stream/sessions/{session_id}
 GET  /health
 GET  /metrics
 ```
+
+A stream session is display liveness. Creating or heartbeating a session must not write a Decision. Kit and the browser client both register here so `/metrics` can scrape `stream_sessions`. An optional `gpu` object on heartbeat is the RTX-host sample; the API does not invent GPU numbers.
 
 ## Events
 
