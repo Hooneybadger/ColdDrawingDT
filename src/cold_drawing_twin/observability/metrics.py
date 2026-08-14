@@ -37,6 +37,11 @@ twin_state_age_seconds = Gauge(
 )
 fea_queue_depth = Gauge("fea_queue_depth", "FEA jobs in QUEUED")
 fea_running_jobs = Gauge("fea_running_jobs", "FEA jobs in RUNNING")
+gpu_devices = Gauge("gpu_devices", "NVIDIA GPUs reported on scrape")
+gpu_utilization_ratio = Gauge("gpu_utilization_ratio", "GPU utilization from 0 to 1", ["gpu"])
+gpu_memory_used_bytes = Gauge("gpu_memory_used_bytes", "GPU memory used", ["gpu"])
+gpu_memory_total_bytes = Gauge("gpu_memory_total_bytes", "GPU memory total", ["gpu"])
+stream_sessions = Gauge("stream_sessions", "Active stream sessions", ["role", "client"])
 
 
 class MetricsMiddleware(BaseHTTPMiddleware):
@@ -75,6 +80,31 @@ def scrape_runtime_gauges(session: Session) -> None:
     fea_running_jobs.set(
         session.query(FeaJobRow).filter(FeaJobRow.status == FeaJobStatus.RUNNING.value).count()
     )
+    _scrape_stream_and_gpu()
+
+
+def _scrape_stream_and_gpu() -> None:
+    from collections import Counter
+
+    from cold_drawing_twin.observability.gpu import GpuSample, read_nvidia_smi
+    from cold_drawing_twin.stream.sessions import STREAM_CLIENTS, STREAM_ROLES, STREAM_STORE
+
+    live = STREAM_STORE.active()
+    counts = Counter((item.role, item.client) for item in live)
+    for role in STREAM_ROLES:
+        for client in STREAM_CLIENTS:
+            stream_sessions.labels(role, client).set(counts.get((role, client), 0))
+    samples = [item.gpu for item in live if item.gpu is not None]
+    if not samples:
+        samples = read_nvidia_smi()
+    seen: dict[str, GpuSample] = {}
+    for sample in samples:
+        seen[sample.index] = sample
+    gpu_devices.set(len(seen))
+    for index, sample in seen.items():
+        gpu_utilization_ratio.labels(index).set(sample.utilization_ratio)
+        gpu_memory_used_bytes.labels(index).set(sample.memory_used_bytes)
+        gpu_memory_total_bytes.labels(index).set(sample.memory_total_bytes)
 
 
 def install_metrics(app) -> None:

@@ -110,7 +110,7 @@ docker compose up -d
 | Mill-calibrated plastic curve | Production calibration required |
 | FEA automatic SAFE/UNSAFE thresholds | Not implemented (`evaluator: unimplemented`; `required_thresholds: []`) |
 | Prometheus counters that the process actually increments | Implemented |
-| Twin age, FEA queue depth, GPU, stream sessions as live series | Twin age and FEA queue depth scraped; GPU and stream sessions not implemented |
+| Twin age, FEA queue depth, GPU, stream sessions as live series | Implemented |
 | Omniverse Kit runtime / WebRTC | Not implemented in this repository (host-side) |
 
 PINN `normalized_hardening_coefficient` is not a megapascal material property.

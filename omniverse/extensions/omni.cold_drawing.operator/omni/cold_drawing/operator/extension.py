@@ -22,6 +22,11 @@ class ColdDrawingOperatorExtension(IExt):
         self._elapsed = 0.0
         self.latest = None
         self._sub = None
+        self.session_id = None
+        try:
+            self.session_id = self.client.start_stream().get("session_id")
+        except Exception:
+            self.session_id = None
         try:
             import omni.kit.app
 
@@ -30,6 +35,17 @@ class ColdDrawingOperatorExtension(IExt):
             self._sub = None
 
     def on_shutdown(self):
+        if self.session_id:
+            try:
+                from urllib.request import Request, urlopen
+
+                request = Request(
+                    self.client.base_url + f"/stream/sessions/{self.session_id}",
+                    method="DELETE",
+                )
+                urlopen(request, timeout=5).read()
+            except Exception:
+                pass
         self._sub = None
 
     def _on_update(self, event):
@@ -44,5 +60,10 @@ class ColdDrawingOperatorExtension(IExt):
             return self.latest
         self._elapsed = 0.0
         view = self.client.status()
+        if self.session_id:
+            try:
+                self.client.heartbeat_stream(self.session_id)
+            except Exception:
+                pass
         self.latest = apply_status_attributes({}, view)
         return self.latest
