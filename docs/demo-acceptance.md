@@ -37,4 +37,4 @@ Automatic FEA SAFE/UNSAFE cannot pass: the criterion evaluator is not implemente
 
 `pinn-integration.yml` is a `workflow_dispatch` job for real `predict.py` evidence. `fea-integration.yml` runs OpenRadioss on every push/PR to `main`. Neither is part of default `make test`.
 
-Operator/senior Kit apps poll the HTTP API. They do not write Decisions.
+Operator/senior Kit apps poll the HTTP API and register stream sessions. The browser page `/operator` uses a WebRTC datachannel with HTTP poll fallback. They do not write Decisions.

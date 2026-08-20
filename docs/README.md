@@ -21,7 +21,7 @@ Not filled:
 
 - FEA numeric safety thresholds
 - Calibrated hardening curve numbers
-- Omniverse Kit / WebRTC host runtime
+- Omniverse Kit / WebRTC host runtime (Kit binary on the RTX host; this repo ships the apps, `/operator` page, and signaling)
 
 ## Map
 

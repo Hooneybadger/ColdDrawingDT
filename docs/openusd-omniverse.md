@@ -4,7 +4,7 @@ Terms: [glossary](glossary.md).
 
 OpenUSD is the spatial source of truth. Omniverse Kit is the 3D app. Neither owns safety rules or process measurements.
 
-This version generates `usd/factory/bugok_factory.usda` from layout YAML and ships Kit extension shells that call the HTTP API. Kit itself and WebRTC streaming run on the site RTX host.
+This version generates `usd/factory/bugok_factory.usda` from layout YAML and ships Kit apps that call the HTTP API. Operator browsers can open `/operator` for a WebRTC datachannel (Twin state JSON, not a rendered 3D frame). Kit livestream (`omni.kit.livestream.webrtc`) still needs the site RTX Kit binary, the same way OpenRadioss needs solver binaries.
 
 ## Root tree
 
@@ -78,15 +78,17 @@ Do not show the full senior analysis surface by default.
 
 ## Low-spec delivery
 
-RTX render stays on an on-site GPU host. The operator uses a Kit app over WebRTC.
+RTX render stays on an on-site GPU host. The operator browser can use `/operator` (Twin JSON over a WebRTC datachannel) without Kit. 3D livestream still uses Kit on that host.
 
 ```mermaid
 flowchart LR
-  browser[Low-spec browser] <-->|WebRTC| host[On-site RTX host]
+  browser[Low-spec browser] -->|"WebRTC JSON /operator"| api[Twin API]
+  browser2[3D client] <-->|WebRTC video| host[On-site RTX host]
   host --> kit[Omniverse Kit app]
+  kit --> api
 ```
 
-The operator client must not query the Digital Twin database directly. Domain data reaches Kit through the app API and events.
+The operator client must not query the Digital Twin database directly. Domain data reaches Kit and `/operator` through the app API.
 
 ## Twin to 3D map
 
@@ -120,9 +122,8 @@ Demo FEA job ID in docs: `fea-0001`.
 
 ## Streaming acceptance
 
-- Streamable Kit app runs on the RTX host
-- Chromium client receives WebRTC
-- Keyboard and mouse round-trip works
-- Operator scope is applied before draw
-- Distant areas use proxy or unloaded payload
+- `/operator` serves a display-only page; Twin state rides a WebRTC datachannel with HTTP poll fallback
+- Streamable Kit app runs on the RTX host when Kit is installed
+- Chromium can open `/operator` without Kit
+- Kit 3D keyboard and mouse round-trip is a host Kit concern
 - Streaming failure never changes a stored Decision

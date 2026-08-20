@@ -143,6 +143,8 @@ GET  /stream/sessions
 GET  /stream/sessions/{session_id}
 POST /stream/sessions/{session_id}/heartbeat
 DELETE /stream/sessions/{session_id}
+POST /stream/webrtc/offer
+GET  /operator
 GET  /health
 GET  /metrics
 ```

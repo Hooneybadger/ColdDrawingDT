@@ -38,3 +38,10 @@ class StreamSessionCreate(BaseModel):
 
 class StreamHeartbeat(BaseModel):
     gpu: StreamGpuBody | None = None
+
+
+class WebRtcOffer(BaseModel):
+    sdp: str
+    type: str
+    asset_id: str
+    session_id: str | None = None
