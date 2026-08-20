@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cold Drawing operator</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; max-width: 40rem; }
+    #indicator { width: 1.2rem; height: 1.2rem; display: inline-block; border-radius: 50%; }
+    pre { background: #f4f4f4; padding: 1rem; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Operator view</h1>
+  <p>Display only. This page does not write Decisions.</p>
+  <p>Transport: <span id="transport">starting</span></p>
+  <p>Asset <span id="asset"></span> <span id="indicator"></span> <strong id="verdict"></strong></p>
+  <p id="text"></p>
+  <pre id="payload"></pre>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const assetId = params.get("asset_id") || "BG.MIEUM.DRW.04";
+    document.getElementById("asset").textContent = assetId;
+    const colors = { green: "#2e7d32", red: "#c62828", amber: "#f9a825", blue: "#1565c0" };
+    let webrtcLive = false;
+
+    function render(view) {
+      document.getElementById("verdict").textContent = view.latest_verdict || "";
+      document.getElementById("text").textContent = view.text || "";
+      document.getElementById("indicator").style.background = colors[view.indicator] || "#777";
+      document.getElementById("payload").textContent = JSON.stringify(view, null, 2);
+    }
+
+    async function pollHttp() {
+      const response = await fetch("/assets/" + encodeURIComponent(assetId) + "/state");
+      if (!response.ok) {
+        render({
+          latest_verdict: "ANALYSIS_REQUIRED",
+          text: "Twin state is not loaded.",
+          indicator: "blue",
+          display_only: true,
+          asset_id: assetId
+        });
+        return;
+      }
+      const state = await response.json();
+      const map = {
+        SAFE: ["Continue the current pass.", "green"],
+        UNSAFE: ["Stop. Condition rejected.", "red"],
+        INCONCLUSIVE: ["Wait for review.", "amber"],
+        MANUAL_REVIEW: ["Wait for review.", "amber"],
+        ANALYSIS_REQUIRED: ["Check in progress.", "blue"]
+      };
+      const verdict = state.latest_verdict || "ANALYSIS_REQUIRED";
+      const pair = map[verdict] || map.ANALYSIS_REQUIRED;
+      render({
+        asset_id: assetId,
+        process_state: state.features || {},
+        latest_verdict: verdict,
+        fea_running: Boolean(state.active_fea_job_id),
+        last_update: state.source_timestamp,
+        quality: state.quality,
+        text: pair[0],
+        indicator: pair[1],
+        display_only: true
+      });
+    }
+
+    async function registerSession() {
+      const response = await fetch("/stream/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: "operator", client: "browser", asset_id: assetId })
+      });
+      if (!response.ok) return null;
+      return (await response.json()).session_id;
+    }
+
+    async function startWebrtc(sessionId) {
+      const pc = new RTCPeerConnection();
+      const channel = pc.createDataChannel("operator");
+      channel.onmessage = (event) => {
+        webrtcLive = true;
+        document.getElementById("transport").textContent = "webrtc-datachannel";
+        render(JSON.parse(event.data));
+      };
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await new Promise((resolve) => {
+        if (pc.iceGatheringState === "complete") {
+          resolve();
+          return;
+        }
+        pc.onicegatheringstatechange = () => {
+          if (pc.iceGatheringState === "complete") resolve();
+        };
+      });
+      const response = await fetch("/stream/webrtc/offer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sdp: pc.localDescription.sdp,
+          type: pc.localDescription.type,
+          asset_id: assetId,
+          session_id: sessionId
+        })
+      });
+      if (!response.ok) throw new Error("webrtc offer failed");
+      await pc.setRemoteDescription(await response.json());
+    }
+
+    (async () => {
+      const sessionId = await registerSession();
+      setInterval(() => {
+        if (sessionId) {
+          fetch("/stream/sessions/" + sessionId + "/heartbeat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: "{}"
+          });
+        }
+      }, 10000);
+      try {
+        await startWebrtc(sessionId);
+      } catch (err) {
+        document.getElementById("transport").textContent = "http-poll fallback";
+      }
+      setTimeout(async () => {
+        if (!webrtcLive) {
+          document.getElementById("transport").textContent = "http-poll fallback";
+          await pollHttp();
+          setInterval(pollHttp, 2000);
+        }
+      }, 3000);
+    })();
+  </script>
+</body>
+</html>

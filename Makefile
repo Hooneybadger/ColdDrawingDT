@@ -47,7 +47,8 @@ factory-stage:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m cold_drawing_twin.cli factory-stage
 
 demo-stream:
-	@echo "Launch omniverse/apps/operator/cold_drawing_operator.kit on the RTX host."
+	@echo "Operator WebRTC page: http://127.0.0.1:8000/operator"
+	@echo "Launch omniverse/apps/operator/cold_drawing_operator.kit on the RTX host for 3D livestream."
 	@echo "The operator client polls the HTTP API. Streaming must not write Decisions."
 	@test -f usd/factory/bugok_factory.usda || (echo "run make factory-stage first" && exit 1)
 

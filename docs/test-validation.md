@@ -102,7 +102,7 @@ Track separately:
 - API overhead
 - FEA queue wait
 - FEA runtime
-- WebRTC session start
+- WebRTC session start (`POST /stream/sessions` and `POST /stream/webrtc/offer`)
 - Concurrent operator stream GPU cost
 
 Do not average PINN and FEA latency into one number.
