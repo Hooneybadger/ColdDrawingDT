@@ -1,11 +1,12 @@
 version: fea-criterion-v1
 automatic_verdict_enabled: false
-evaluator: unimplemented
+evaluator: thresholds_v1
 policy:
   require_quality_pass: true
   on_missing_required_metric: INCONCLUSIVE
   on_quality_failure: INCONCLUSIVE
 criteria:
   # Project-specific engineering thresholds belong here as versioned configuration.
-  # Filling this list cannot enable SAFE/UNSAFE; the evaluator is not implemented.
+  # Leave this list empty until mill-validated numbers exist.
+  # automatic_verdict_enabled must also be true before SAFE/UNSAFE can be emitted.
   required_thresholds: []

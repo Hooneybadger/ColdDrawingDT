@@ -2,7 +2,7 @@
 
 Terms: [glossary](glossary.md).
 
-This version writes and, when binaries are installed, runs a 2D axisymmetric cold-drawing reference case. The criterion evaluator is not implemented. Filling `required_thresholds` cannot produce automatic SAFE/UNSAFE.
+This version writes and, when binaries are installed, runs a 2D axisymmetric cold-drawing reference case. The criterion evaluator is `thresholds_v1`. The mill YAML keeps `automatic_verdict_enabled: false` and `required_thresholds` empty, so a quality-passing solve stays `INCONCLUSIVE`.
 
 ## Formulation
 
@@ -44,7 +44,7 @@ Demo numbers: `reduction_ratio = 0.3`, `initial_radius_m = 0.01` so `r_f = 0.01 
 
 Solver completion is not a safety verdict. `quasi-static-quality-v1` requires normal termination, required files, finite required metrics, and minimum mesh counts. OpenRadioss clips listing `ERROR` at 99.9%; a saturated clip fails the gate because the solver did not report a usable energy balance. No mill kinetic/internal energy ratio cut-off is invented.
 
-`fea-criterion-v1` sets `automatic_verdict_enabled: false` and `evaluator: unimplemented`. `required_thresholds` is empty. A quality-passing solve is therefore `INCONCLUSIVE` and goes to `MANUAL_REVIEW`. FEA metrics are still stored. Listing numbers in YAML cannot turn this evaluator on.
+`fea-criterion-v1` ships `evaluator: thresholds_v1` with `automatic_verdict_enabled: false` and empty `required_thresholds`. A quality-passing mill solve is therefore `INCONCLUSIVE` and goes to `MANUAL_REVIEW`. Listing numbers in the mill YAML cannot turn automatic SAFE/UNSAFE on. Tests may enable the flag with injected thresholds.
 
 ## How to run
 
@@ -55,7 +55,7 @@ export OPENRADIOSS_ENGINE_BIN=$HOME/OpenRadioss/exec/engine_linux64_gf
 make fea-smoke
 ```
 
-The GitHub Actions workflow `.github/workflows/fea-integration.yml` does that install and smoke on `ubuntu-latest` for every push/PR to `main`, uploads `simulation/workspaces/fea-smoke`, and prints `result.json` fields. A green run means Starter and Engine actually ran (`solver_status=SUCCEEDED`, `NORMAL_TERMINATION`). `INCONCLUSIVE` is expected. The job does not fail because the unimplemented criterion is inconclusive.
+The GitHub Actions workflow `.github/workflows/fea-integration.yml` does that install and smoke on `ubuntu-latest` for every push/PR to `main`, uploads `simulation/workspaces/fea-smoke`, and prints `result.json` fields. A green run means Starter and Engine actually ran (`solver_status=SUCCEEDED`, `NORMAL_TERMINATION`). `INCONCLUSIVE` is expected on the mill YAML. The job does not fail because automatic SAFE is off.
 
 Artifacts land in `simulation/workspaces/<job-id>/`: starter deck, engine deck, solver logs, parsed `result.json`.
 
@@ -79,6 +79,6 @@ Parsed from listing + `th_to_csv` + `anim_to_vtk` (not placeholders), **fea-refe
 
 `Isolid=17` was rejected: a no-contact run still saturated listing `ERROR` at 99.9% while internal energy grew without matching external work. That is a 2D Q4 formulation failure on this solver build, not a mill fracture threshold.
 
-TYPE5 still reports `CONTACT ENERGY = 0` in the T01 file. Quality uses listing `ERROR` saturation, required files, and finite required metrics. The unimplemented criterion still forces `INCONCLUSIVE` / `MANUAL_REVIEW` after a quality-passing solve.
+TYPE5 still reports `CONTACT ENERGY = 0` in the T01 file. Quality uses listing `ERROR` saturation, required files, and finite required metrics. With automatic verdict off, a quality-passing mill solve stays `INCONCLUSIVE` / `MANUAL_REVIEW`.
 
 `Inacti=3` was rejected: it moved the nose node across the inlet clearance and destroyed the bar at t=0.

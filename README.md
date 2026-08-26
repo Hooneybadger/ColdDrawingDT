@@ -108,7 +108,7 @@ docker compose up -d
 | OpenRadioss on every CI run | Implemented (`fea-integration.yml` on push/PR) |
 | Reference LAW36 steel card `stainless_reference_v1` | Reference implementation |
 | Mill-calibrated plastic curve | Production calibration required |
-| FEA automatic SAFE/UNSAFE thresholds | Not implemented (`evaluator: unimplemented`; `required_thresholds: []`) |
+| FEA automatic SAFE/UNSAFE thresholds | Implemented (`thresholds_v1`; mill YAML leaves it off) |
 | Prometheus counters that the process actually increments | Implemented |
 | Twin age, FEA queue depth, GPU, stream sessions as live series | Implemented |
 | Omniverse Kit runtime / WebRTC | Implemented (operator `/operator` datachannel; Kit livestream needs host Kit) |

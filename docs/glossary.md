@@ -68,7 +68,7 @@ These are different clocks and gates. Do not mix them.
 | Source quality | Equipment / OPC UA quality frozen on the Snapshot (`GOOD`, `BAD`, `UNCERTAIN`). |
 | Snapshot input quality | `MEASURED` for a live reading. `SCENARIO_ASSUMED` for a what-if that must not be read as a verified GOOD measurement. |
 | FEA numerical quality | Solver output gate (`quasi-static-quality-v1`). Pass is not a safety verdict. |
-| FEA safety criterion | Engineering SAFE/UNSAFE thresholds. Unimplemented in this version. |
+| FEA safety criterion | Engineering SAFE/UNSAFE thresholds (`thresholds_v1`). Default mill YAML leaves automatic verdict off. |
 
 ## Process features
 
