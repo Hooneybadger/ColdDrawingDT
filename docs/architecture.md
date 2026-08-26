@@ -70,7 +70,7 @@ Timeouts are separate:
 - The FEA lease and heartbeat say whether the worker is still alive
 - `make fea-reclaim` recovers a dead `RUNNING` job from the lease
 
-Equipment `source_quality` is not FEA numerical quality and not the unimplemented safety criterion.
+Equipment `source_quality` is not FEA numerical quality and not the FEA safety criterion.
 
 ## Layer jobs
 

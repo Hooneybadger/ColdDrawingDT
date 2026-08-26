@@ -138,4 +138,4 @@ simulation/
 
 Solver success creates an FEA result object. A separate versioned criterion then returns `SAFE`, `UNSAFE`, or `INCONCLUSIVE`. `INCONCLUSIVE` goes to Manual review.
 
-This version's criterion evaluator is not implemented (`automatic_verdict_enabled: false`). Filling `required_thresholds` cannot produce automatic SAFE/UNSAFE. See [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml).
+The mill YAML keeps `automatic_verdict_enabled: false` and empty `required_thresholds`. Filling mill YAML without enabling the flag cannot produce automatic SAFE/UNSAFE. See [config/fea_safety_criterion.yaml](../config/fea_safety_criterion.yaml).

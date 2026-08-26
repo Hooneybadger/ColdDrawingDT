@@ -37,7 +37,7 @@ def summarize(path: Path) -> int:
     if term_status != "NORMAL_TERMINATION":
         print(f"ERROR: termination is {termination!r}, not NORMAL_TERMINATION.", file=sys.stderr)
         return 1
-    # INCONCLUSIVE criterion is expected while the evaluator is unimplemented.
+    # INCONCLUSIVE criterion is expected while mill automatic verdict is off.
     # quality_pass is printed as evidence; this script does not fail on it.
     return 0
 

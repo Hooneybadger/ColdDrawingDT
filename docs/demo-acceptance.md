@@ -33,7 +33,7 @@ make fea-validate
 
 `make test-pinn` runs in-domain inference through `predict.py` and `pinn.pt`. Missing bundle files fail that target. Default `make test` does not require the files.
 
-Automatic FEA SAFE/UNSAFE cannot pass: the criterion evaluator is not implemented, and `required_thresholds` is empty.
+Automatic FEA SAFE/UNSAFE stays off on the mill YAML: `automatic_verdict_enabled` is false and `required_thresholds` is empty. The `thresholds_v1` evaluator runs only when a site enables it with mill-validated numbers.
 
 `pinn-integration.yml` is a `workflow_dispatch` job for real `predict.py` evidence. `fea-integration.yml` runs OpenRadioss on every push/PR to `main`. Neither is part of default `make test`.
 

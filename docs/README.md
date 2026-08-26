@@ -15,13 +15,13 @@ Present:
 - Worked JSON under `docs/examples/`
 - Factory picture under `docs/images/`
 - HTTP API, PINN adapter, FEA pipeline, OpenUSD stage
+- Operator `/operator` WebRTC page; Kit livestream apps (Kit binary stays on the RTX host)
 - Contract check script `scripts/validate_contracts.py`
 
 Not filled:
 
-- FEA numeric safety thresholds
+- Mill-validated FEA numeric safety thresholds (evaluator exists; mill YAML leaves it off)
 - Calibrated hardening curve numbers
-- Omniverse Kit / WebRTC host runtime (Kit binary on the RTX host; this repo ships the apps, `/operator` page, and signaling)
 
 ## Map
 

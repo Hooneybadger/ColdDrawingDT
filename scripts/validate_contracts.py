@@ -139,11 +139,11 @@ def main() -> None:
     if fea_crit.get("version") != "fea-criterion-v1":
         fail("FEA criterion version is not fea-criterion-v1")
     if fea_crit.get("automatic_verdict_enabled") is not False:
-        fail("automatic_verdict_enabled must stay false until an evaluator exists")
-    if fea_crit.get("evaluator") != "unimplemented":
-        fail("FEA criterion evaluator must stay unimplemented in this version")
+        fail("automatic_verdict_enabled must stay false until mill-validated thresholds exist")
+    if fea_crit.get("evaluator") != "thresholds_v1":
+        fail("FEA criterion evaluator must be thresholds_v1")
     if fea_crit["criteria"].get("required_thresholds") != []:
-        fail("this version still has empty FEA thresholds; do not pretend they are filled")
+        fail("this mill YAML still has empty FEA thresholds; do not invent mill numbers")
 
     try:
         Draft202012Validator.check_schema(snapshot_schema)
