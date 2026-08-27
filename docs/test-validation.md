@@ -106,3 +106,15 @@ Track separately:
 - Concurrent operator stream GPU cost
 
 Do not average PINN and FEA latency into one number.
+
+## Display and integration (no Kit in CI)
+
+- Verdict colors: `SAFE` green, `UNSAFE` red, `ANALYSIS_REQUIRED` blue, `INCONCLUSIVE` / `MANUAL_REVIEW` amber, unknown or backend OFFLINE gray
+- Backend fetch failure must not become `ANALYSIS_REQUIRED`
+- `GET /aas/{id}/view` maps BaSyx ProcessState / EvaluationState / SimulationState; disabled or failing BaSyx returns `OFFLINE` and null submodels
+- AAS V3 submodel GET uses unpadded Base64URL IDs
+- `GET /aas-inspector` returns the HTML page and points at `/aas/{id}/view`, not Twin SQL routes
+- Omniverse panel model conversion from `GET /assets/{id}/live` without `omni.ui`
+- USD StatusIndicator attribute mapping without Kit; in-memory `pxr.Usd.Stage` write when `pxr` is installed
+
+Kit window pixels, live BaSyx, and an OpenRadioss RUNNING screenshot are [portfolio-demo.md](portfolio-demo.md), not default `make test`.

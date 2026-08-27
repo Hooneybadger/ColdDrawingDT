@@ -117,10 +117,12 @@ Equipment `source_quality` is not FEA numerical quality and not the FEA safety c
 
 ### OpenUSD view
 
-- Factory layout
-- Live and history overlays
-- FEA field view
-- Senior and operator apps
+- Factory layout generated from YAML
+- Operator and senior Kit apps with a live `omni.ui` panel
+- Drawing 4 StatusIndicator color and `coldDrawing:*` attributes from backend state
+- Browser `/operator` and `/aas-inspector` (display only)
+
+History timeline UI and FEA field overlay are not in this version. 3D clients do not own safety rules.
 
 ## Scenario boundary
 

@@ -16,6 +16,8 @@ Present:
 - Factory picture under `docs/images/`
 - HTTP API, PINN adapter, FEA pipeline, OpenUSD stage
 - Operator `/operator` WebRTC page; Kit livestream apps (Kit binary stays on the RTX host)
+- AAS Inspector `/aas-inspector` (reads BaSyx through `GET /aas/{id}/view`)
+- Omniverse `omni.ui` live panel and Drawing 4 StatusIndicator bind (display only)
 - Contract check script `scripts/validate_contracts.py`
 
 Not filled:
@@ -40,6 +42,7 @@ Not filled:
 | [observability-reliability.md](observability-reliability.md) | Metrics, alerts, Lineage |
 | [test-validation.md](test-validation.md) | Tests |
 | [demo-acceptance.md](demo-acceptance.md) | make targets |
+| [portfolio-demo.md](portfolio-demo.md) | Backend to AAS to Omniverse demo sequence |
 | [adr/README.md](adr/README.md) | Why these tools were chosen |
 | [contribution-units.md](contribution-units.md) | Branch and commit size |
 
