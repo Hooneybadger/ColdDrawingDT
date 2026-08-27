@@ -12,6 +12,7 @@ except ImportError:  # Kit is not present in unit tests.
             return None
 
 
+from cold_drawing_twin.kit_runtime import LiveViewController
 from omni.cold_drawing.senior.client import TwinApiClient
 
 
@@ -23,6 +24,7 @@ class ColdDrawingSeniorExtension(IExt):
         self.latest = None
         self._sub = None
         self.session_id = None
+        self.view = LiveViewController(self.client, self.asset_id, "Cold Drawing Senior")
         try:
             self.session_id = self.client.start_stream(self.asset_id).get("session_id")
         except Exception:
@@ -46,6 +48,8 @@ class ColdDrawingSeniorExtension(IExt):
                 urlopen(request, timeout=5).read()
             except Exception:
                 pass
+        if getattr(self, "view", None) is not None:
+            self.view.shutdown()
         self._sub = None
 
     def _on_update(self, event):
@@ -59,25 +63,13 @@ class ColdDrawingSeniorExtension(IExt):
         if self._elapsed < self.client.poll_s and self.latest is not None:
             return self.latest
         self._elapsed = 0.0
-        self.latest = self.live_state()
         if self.session_id:
             try:
                 self.client.heartbeat_stream(self.session_id)
             except Exception:
                 pass
+        self.latest = self.view.tick()
         return self.latest
-
-    def live_state(self):
-        state = self.client.asset_state(self.asset_id)
-        overview = self.client.assets()
-        return {
-            "factory": overview,
-            "selected_asset": state,
-            "fea_job": None
-            if not state.get("active_fea_job_id") and not state.get("last_completed_fea_job_id")
-            else self.client.fea_job(state.get("active_fea_job_id") or state.get("last_completed_fea_job_id")),
-            "history_path": f"/assets/{self.asset_id}/history",
-        }
 
     def run_fast_evaluation(self):
         return self.client.evaluate(self.asset_id)
