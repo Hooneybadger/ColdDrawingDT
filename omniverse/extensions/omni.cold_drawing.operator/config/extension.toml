@@ -3,5 +3,9 @@ title = "Cold Drawing Operator"
 version = "1.1.0"
 description = "Assigned-line operator view. Reads the HTTP API only."
 
+[dependencies]
+"omni.ui" = {}
+"omni.usd" = {}
+
 [[python.module]]
 name = "omni.cold_drawing.operator"

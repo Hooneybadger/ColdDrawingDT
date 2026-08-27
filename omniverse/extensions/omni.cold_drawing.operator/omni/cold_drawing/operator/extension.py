@@ -12,7 +12,7 @@ except ImportError:
             return None
 
 
-from cold_drawing_twin.display import apply_status_attributes
+from cold_drawing_twin.kit_runtime import LiveViewController
 from omni.cold_drawing.operator.client import OperatorClient
 
 
@@ -23,6 +23,7 @@ class ColdDrawingOperatorExtension(IExt):
         self.latest = None
         self._sub = None
         self.session_id = None
+        self.view = LiveViewController(self.client, self.client.asset_id, "Cold Drawing Operator")
         try:
             self.session_id = self.client.start_stream().get("session_id")
         except Exception:
@@ -46,6 +47,8 @@ class ColdDrawingOperatorExtension(IExt):
                 urlopen(request, timeout=5).read()
             except Exception:
                 pass
+        if getattr(self, "view", None) is not None:
+            self.view.shutdown()
         self._sub = None
 
     def _on_update(self, event):
@@ -59,11 +62,10 @@ class ColdDrawingOperatorExtension(IExt):
         if self._elapsed < self.client.poll_s and self.latest is not None:
             return self.latest
         self._elapsed = 0.0
-        view = self.client.status()
         if self.session_id:
             try:
                 self.client.heartbeat_stream(self.session_id)
             except Exception:
                 pass
-        self.latest = apply_status_attributes({}, view)
+        self.latest = self.view.tick()
         return self.latest
