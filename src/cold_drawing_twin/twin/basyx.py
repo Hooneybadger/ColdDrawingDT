@@ -171,3 +171,37 @@ class BasyxClient:
         if raise_for_status:
             response.raise_for_status()
         return response
+
+
+def submodel_element_map(payload: dict[str, Any]) -> dict[str, Any]:
+    return {item["idShort"]: item.get("value") for item in payload.get("submodelElements") or []}
+
+
+def read_projected_view(client: BasyxClient, asset_id: str) -> dict[str, Any]:
+    """Read ProcessState / EvaluationState / SimulationState from BaSyx. Not from SQL."""
+    registry = asset_registry()
+    aas_id = registry[asset_id]["aas_id"]
+    offline = {
+        "asset_id": asset_id,
+        "aas_id": aas_id,
+        "basyx_status": "OFFLINE",
+        "process": None,
+        "evaluation": None,
+        "simulation": None,
+    }
+    if not client.enabled:
+        return offline
+    try:
+        process = submodel_element_map(client.get_submodel(submodel_id(aas_id, PROCESS_ID_SHORT)))
+        evaluation = submodel_element_map(client.get_submodel(submodel_id(aas_id, EVALUATION_ID_SHORT)))
+        simulation = submodel_element_map(client.get_submodel(submodel_id(aas_id, SIMULATION_ID_SHORT)))
+    except Exception:  # noqa: BLE001
+        return offline
+    return {
+        "asset_id": asset_id,
+        "aas_id": aas_id,
+        "basyx_status": "ONLINE",
+        "process": process,
+        "evaluation": evaluation,
+        "simulation": simulation,
+    }

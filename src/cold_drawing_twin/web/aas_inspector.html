@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AAS Inspector</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; max-width: 48rem; }
+    section { margin-bottom: 1.5rem; }
+    table { border-collapse: collapse; width: 100%; }
+    td { padding: 0.25rem 0.5rem; border-bottom: 1px solid #ddd; vertical-align: top; }
+    td:first-child { width: 16rem; color: #444; }
+    .offline { color: #777; }
+  </style>
+</head>
+<body>
+  <h1>AAS Inspector</h1>
+  <p>Read-only AAS / BaSyx view. This page does not write Decisions and does not read SQL Twin tables.</p>
+  <p>
+    Asset
+    <input id="asset" value="BG.MIEUM.DRW.04" size="28">
+    <button id="load" type="button">Load</button>
+  </p>
+  <section>
+    <h2>Asset</h2>
+    <table>
+      <tr><td>Asset ID</td><td id="asset_id">—</td></tr>
+      <tr><td>AAS ID</td><td id="aas_id">—</td></tr>
+      <tr><td>BaSyx connection status</td><td id="basyx_status">—</td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>ProcessState</h2>
+    <table id="process"></table>
+  </section>
+  <section>
+    <h2>EvaluationState</h2>
+    <table id="evaluation"></table>
+  </section>
+  <section>
+    <h2>SimulationState</h2>
+    <table id="simulation"></table>
+  </section>
+  <script>
+    const processKeys = [
+      "reductionRatio", "dieHalfAngleRad", "frictionCoefficient",
+      "normalizedHardeningCoefficient", "sourceTimestamp", "quality", "stateVersion"
+    ];
+    const evaluationKeys = [
+      "latestEvaluationId", "latestSnapshotId", "latestDecisionId", "latestVerdict"
+    ];
+    const simulationKeys = ["activeFeaJobId", "lastCompletedFeaJobId"];
+
+    function dash(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      return String(value);
+    }
+
+    function fillTable(tableId, keys, payload) {
+      const table = document.getElementById(tableId);
+      table.innerHTML = "";
+      keys.forEach((key) => {
+        const row = document.createElement("tr");
+        const name = document.createElement("td");
+        const value = document.createElement("td");
+        name.textContent = key;
+        value.textContent = payload ? dash(payload[key]) : "—";
+        row.appendChild(name);
+        row.appendChild(value);
+        table.appendChild(row);
+      });
+    }
+
+    async function load() {
+      const assetId = document.getElementById("asset").value.trim() || "BG.MIEUM.DRW.04";
+      const response = await fetch("/aas/" + encodeURIComponent(assetId) + "/view");
+      if (!response.ok) {
+        document.getElementById("basyx_status").textContent = "Unavailable";
+        document.getElementById("basyx_status").className = "offline";
+        return;
+      }
+      const body = await response.json();
+      document.getElementById("asset_id").textContent = dash(body.asset_id);
+      document.getElementById("aas_id").textContent = dash(body.aas_id);
+      document.getElementById("basyx_status").textContent = dash(body.basyx_status);
+      document.getElementById("basyx_status").className = body.basyx_status === "ONLINE" ? "" : "offline";
+      fillTable("process", processKeys, body.process);
+      fillTable("evaluation", evaluationKeys, body.evaluation);
+      fillTable("simulation", simulationKeys, body.simulation);
+    }
+
+    document.getElementById("load").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>

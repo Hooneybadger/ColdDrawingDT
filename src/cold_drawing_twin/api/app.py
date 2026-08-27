@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from starlette.responses import Response
 
+from cold_drawing_twin.api.aas_routes import router as aas_router
 from cold_drawing_twin.api.routes import router
 from cold_drawing_twin.api.stream_routes import router as stream_router
 from cold_drawing_twin.observability.metrics import install_metrics, scrape_runtime_gauges
@@ -26,6 +27,7 @@ def create_app(app_container: AppContainer | None = None) -> FastAPI:
     install_metrics(app)
     app.include_router(router)
     app.include_router(stream_router)
+    app.include_router(aas_router)
 
     @app.get("/health")
     def health():
