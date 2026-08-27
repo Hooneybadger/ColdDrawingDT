@@ -35,7 +35,18 @@ This version generates `usd/factory/bugok_factory.usda` from layout YAML and shi
     Utilities
 ```
 
-Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04` references `usd/assets/drawing/Drawing_04.usda` (Frame, Die, Workpiece, Entry, Exit, StatusIndicator). `proxy` and `render` purposes share that asset. Kit extensions poll `/assets/{id}/state` on a timer. They display backend verdicts; they do not compute safety.
+Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04` references `usd/assets/drawing/Drawing_04.usda` (Frame, Die, Workpiece, Entry, Exit, StatusIndicator). `proxy` and `render` purposes share that asset.
+
+Kit extensions poll `GET /assets/{id}/live` on a timer. They map Asset ID to `usd_prim` from [config/asset_registry.yaml](../config/asset_registry.yaml). They display backend verdicts; they do not compute safety. Fetch failure sets `Backend: OFFLINE` and a gray indicator. It does not become `ANALYSIS_REQUIRED`.
+
+The operator and senior extensions each open one `omni.ui` panel:
+
+- PROCESS STATE: Asset ID, reduction ratio, die half angle, friction, normalized hardening, state version, source timestamp, source quality
+- DECISION: latest verdict, Evaluation ID, Snapshot ID, Decision ID, routing action, model version, FEA job ID
+- FEA: status (`IDLE` / `QUEUED` / `RUNNING` / `COMPLETED` / `FAILED` / `TIMEOUT`), solver, solver version, criterion verdict, quality, last completed FEA job ID
+- CONNECTION STATUS: `Backend: ONLINE` or `Backend: OFFLINE`
+
+Missing fields render as a dash or `Unavailable`. The extension writes `displayColor` and `coldDrawing:*` attributes onto `Drawing_04` and `Drawing_04/StatusIndicator`. Default CI does not launch Kit; mapping tests run without it. The live sequence is [portfolio-demo.md](portfolio-demo.md).
 
 ## Asset files
 
@@ -54,27 +65,23 @@ Use:
 - `render` purpose for the focused machine
 - variants for equipment state when useful
 
-## Senior app
+## Senior app (this version)
 
-- Whole-factory navigation
-- Live state overlay
-- Status filters
-- Timeline of historical Snapshots
-- Evaluation Lineage panel
-- FEA contour and critical region
-- Scenario create and compare
+- Whole-factory stage (`usd/factory/bugok_factory.usda`)
+- Same live panel and StatusIndicator bind as the operator extension, default Asset `BG.MIEUM.DRW.04`
+- HTTP evaluate helper `POST /assets/{id}/evaluations`
 
-History view must look different from live state.
+Not in this version: Snapshot timeline UI, FEA contour overlay, status filters, Scenario compare UI.
 
-## Operator app
+## Operator app (this version)
 
-- Assigned line only
-- Current step and key conditions
-- Decision: `SAFE`, `UNSAFE`, `ANALYSIS_REQUIRED`, `MANUAL_REVIEW`
-- FEA progress when a job is open
-- Short status text
+- Assigned line `BG.MIEUM.DRW.04`
+- `omni.ui` live panel (process, Decision, FEA, connection)
+- Backend verdict colors: `SAFE` green, `UNSAFE` red, `ANALYSIS_REQUIRED` blue, `INCONCLUSIVE` / `MANUAL_REVIEW` amber
+- Unknown verdict or backend OFFLINE: gray, text `Backend OFFLINE. State unavailable.`
+- FEA lifecycle from backend job status only
 
-Do not show the full senior analysis surface by default.
+Do not show a second decision engine. Browser `/operator` is Twin JSON over WebRTC or HTTP poll, not a 3D frame.
 
 ## Low-spec delivery
 

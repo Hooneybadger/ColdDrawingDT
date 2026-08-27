@@ -50,6 +50,10 @@ BG.MIEUM.DRW.04
   USD  /World/BugokFactory/Production/Drawing/Drawing_04
 ```
 
+`GET /aas/{asset_id}/view` reads those three submodels from BaSyx. It does not rebuild them from Twin SQL. If BaSyx is disabled or unreachable the payload is `basyx_status=OFFLINE` with `process`, `evaluation`, and `simulation` set to null. That is not `MANUAL_REVIEW` and not `ANALYSIS_REQUIRED`.
+
+`GET /aas-inspector` is a read-only HTML page for that endpoint. Default Asset ID is `BG.MIEUM.DRW.04`. See [portfolio-demo.md](portfolio-demo.md).
+
 ## Snapshot
 
 An Evaluation never reads a moving Digital Twin all the way through. At start it copies an immutable Snapshot.

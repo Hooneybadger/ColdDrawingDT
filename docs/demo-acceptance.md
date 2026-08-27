@@ -37,4 +37,6 @@ Automatic FEA SAFE/UNSAFE stays off on the mill YAML: `automatic_verdict_enabled
 
 `pinn-integration.yml` is a `workflow_dispatch` job for real `predict.py` evidence. `fea-integration.yml` runs OpenRadioss on every push/PR to `main`. Neither is part of default `make test`.
 
-Operator/senior Kit apps poll the HTTP API and register stream sessions. The browser page `/operator` uses a WebRTC datachannel with HTTP poll fallback. They do not write Decisions.
+Operator/senior Kit apps poll `GET /assets/{id}/live`, draw an `omni.ui` panel, and bind Drawing 4 `StatusIndicator`. They register stream sessions. The browser page `/operator` uses a WebRTC datachannel with HTTP poll fallback. `/aas-inspector` reads BaSyx through `GET /aas/{id}/view`. None of these write Decisions.
+
+The visual sequence (same Decision ID on backend, AAS, and Omniverse) is [portfolio-demo.md](portfolio-demo.md).

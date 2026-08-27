@@ -48,8 +48,9 @@ factory-stage:
 
 demo-stream:
 	@echo "Operator WebRTC page: http://127.0.0.1:8000/operator"
+	@echo "AAS Inspector: http://127.0.0.1:8000/aas-inspector"
 	@echo "Launch omniverse/apps/operator/cold_drawing_operator.kit on the RTX host for 3D livestream."
-	@echo "The operator client polls the HTTP API. Streaming must not write Decisions."
+	@echo "The operator client polls GET /assets/{id}/live. Streaming must not write Decisions."
 	@test -f usd/factory/bugok_factory.usda || (echo "run make factory-stage first" && exit 1)
 
 api:

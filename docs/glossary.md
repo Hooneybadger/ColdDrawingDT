@@ -34,6 +34,7 @@ Use these names in every document.
 | `NEED_FEA` | PINN asks for FEA before a final Decision. |
 | `INCONCLUSIVE` | FEA ran but numerical quality or metrics are not enough. |
 | `MANUAL_REVIEW` | Automatic Decision is blocked. A person must review. |
+| `ANALYSIS_REQUIRED` | Display mapping when the backend stored that string. Transport failure is not this verdict. |
 
 ## Clocks
 
