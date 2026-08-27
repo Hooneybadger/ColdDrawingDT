@@ -45,3 +45,13 @@ def test_http_contracts(settings):
     assert live["usd_prim"].endswith("Drawing_04")
     history = client.get(f"/assets/{PRIMARY}/history").json()
     assert history["points"]
+    inspector = client.get("/aas-inspector")
+    assert inspector.status_code == 200
+    assert "Read-only AAS / BaSyx view" in inspector.text
+    assert "/aas/" in inspector.text
+    assert "/assets/" not in inspector.text
+    aas = client.get(f"/aas/{PRIMARY}/view").json()
+    assert aas["asset_id"] == PRIMARY
+    assert aas["basyx_status"] == "OFFLINE"
+    assert aas["process"] is None
+    assert aas["evaluation"] is None

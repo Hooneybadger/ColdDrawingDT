@@ -146,6 +146,8 @@ POST /stream/sessions/{session_id}/heartbeat
 DELETE /stream/sessions/{session_id}
 POST /stream/webrtc/offer
 GET  /operator
+GET  /aas-inspector
+GET  /aas/{asset_id}/view
 GET  /health
 GET  /metrics
 ```
@@ -153,6 +155,8 @@ GET  /metrics
 A stream session is display liveness. Creating or heartbeating a session must not write a Decision. Kit and the browser client both register here so `/metrics` can scrape `stream_sessions`. An optional `gpu` object on heartbeat is the RTX-host sample; the API does not invent GPU numbers.
 
 `GET /assets/{asset_id}/live` is a read-only assembly of Twin, Evaluation, Decision, and FEA job fields for display. It does not compute a verdict.
+
+`GET /aas/{asset_id}/view` reads ProcessState, EvaluationState, and SimulationState from BaSyx. If BaSyx is disabled or unreachable the payload sets `basyx_status` to `OFFLINE` and leaves the submodels null. It does not copy Twin SQL rows and call them AAS data.
 
 ## Events
 
