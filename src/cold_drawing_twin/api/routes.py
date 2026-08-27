@@ -78,6 +78,7 @@ def get_state(asset_id: str, session: Session = Depends(get_session)):
         "quality": row.quality,
         "latest_evaluation_id": row.latest_evaluation_id,
         "latest_snapshot_id": row.latest_snapshot_id,
+        "latest_decision_id": row.latest_decision_id,
         "latest_verdict": row.latest_verdict,
         "active_fea_job_id": row.active_fea_job_id,
         "last_completed_fea_job_id": row.last_completed_fea_job_id,
@@ -105,6 +106,15 @@ def get_history(asset_id: str, session: Session = Depends(get_session)):
     if asset_id not in asset_registry():
         raise HTTPException(404, "unknown asset")
     return {"asset_id": asset_id, "points": history_for(session, asset_id)}
+
+
+@router.get("/assets/{asset_id}/live")
+def get_live(asset_id: str, session: Session = Depends(get_session)):
+    if asset_id not in asset_registry():
+        raise HTTPException(404, "unknown asset")
+    from cold_drawing_twin.api.live import live_view
+
+    return live_view(session, asset_id)
 
 
 @router.post("/assets/{asset_id}/evaluations")

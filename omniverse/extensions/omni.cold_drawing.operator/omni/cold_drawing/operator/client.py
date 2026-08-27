@@ -18,6 +18,10 @@ class OperatorClient:
         payload["asset_id"] = self.asset_id
         return payload
 
+    def fetch_live(self) -> dict:
+        with urlopen(self.base_url + f"/assets/{self.asset_id}/live", timeout=5) as response:
+            return json.loads(response.read().decode("utf-8"))
+
     def status(self) -> dict:
         try:
             return operator_view(self.fetch_state(), backend_online=True)
