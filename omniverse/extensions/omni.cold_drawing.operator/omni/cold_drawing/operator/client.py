@@ -19,7 +19,10 @@ class OperatorClient:
         return payload
 
     def status(self) -> dict:
-        return operator_view(self.fetch_state())
+        try:
+            return operator_view(self.fetch_state(), backend_online=True)
+        except Exception:
+            return operator_view({"asset_id": self.asset_id}, backend_online=False)
 
     def start_stream(self, role: str = "operator", client: str = "kit") -> dict:
         payload = json.dumps({"role": role, "client": client, "asset_id": self.asset_id}).encode("utf-8")
