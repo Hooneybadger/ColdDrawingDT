@@ -34,5 +34,14 @@ def test_http_contracts(settings):
     decision = client.get(f"/decisions/{body['decision_id']}").json()
     assert decision["verdict"] == "SAFE"
     assert decision["routing_policy_version"] == "routing-v1"
+    state = client.get(f"/assets/{PRIMARY}/state").json()
+    assert state["latest_decision_id"] == body["decision_id"]
+    live = client.get(f"/assets/{PRIMARY}/live").json()
+    assert live["backend_status"] == "ONLINE"
+    assert live["decision"]["decision_id"] == body["decision_id"]
+    assert live["decision"]["latest_verdict"] == "SAFE"
+    assert live["decision"]["evaluation_id"] == body["evaluation_id"]
+    assert live["decision"]["snapshot_id"] == body["snapshot"]["snapshot_id"]
+    assert live["usd_prim"].endswith("Drawing_04")
     history = client.get(f"/assets/{PRIMARY}/history").json()
     assert history["points"]

@@ -27,6 +27,9 @@ class TwinApiClient:
     def asset_state(self, asset_id: str) -> dict:
         return self.get_json(f"/assets/{asset_id}/state")
 
+    def live(self, asset_id: str) -> dict:
+        return self.get_json(f"/assets/{asset_id}/live")
+
     def history(self, asset_id: str) -> dict:
         return self.get_json(f"/assets/{asset_id}/history")
 

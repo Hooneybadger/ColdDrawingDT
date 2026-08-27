@@ -130,6 +130,7 @@ FEA path that needs a person: [examples/decision_fea.example.json](examples/deci
 ```text
 GET  /assets/{asset_id}
 GET  /assets/{asset_id}/state
+GET  /assets/{asset_id}/live
 PUT  /assets/{asset_id}/state
 GET  /assets/{asset_id}/history
 POST /assets/{asset_id}/evaluations
@@ -150,6 +151,8 @@ GET  /metrics
 ```
 
 A stream session is display liveness. Creating or heartbeating a session must not write a Decision. Kit and the browser client both register here so `/metrics` can scrape `stream_sessions`. An optional `gpu` object on heartbeat is the RTX-host sample; the API does not invent GPU numbers.
+
+`GET /assets/{asset_id}/live` is a read-only assembly of Twin, Evaluation, Decision, and FEA job fields for display. It does not compute a verdict.
 
 ## Events
 
