@@ -13,6 +13,8 @@ def test_operator_page_is_display_only(settings):
     assert page.status_code == 200
     assert "text/html" in page.headers["content-type"]
     assert "does not write Decisions" in page.text
+    assert "Backend OFFLINE" in page.text
+    assert "State unavailable." in page.text
 
 
 async def test_webrtc_offer_returns_answer(settings):

@@ -12,37 +12,52 @@
 <body>
   <h1>Operator view</h1>
   <p>Display only. This page does not write Decisions.</p>
+  <p>Backend: <span id="backend">starting</span></p>
   <p>Transport: <span id="transport">starting</span></p>
   <p>Asset <span id="asset"></span> <span id="indicator"></span> <strong id="verdict"></strong></p>
+  <p id="ids"></p>
   <p id="text"></p>
   <pre id="payload"></pre>
   <script>
     const params = new URLSearchParams(window.location.search);
     const assetId = params.get("asset_id") || "BG.MIEUM.DRW.04";
     document.getElementById("asset").textContent = assetId;
-    const colors = { green: "#2e7d32", red: "#c62828", amber: "#f9a825", blue: "#1565c0" };
+    const colors = { green: "#2e7d32", red: "#c62828", amber: "#f9a825", blue: "#1565c0", gray: "#777777" };
     let webrtcLive = false;
 
+    function dash(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      return String(value);
+    }
+
     function render(view) {
-      document.getElementById("verdict").textContent = view.latest_verdict || "";
+      const backend = view.backend_status || "ONLINE";
+      document.getElementById("backend").textContent = backend;
+      document.getElementById("verdict").textContent = dash(view.latest_verdict);
       document.getElementById("text").textContent = view.text || "";
-      document.getElementById("indicator").style.background = colors[view.indicator] || "#777";
+      document.getElementById("indicator").style.background = colors[view.indicator] || colors.gray;
+      document.getElementById("ids").textContent =
+        "Decision " + dash(view.decision_id) +
+        " / Evaluation " + dash(view.evaluation_id) +
+        " / Snapshot " + dash(view.snapshot_id);
       document.getElementById("payload").textContent = JSON.stringify(view, null, 2);
     }
 
-    async function pollHttp() {
-      const response = await fetch("/assets/" + encodeURIComponent(assetId) + "/state");
-      if (!response.ok) {
-        render({
-          latest_verdict: "ANALYSIS_REQUIRED",
-          text: "Twin state is not loaded.",
-          indicator: "blue",
-          display_only: true,
-          asset_id: assetId
-        });
-        return;
-      }
-      const state = await response.json();
+    function offlineView() {
+      return {
+        asset_id: assetId,
+        backend_status: "OFFLINE",
+        latest_verdict: null,
+        indicator: "gray",
+        text: "Backend OFFLINE. State unavailable.",
+        display_only: true,
+        decision_id: null,
+        evaluation_id: null,
+        snapshot_id: null
+      };
+    }
+
+    function styleFor(verdict) {
       const map = {
         SAFE: ["Continue the current pass.", "green"],
         UNSAFE: ["Stop. Condition rejected.", "red"],
@@ -50,17 +65,44 @@
         MANUAL_REVIEW: ["Wait for review.", "amber"],
         ANALYSIS_REQUIRED: ["Check in progress.", "blue"]
       };
-      const verdict = state.latest_verdict || "ANALYSIS_REQUIRED";
-      const pair = map[verdict] || map.ANALYSIS_REQUIRED;
+      if (!verdict) return ["No Decision yet.", "gray"];
+      return map[verdict] || ["Unknown verdict.", "gray"];
+    }
+
+    async function pollHttp() {
+      let response;
+      try {
+        response = await fetch("/assets/" + encodeURIComponent(assetId) + "/state");
+      } catch (err) {
+        render(offlineView());
+        return;
+      }
+      if (!response.ok) {
+        render({
+          asset_id: assetId,
+          backend_status: "ONLINE",
+          latest_verdict: null,
+          indicator: "gray",
+          text: "State unavailable.",
+          display_only: true
+        });
+        return;
+      }
+      const state = await response.json();
+      const pair = styleFor(state.latest_verdict || null);
       render({
         asset_id: assetId,
         process_state: state.features || {},
-        latest_verdict: verdict,
+        latest_verdict: state.latest_verdict || null,
+        evaluation_id: state.latest_evaluation_id,
+        snapshot_id: state.latest_snapshot_id,
+        decision_id: state.latest_decision_id,
         fea_running: Boolean(state.active_fea_job_id),
         last_update: state.source_timestamp,
         quality: state.quality,
         text: pair[0],
         indicator: pair[1],
+        backend_status: "ONLINE",
         display_only: true
       });
     }

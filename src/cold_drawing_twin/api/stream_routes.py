@@ -99,16 +99,20 @@ def _operator_view_for(asset_id: str) -> dict:
     try:
         row = TwinStore(session).get(asset_id)
         if row is None:
-            return operator_view({"asset_id": asset_id})
+            return operator_view({"asset_id": asset_id}, backend_online=True)
         return operator_view(
             {
                 "asset_id": row.asset_id,
                 "features": row.features,
                 "latest_verdict": row.latest_verdict,
+                "latest_evaluation_id": row.latest_evaluation_id,
+                "latest_snapshot_id": row.latest_snapshot_id,
+                "latest_decision_id": row.latest_decision_id,
                 "active_fea_job_id": row.active_fea_job_id,
                 "source_timestamp": row.source_timestamp.isoformat() if row.source_timestamp else None,
                 "quality": row.quality,
-            }
+            },
+            backend_online=True,
         )
     finally:
         session.close()
