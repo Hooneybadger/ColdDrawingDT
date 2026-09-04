@@ -1,0 +1,280 @@
+{
+  "version": "1.1",
+  "files": [
+    {
+      "path": ".env.example",
+      "size": 681,
+      "sha256": "49816c7bc6882cd2d7d138685a9237d4c8d8724568015141a2c0cd9cb17a2fa9"
+    },
+    {
+      "path": ".github/CODE_OF_CONDUCT.md",
+      "size": 5218,
+      "sha256": "f6a395a7b6568b39aee6006e2a874943382f56cc88294f3d0b403b53eb00c10d"
+    },
+    {
+      "path": ".github/CONTRIBUTING.md",
+      "size": 1996,
+      "sha256": "da6489b7b8d9f991b96ca8008f73d32e5965fb9901bc28223072af4a1fbfb956"
+    },
+    {
+      "path": ".github/README.md",
+      "size": 1211,
+      "sha256": "25c15a3cffd32d4764ca7f6791f29c3a8e62b76c60400de4c33d981c6d9c4767"
+    },
+    {
+      "path": ".github/SECURITY.md",
+      "size": 1235,
+      "sha256": "1c665fec8114f963bb3549fbdf1f3cd7145e6e0005c60f8d73c6c9febd2e200b"
+    },
+    {
+      "path": ".github/SUPPORT.md",
+      "size": 443,
+      "sha256": "3875688d9470956029d2a408f19e5d0f1519728824821b335808e9dc7a11d715"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "size": 369,
+      "sha256": "40a35b1e22a7d178e43e19fa1b31ab5bdb49a0b278ef81b363ceb28ca03e9c9b"
+    },
+    {
+      "path": ".github/workflows/contracts.yml",
+      "size": 906,
+      "sha256": "a6180f2ea8c18ad9e4b96a18ffb291a8c9dcf83dde371437edc88448c3be13f6"
+    },
+    {
+      "path": ".gitignore",
+      "size": 2542,
+      "sha256": "d9066d3a6fb5c36e988c7c753700f3c1269e687da653e804d56a078dd87598e5"
+    },
+    {
+      "path": "README.md",
+      "size": 3548,
+      "sha256": "b3d7c3687383ba069feabf9551b5d447ebad2de82577f0099d8d1050707e301f"
+    },
+    {
+      "path": "config/README.md",
+      "size": 767,
+      "sha256": "03c667c3553eabac632b594fcd843fa89322f7d23d411fd6cfb9aa7b3b85ddb8"
+    },
+    {
+      "path": "config/asset_registry.yaml",
+      "size": 3709,
+      "sha256": "a5389189a4e1dcd79c3a7b378641234e4a78e920caaf5cf10f42b3ef847109b0"
+    },
+    {
+      "path": "config/factory_layout.yaml",
+      "size": 2769,
+      "sha256": "402720ffc1f9f411a38e598f9f86e421f7323680e1d4d83c5095ac3094db1df7"
+    },
+    {
+      "path": "config/fea_reference_case.yaml",
+      "size": 645,
+      "sha256": "d02eae264703ececb1ecd05c56e49aa2226ea2460662ee88e6ba5802bb7ef138"
+    },
+    {
+      "path": "config/fea_safety_criterion.yaml",
+      "size": 358,
+      "sha256": "210332decaffd6ca5c03669624b7ef8ccab798a5d57574024111aa258cf95de8"
+    },
+    {
+      "path": "config/pinn_contract.yaml",
+      "size": 468,
+      "sha256": "b35ad0594f4051ebd7e072df6bb3f27575c8c7b03e822bb7fa1c0ead83197be7"
+    },
+    {
+      "path": "config/routing_policy.yaml",
+      "size": 410,
+      "sha256": "385fe1ae4fe70dd19f3c1324386944c4ee9949df3d35b514d2801303a4798a3a"
+    },
+    {
+      "path": "docs/README.md",
+      "size": 2748,
+      "sha256": "a64b8caaa273009bfe5e9c1bb1e9a376137b1d09a2021a2246c469eb853583df"
+    },
+    {
+      "path": "docs/adr/0001-aas-basyx.md",
+      "size": 389,
+      "sha256": "a8f99f9005feff1c0fc2f4ab023694d5bff8b46d8449420af3ecd4a937659315"
+    },
+    {
+      "path": "docs/adr/0002-opcua-edge.md",
+      "size": 401,
+      "sha256": "e77a75bf71f60072b56db000e76cf4bcfe4ee4b70c4a028a8814f6ead854e6e9"
+    },
+    {
+      "path": "docs/adr/0003-postgres-timescale.md",
+      "size": 263,
+      "sha256": "d1d74518a89707e5cad4b8da9accc783587c7c5502449c4d2618b9498498c368"
+    },
+    {
+      "path": "docs/adr/0004-rabbitmq-celery.md",
+      "size": 436,
+      "sha256": "54f3eb91cf02d6d8d1982f5fb3a70a090e58d7ed69210e1ca94b2d98c581c3aa"
+    },
+    {
+      "path": "docs/adr/0005-openradioss-gmsh.md",
+      "size": 477,
+      "sha256": "62f3600424e93c2217715e0ea6ef94af8a6fbcab6b6e6a16c8321744867c0c3b"
+    },
+    {
+      "path": "docs/adr/0006-openusd-omniverse.md",
+      "size": 444,
+      "sha256": "3ba822f20e4854164cfc2a2a9bf5a69031b3d14a6eeddd2adccdb35fb37427b0"
+    },
+    {
+      "path": "docs/adr/0007-pinn-openradioss-routing.md",
+      "size": 330,
+      "sha256": "3452284898bc8219f7bdcd24d1b22b0063c72a38bbc1d229e60341bcea459dfc"
+    },
+    {
+      "path": "docs/adr/0008-docker-compose-first.md",
+      "size": 308,
+      "sha256": "786b69c74376c43c0769a664ae230058b1acafab8f1249c63d45a8c4d67e5ba3"
+    },
+    {
+      "path": "docs/adr/README.md",
+      "size": 685,
+      "sha256": "d69fa6b904bf63cb0cee046012d27e7ac1f6429e10091bce1207871dd7002a19"
+    },
+    {
+      "path": "docs/ai-fea-orchestration.md",
+      "size": 3386,
+      "sha256": "3c923333c15a4c0de42176dd7d72548e9b8599f39245ba17b5542a1b74acce33"
+    },
+    {
+      "path": "docs/api-contracts.md",
+      "size": 3345,
+      "sha256": "5407c2d09aad6e4c40f84f22e15edd25542086dcca66edbcf6512f1de7298202"
+    },
+    {
+      "path": "docs/architecture.md",
+      "size": 2811,
+      "sha256": "708a270f6ea4fa50ce8850e9e32f18fea2919d90f8bdfa0debc06909a9a02ff1"
+    },
+    {
+      "path": "docs/contribution-units.md",
+      "size": 2738,
+      "sha256": "cce840e23b8e93a541b288e8f90f829ab7225bd1b41ccf7291e3153f7320d3ad"
+    },
+    {
+      "path": "docs/demo-acceptance.md",
+      "size": 2627,
+      "sha256": "1c18d2384fcb972297d8260df2a6ebc5284f0a3db9fdd9803c9ec1d9e3e0a3c0"
+    },
+    {
+      "path": "docs/deployment.md",
+      "size": 1813,
+      "sha256": "5d596f92c7f397bb0947ead374ff657a3ccec4df486380df91e75dd7ed16797d"
+    },
+    {
+      "path": "docs/digital-twin.md",
+      "size": 2372,
+      "sha256": "a22f29d747b14c6a3a5dfe9f537d4dc7d20e13e1ad58a508f371aceb274013f9"
+    },
+    {
+      "path": "docs/examples/decision.example.json",
+      "size": 233,
+      "sha256": "c7e774e2e10aea45ea9b783237bde19e5432f1514d80e2f35a286b959cdb8f76"
+    },
+    {
+      "path": "docs/examples/decision_fea.example.json",
+      "size": 251,
+      "sha256": "75c503fa1c252e5e4b192918d7435322de41c0ad9160f7bea510482df200aee2"
+    },
+    {
+      "path": "docs/examples/evaluation_request.example.json",
+      "size": 103,
+      "sha256": "9b44bc874e05ad46d23df6c4e41fc949af76204ed9b1010e47204888d30938eb"
+    },
+    {
+      "path": "docs/examples/fea_job.example.json",
+      "size": 267,
+      "sha256": "2d8435a501c2c98b393c9021f5d107a91036706098aedcdca131c950ed4b2d47"
+    },
+    {
+      "path": "docs/examples/prediction_result.example.json",
+      "size": 187,
+      "sha256": "034059981d12c5b3b2889e6a67b6b0ebe0a6a9446cd2c5c4f3cbe1345dde34ee"
+    },
+    {
+      "path": "docs/examples/process_snapshot.example.json",
+      "size": 305,
+      "sha256": "51e132aaa3811830df29b4ec6b434fdd3bc39a91258a1cf6cc19d4d1135edc47"
+    },
+    {
+      "path": "docs/examples/scenario_request.example.json",
+      "size": 197,
+      "sha256": "711e840812443895ebe350797fb650857605b03dd6544bb1594aa122be51d1da"
+    },
+    {
+      "path": "docs/factory-reconstruction.md",
+      "size": 4853,
+      "sha256": "99d0822ffd12420c32296d2159b06db4b777aaebf79b9bdf735fb9aa2cec1d55"
+    },
+    {
+      "path": "docs/glossary.md",
+      "size": 1846,
+      "sha256": "6252db746d33678eace91123d0693fa61641acb2777efd2de46d79022d7d740e"
+    },
+    {
+      "path": "docs/images/factory-layout.svg",
+      "size": 10142,
+      "sha256": "43aa5bed90b71450007d9824052af2c27532aa4589f2a8376cd51993e89ff8a1"
+    },
+    {
+      "path": "docs/observability-reliability.md",
+      "size": 2097,
+      "sha256": "c076d40c66fc455c07f2ad41daf42f3b8580541c9a5d47673ef17cbc557bb016"
+    },
+    {
+      "path": "docs/openradioss-fea.md",
+      "size": 4516,
+      "sha256": "704153cb74b20a555abd011f8d7436bc60145f6a34ec9d5bd4efbc99fa6b5472"
+    },
+    {
+      "path": "docs/openusd-omniverse.md",
+      "size": 2762,
+      "sha256": "132de5263cc100b8bff1a13799e27d6187eddc897b6aac3dbc4685afdef18e92"
+    },
+    {
+      "path": "docs/repository.md",
+      "size": 1274,
+      "sha256": "2be8ddc9831d45a43b126ebbae7d230b3db35a8a71070b8aa788c6c21afdd58c"
+    },
+    {
+      "path": "docs/test-validation.md",
+      "size": 2258,
+      "sha256": "f3ff55c2f4a94cf094f534d8480dae2e4922b15bd2bccab090dc69bf2c313064"
+    },
+    {
+      "path": "requirements-ci.txt",
+      "size": 33,
+      "sha256": "6c182f03400b89a551eb724714a0c9c49b8eb7b027970253deea5841c9fe9dfd"
+    },
+    {
+      "path": "requirements.txt",
+      "size": 107,
+      "sha256": "a16c087bd74f2d6eb57883fe4546cc760c1c55c449432db917f526add2e38235"
+    },
+    {
+      "path": "schemas/decision.schema.json",
+      "size": 864,
+      "sha256": "d90f23155702f42113ffc4a0c8cc3686545d88a463c8002149d5d8edbe18d08e"
+    },
+    {
+      "path": "schemas/process_snapshot.schema.json",
+      "size": 1034,
+      "sha256": "2e6847dc3b0c85135022f941cefd3aead9df6e46c0d679679a5e8299818862ce"
+    },
+    {
+      "path": "scripts/render_factory_layout.py",
+      "size": 8401,
+      "sha256": "e87c8c276355b899106aa3529aeaca09f415cbca1c1919bdcfd98712b4e969f6"
+    },
+    {
+      "path": "scripts/validate_contracts.py",
+      "size": 6359,
+      "sha256": "ca8d9e4d635387700a6c74ff6881bfdf1daa0007929f7324c953d3bfd7fd5133"
+    }
+  ]
+}
