@@ -2,53 +2,290 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Cold Drawing operator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Operator · BG.MIEUM</title>
   <style>
-    body { font-family: sans-serif; margin: 2rem; max-width: 40rem; }
-    #indicator { width: 1.2rem; height: 1.2rem; display: inline-block; border-radius: 50%; }
-    pre { background: #f4f4f4; padding: 1rem; overflow: auto; }
+    :root {
+      --bg: #1c1f24;
+      --panel: #262b31;
+      --edge: #3a4048;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --lamp-safe: #3d8a4a;
+      --lamp-unsafe: #c62828;
+      --lamp-warn: #c9a227;
+      --lamp-info: #3d7ec9;
+      --lamp-off: #6b7178;
+      --banner-alarm: #6b1d1d;
+      --banner-warn: #5a4714;
+      --banner-info: #1a3558;
+      --banner-off: #3a3f46;
+      --tile: #2f353c;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); }
+    body {
+      font-family: "Segoe UI", ui-sans-serif, sans-serif;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 0.55rem 1rem;
+      background: #16191d;
+      border-bottom: 1px solid var(--edge);
+    }
+    header nav { margin-left: auto; display: flex; gap: 0.75rem; }
+    header a { color: var(--muted); text-decoration: none; }
+    header a[aria-current="page"] { color: var(--text); }
+    .site { font-weight: 600; letter-spacing: 0.04em; }
+    .clocks { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; }
+    .conn { display: flex; align-items: center; gap: 0.4rem; font-size: 12px; color: var(--muted); }
+    .lamp {
+      width: 0.7rem; height: 0.7rem; border-radius: 50%;
+      background: var(--lamp-off); display: inline-block; flex-shrink: 0;
+    }
+    .lamp.green { background: var(--lamp-safe); }
+    .lamp.red { background: var(--lamp-unsafe); }
+    .lamp.amber { background: var(--lamp-warn); }
+    .lamp.blue { background: var(--lamp-info); }
+    .lamp.gray { background: var(--lamp-off); }
+    #banner {
+      display: none;
+      padding: 0.7rem 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    #banner.alarm { display: block; background: var(--banner-alarm); }
+    #banner.warning { display: block; background: var(--banner-warn); color: #fff6d5; }
+    #banner.advisory { display: block; background: var(--banner-info); }
+    #banner.unavailable { display: block; background: var(--banner-off); }
+    main {
+      display: grid;
+      grid-template-columns: minmax(18rem, 1.4fr) minmax(16rem, 1fr);
+      gap: 0.75rem;
+      padding: 0.75rem;
+    }
+    @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--edge);
+      padding: 0.85rem 1rem;
+    }
+    h1, h2 { margin: 0 0 0.6rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .face-head { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.4rem; }
+    #verdict { font-size: 1.7rem; font-weight: 650; letter-spacing: 0.04em; margin: 0; }
+    #action { margin: 0 0 0.85rem; color: var(--muted); }
+    .pvs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .pv { background: var(--tile); padding: 0.55rem 0.65rem; }
+    .pv .label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .pv .reading { display: flex; align-items: baseline; gap: 0.35rem; }
+    .pv .value { font-size: 1.45rem; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .pv .unit { color: var(--muted); font-size: 0.8rem; }
+    .meta { margin-top: 0.75rem; color: var(--muted); font-size: 12px; }
+    .id-row { display: grid; grid-template-columns: 7.5rem 1fr auto; gap: 0.4rem; align-items: center; margin: 0.35rem 0; }
+    .id-row span { color: var(--muted); }
+    code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.82rem; color: var(--text); word-break: break-all; }
+    button, input, select {
+      font: inherit; color: var(--text); background: #1c1f24; border: 1px solid var(--edge); padding: 0.25rem 0.45rem;
+    }
+    button { cursor: pointer; }
+    button:hover { border-color: var(--muted); }
+    footer {
+      padding: 0.45rem 1rem 0.8rem; color: var(--muted); font-size: 12px;
+    }
+    .asset-field { display: flex; gap: 0.35rem; align-items: center; }
   </style>
 </head>
 <body>
-  <h1>Operator view</h1>
-  <p>Display only. This page does not write Decisions.</p>
-  <p>Backend: <span id="backend">starting</span></p>
-  <p>Transport: <span id="transport">starting</span></p>
-  <p>Asset <span id="asset"></span> <span id="indicator"></span> <strong id="verdict"></strong></p>
-  <p id="ids"></p>
-  <p id="text"></p>
-  <pre id="payload"></pre>
+  <header>
+    <span class="site">BG.MIEUM</span>
+    <div class="asset-field">
+      <label for="asset">Asset</label>
+      <input id="asset" size="22" value="BG.MIEUM.DRW.04" autocomplete="off">
+    </div>
+    <span class="conn"><span id="backend-lamp" class="lamp gray"></span> Backend <span id="backend">starting</span></span>
+    <span class="conn">Transport <span id="transport">starting</span></span>
+    <div class="clocks">
+      Console UTC <span id="console-clock">—</span><br>
+      Source <span id="source-clock">—</span>
+    </div>
+    <nav>
+      <a href="/operator" aria-current="page">Operator</a>
+      <a href="/aas-inspector">AAS Inspector</a>
+    </nav>
+  </header>
+  <div id="banner" role="status"></div>
+  <main>
+    <section aria-labelledby="face-title">
+      <h1 id="face-title">Selected asset</h1>
+      <div class="face-head">
+        <span id="indicator" class="lamp gray" aria-hidden="true"></span>
+        <p id="verdict">—</p>
+      </div>
+      <p id="action"></p>
+      <div id="pvs" class="pvs"></div>
+      <p class="meta">Quality <span id="quality">—</span></p>
+    </section>
+    <section aria-labelledby="lineage-title">
+      <h2 id="lineage-title">Current evaluation</h2>
+      <p class="meta">Route <span id="routing">—</span> · Model <span id="model">—</span></p>
+      <p class="meta" id="eval-status"></p>
+      <div class="id-row"><span>Evaluation</span><code id="evaluation-id">—</code><button type="button" data-copy="evaluation-id">Copy</button></div>
+      <div class="id-row"><span>Snapshot</span><code id="snapshot-id">—</code><button type="button" data-copy="snapshot-id">Copy</button></div>
+      <h2>Decision</h2>
+      <div class="id-row"><span>Decision</span><code id="decision-id">—</code><button type="button" data-copy="decision-id">Copy</button></div>
+      <p class="meta" id="last-finalized"></p>
+      <h2>FEA</h2>
+      <p class="meta">Status <span id="fea-status">—</span></p>
+      <p class="meta">Job <span id="fea-job">—</span></p>
+      <p class="meta">History <span id="last-fea">—</span></p>
+    </section>
+  </main>
+  <footer>Display only. This page does not write Decisions.</footer>
+  <p hidden>Backend OFFLINE. State unavailable.</p>
   <script>
     const params = new URLSearchParams(window.location.search);
-    const assetId = params.get("asset_id") || "BG.MIEUM.DRW.04";
-    document.getElementById("asset").textContent = assetId;
-    const colors = { green: "#2e7d32", red: "#c62828", amber: "#f9a825", blue: "#1565c0", gray: "#777777" };
+    const assetInput = document.getElementById("asset");
+    assetInput.value = params.get("asset_id") || "BG.MIEUM.DRW.04";
+    const colors = { green: "green", red: "red", amber: "amber", blue: "blue", gray: "gray" };
+    const pvDefs = [
+      { key: "reduction_ratio", label: "Reduction ratio", unit: "" },
+      { key: "die_half_angle_rad", label: "Die half angle", unit: "rad" },
+      { key: "friction_coefficient", label: "Friction coefficient", unit: "" },
+      { key: "normalized_hardening_coefficient", label: "Norm. hardening", unit: "" }
+    ];
     let webrtcLive = false;
+    let pollTimer = null;
 
     function dash(value) {
       if (value === null || value === undefined || value === "") return "—";
       return String(value);
     }
 
+    function attentionFor(view) {
+      if (view.attention) return view.attention;
+      const backend = view.backend_status || "ONLINE";
+      if (backend !== "ONLINE") return "unavailable";
+      const verdict = view.latest_verdict || (view.decision && view.decision.latest_verdict);
+      const fea = (view.fea_status || (view.fea && view.fea.status) || "").toUpperCase();
+      if (verdict === "UNSAFE") return "alarm";
+      if (fea === "QUEUED" || fea === "RUNNING") return "advisory";
+      if (verdict === "INCONCLUSIVE" || verdict === "MANUAL_REVIEW") return "warning";
+      if (verdict === "ANALYSIS_REQUIRED") return "advisory";
+      if (!verdict) return "unavailable";
+      return "none";
+    }
+
+    function processVars(view) {
+      if (Array.isArray(view.process_variables) && view.process_variables.length) {
+        return view.process_variables;
+      }
+      const features = (view.process && view.process.features) || view.process_state || {};
+      return pvDefs.map((item) => ({
+        key: item.key,
+        label: item.label,
+        unit: item.unit,
+        value: dash(features[item.key])
+      }));
+    }
+
+    function setLamp(id, indicator) {
+      const node = document.getElementById(id);
+      node.className = "lamp " + (colors[indicator] || "gray");
+    }
+
     function render(view) {
       const backend = view.backend_status || "ONLINE";
+      const indicator = view.indicator || "gray";
+      const verdict = view.latest_verdict_label || view.latest_verdict || (view.decision && view.decision.latest_verdict);
+      const attention = attentionFor(view);
+      const decision = view.decision || {};
+      const fea = view.fea || {};
       document.getElementById("backend").textContent = backend;
-      document.getElementById("verdict").textContent = dash(view.latest_verdict);
-      document.getElementById("text").textContent = view.text || "";
-      document.getElementById("indicator").style.background = colors[view.indicator] || colors.gray;
-      document.getElementById("ids").textContent =
-        "Decision " + dash(view.decision_id) +
-        " / Evaluation " + dash(view.evaluation_id) +
-        " / Snapshot " + dash(view.snapshot_id);
-      document.getElementById("payload").textContent = JSON.stringify(view, null, 2);
+      setLamp("backend-lamp", backend === "ONLINE" ? "green" : "gray");
+      setLamp("indicator", indicator);
+      const route = view.current_route || view.routing_action || decision.routing_action;
+      const rawFea = String(view.fea_status || fea.status || "").toUpperCase();
+      const running = ["QUEUED", "RUNNING"].includes(rawFea);
+      const headline = view.headline || (running ? "WAITING FOR FEA" : ((verdict === "INCONCLUSIVE" || verdict === "MANUAL_REVIEW") ? "MANUAL REVIEW" : verdict));
+      document.getElementById("verdict").textContent = dash(headline);
+      document.getElementById("action").textContent = running
+        ? "Engineering decision pending."
+        : (headline === "MANUAL REVIEW"
+          ? ("Engineering verdict  " + dash(verdict))
+          : (view.evaluation_status || view.text || ""));
+      const banner = document.getElementById("banner");
+      banner.className = "";
+      banner.textContent = "";
+      if (attention !== "none") {
+        banner.className = attention;
+        if (running) banner.textContent = "Engineering decision pending.";
+        else if (headline === "MANUAL REVIEW") banner.textContent = "MANUAL REVIEW";
+        else banner.textContent = view.text || (backend === "ONLINE" ? dash(verdict) : "Backend OFFLINE. State unavailable.");
+      }
+      const pvs = document.getElementById("pvs");
+      pvs.innerHTML = "";
+      processVars(view).forEach((item) => {
+        const tile = document.createElement("div");
+        tile.className = "pv";
+        tile.innerHTML = "<span class='label'></span><span class='reading'><span class='value'></span><span class='unit'></span></span>";
+        tile.querySelector(".label").textContent = item.label;
+        tile.querySelector(".value").textContent = dash(item.value);
+        tile.querySelector(".unit").textContent = item.unit || "";
+        pvs.appendChild(tile);
+      });
+      document.getElementById("quality").textContent = dash(view.source_quality || view.quality || (view.process && view.process.quality));
+      let feaStatus = view.fea_headline || "";
+      let evalStatus = view.evaluation_status || "";
+      let currentJob = view.current_fea_job_id;
+      let historyJob = view.history_fea_job_id;
+      if (!feaStatus) {
+        if (running) {
+          feaStatus = rawFea;
+          evalStatus = "WAITING FOR FEA";
+          currentJob = decision.fea_job_id;
+          historyJob = fea.last_completed_fea_job_id;
+        } else if (verdict === "INCONCLUSIVE" || verdict === "MANUAL_REVIEW") {
+          feaStatus = "COMPLETED";
+          evalStatus = "MANUAL REVIEW";
+          currentJob = decision.fea_job_id || fea.last_completed_fea_job_id;
+          historyJob = null;
+        } else if (route === "ACCEPT" || verdict === "SAFE" || verdict === "UNSAFE") {
+          feaStatus = "NOT REQUIRED";
+          currentJob = null;
+          historyJob = fea.last_completed_fea_job_id;
+        } else {
+          feaStatus = rawFea || (backend === "ONLINE" ? "NOT REQUIRED" : "");
+          currentJob = decision.fea_job_id;
+          historyJob = fea.last_completed_fea_job_id;
+        }
+      }
+      document.getElementById("fea-status").textContent = dash(feaStatus);
+      document.getElementById("eval-status").textContent = evalStatus;
+      document.getElementById("last-finalized").textContent = view.show_last_finalized
+        ? ("LAST FINALIZED DECISION  " + dash(verdict) + "  " + dash(view.decision_id || decision.decision_id))
+        : "";
+      document.getElementById("decision-id").textContent = dash(view.decision_id || decision.decision_id);
+      document.getElementById("evaluation-id").textContent = dash(view.evaluation_id || decision.evaluation_id);
+      document.getElementById("snapshot-id").textContent = dash(view.snapshot_id || decision.snapshot_id);
+      document.getElementById("routing").textContent = dash(route);
+      document.getElementById("model").textContent = dash(view.model_version || decision.model_version);
+      document.getElementById("fea-job").textContent = dash(currentJob || view.fea_job_id);
+      document.getElementById("last-fea").textContent = dash(historyJob);
+      document.getElementById("source-clock").textContent = dash(view.source_timestamp || view.last_update || (view.process && view.process.source_timestamp));
     }
 
     function offlineView() {
       return {
-        asset_id: assetId,
+        asset_id: assetInput.value.trim(),
         backend_status: "OFFLINE",
         latest_verdict: null,
         indicator: "gray",
+        attention: "unavailable",
         text: "Backend OFFLINE. State unavailable.",
         display_only: true,
         decision_id: null,
@@ -57,22 +294,11 @@
       };
     }
 
-    function styleFor(verdict) {
-      const map = {
-        SAFE: ["Continue the current pass.", "green"],
-        UNSAFE: ["Stop. Condition rejected.", "red"],
-        INCONCLUSIVE: ["Wait for review.", "amber"],
-        MANUAL_REVIEW: ["Wait for review.", "amber"],
-        ANALYSIS_REQUIRED: ["Check in progress.", "blue"]
-      };
-      if (!verdict) return ["No Decision yet.", "gray"];
-      return map[verdict] || ["Unknown verdict.", "gray"];
-    }
-
     async function pollHttp() {
+      const assetId = assetInput.value.trim() || "BG.MIEUM.DRW.04";
       let response;
       try {
-        response = await fetch("/assets/" + encodeURIComponent(assetId) + "/state");
+        response = await fetch("/assets/" + encodeURIComponent(assetId) + "/live");
       } catch (err) {
         render(offlineView());
         return;
@@ -83,31 +309,17 @@
           backend_status: "ONLINE",
           latest_verdict: null,
           indicator: "gray",
+          attention: "unavailable",
           text: "State unavailable.",
           display_only: true
         });
         return;
       }
-      const state = await response.json();
-      const pair = styleFor(state.latest_verdict || null);
-      render({
-        asset_id: assetId,
-        process_state: state.features || {},
-        latest_verdict: state.latest_verdict || null,
-        evaluation_id: state.latest_evaluation_id,
-        snapshot_id: state.latest_snapshot_id,
-        decision_id: state.latest_decision_id,
-        fea_running: Boolean(state.active_fea_job_id),
-        last_update: state.source_timestamp,
-        quality: state.quality,
-        text: pair[0],
-        indicator: pair[1],
-        backend_status: "ONLINE",
-        display_only: true
-      });
+      render(await response.json());
     }
 
     async function registerSession() {
+      const assetId = assetInput.value.trim() || "BG.MIEUM.DRW.04";
       const response = await fetch("/stream/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,11 +330,16 @@
     }
 
     async function startWebrtc(sessionId) {
+      const assetId = assetInput.value.trim() || "BG.MIEUM.DRW.04";
       const pc = new RTCPeerConnection();
       const channel = pc.createDataChannel("operator");
       channel.onmessage = (event) => {
         webrtcLive = true;
         document.getElementById("transport").textContent = "webrtc-datachannel";
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
         render(JSON.parse(event.data));
       };
       const offer = await pc.createOffer();
@@ -150,7 +367,31 @@
       await pc.setRemoteDescription(await response.json());
     }
 
+    function startPoll() {
+      document.getElementById("transport").textContent = "http-poll fallback";
+      pollHttp();
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(pollHttp, 2000);
+    }
+
+    document.querySelectorAll("[data-copy]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const text = document.getElementById(button.getAttribute("data-copy")).textContent;
+        try { await navigator.clipboard.writeText(text); } catch (err) {}
+      });
+    });
+    assetInput.addEventListener("change", () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("asset_id", assetInput.value.trim() || "BG.MIEUM.DRW.04");
+      history.replaceState({}, "", url);
+      if (!webrtcLive) pollHttp();
+    });
+    setInterval(() => {
+      document.getElementById("console-clock").textContent = new Date().toISOString().slice(11, 19) + "Z";
+    }, 1000);
+
     (async () => {
+      startPoll();
       const sessionId = await registerSession();
       setInterval(() => {
         if (sessionId) {
@@ -164,14 +405,10 @@
       try {
         await startWebrtc(sessionId);
       } catch (err) {
-        document.getElementById("transport").textContent = "http-poll fallback";
+        if (!webrtcLive && !pollTimer) startPoll();
       }
-      setTimeout(async () => {
-        if (!webrtcLive) {
-          document.getElementById("transport").textContent = "http-poll fallback";
-          await pollHttp();
-          setInterval(pollHttp, 2000);
-        }
+      setTimeout(() => {
+        if (!webrtcLive && !pollTimer) startPoll();
       }, 3000);
     })();
   </script>
