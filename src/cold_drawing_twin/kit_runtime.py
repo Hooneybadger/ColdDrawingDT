@@ -10,6 +10,35 @@ from cold_drawing_twin.usd_status import apply_status_to_stage, current_kit_stag
 LOGGER = logging.getLogger(__name__)
 
 
+def apply_kit_viewport() -> None:
+    """Hide the default editor grid when Kit settings are available."""
+    try:
+        import carb
+
+        settings = carb.settings.get_settings()
+        for key, value in (
+            ("/persistent/app/viewport/grid/enabled", False),
+            ("/app/viewport/grid/enabled", False),
+            ("/exts/omni.kit.window.viewport/showGrid", False),
+            ("/persistent/app/viewport/displayOptions", 0),
+            ("/app/viewport/show/grid", False),
+            ("/app/showHud", False),
+            ("/persistent/app/viewport/showFPS", False),
+            ("/app/viewport/showFPS", False),
+            ("/exts/omni.kit.window.viewport/showFPS", False),
+            ("/app/viewport/show/hud", False),
+            ("/rtx/post/aa/op", 1),
+            ("/app/viewport/grid/scale", 0),
+            ("/persistent/app/omniverse/showHud", False),
+        ):
+            try:
+                settings.set(key, value)
+            except Exception:
+                continue
+    except Exception:
+        LOGGER.debug("Kit viewport settings unavailable", exc_info=False)
+
+
 class LiveViewController:
     """Poll the backend live view, update omni.ui, and bind Drawing 4 USD."""
 
@@ -19,6 +48,7 @@ class LiveViewController:
         self.panel = create_live_panel(title)
         self.latest = None
         self._logged_offline = False
+        apply_kit_viewport()
 
     def _load_live(self) -> dict:
         if hasattr(self.client, "fetch_live"):

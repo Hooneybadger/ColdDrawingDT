@@ -24,9 +24,36 @@ def test_status_binding_safe_is_green():
     )
     bound = status_binding(model["usd_prim"], model)
     assert bound["indicator_prim"].endswith("StatusIndicator")
+    assert bound["tower_prim"].endswith("StatusTower")
     assert bound["attributes"]["coldDrawing:verdict"] == "SAFE"
     assert bound["attributes"]["coldDrawing:indicator"] == "green"
     assert bound["color"][1] > bound["color"][0]
+
+
+def test_status_binding_waiting_for_fea_is_blue():
+    model = panel_model(
+        {
+            "usd_prim": "/World/BugokFactory/Production/Drawing/Drawing_04",
+            "decision": {"latest_verdict": "SAFE", "decision_id": "dec-old"},
+            "fea": {"status": "RUNNING"},
+        }
+    )
+    bound = status_binding(model["usd_prim"], model)
+    assert bound["attributes"]["coldDrawing:indicator"] == "blue"
+    assert bound["indicator"] == "blue"
+
+
+def test_status_binding_manual_review_is_amber():
+    model = panel_model(
+        {
+            "usd_prim": "/World/BugokFactory/Production/Drawing/Drawing_04",
+            "decision": {"latest_verdict": "INCONCLUSIVE", "decision_id": "dec-new"},
+            "fea": {"status": "COMPLETED", "criterion_verdict": "INCONCLUSIVE"},
+        }
+    )
+    bound = status_binding(model["usd_prim"], model)
+    assert bound["attributes"]["coldDrawing:indicator"] == "amber"
+    assert bound["indicator"] == "amber"
 
 
 def test_status_binding_offline_is_neutral_gray():
@@ -89,6 +116,10 @@ def test_apply_status_to_stage_when_pxr_available():
     indicator = stage.DefinePrim(asset_path + "/StatusIndicator", "Xform")
     UsdGeom.Sphere.Define(stage, indicator.GetPath().AppendChild("proxy"))
     UsdGeom.Sphere.Define(stage, indicator.GetPath().AppendChild("render"))
+    tower = stage.DefinePrim(asset_path + "/StatusTower", "Xform")
+    UsdGeom.Sphere.Define(stage, tower.GetPath().AppendChild("RedLamp"))
+    UsdGeom.Sphere.Define(stage, tower.GetPath().AppendChild("GreenLamp"))
+    UsdGeom.Cube.Define(stage, tower.GetPath().AppendChild("ActiveLamp"))
     model = panel_model(
         {
             "usd_prim": asset_path,

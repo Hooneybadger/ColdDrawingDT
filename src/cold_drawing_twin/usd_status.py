@@ -3,9 +3,18 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from cold_drawing_twin.display import apply_status_attributes, status_indicator_prim
+from cold_drawing_twin.display import apply_status_attributes, status_indicator_prim, status_tower_prim
 
 LOGGER = logging.getLogger(__name__)
+
+
+_LAMP_OFF = (0.14, 0.14, 0.14)
+_LAMP_CHILD = {
+    "green": "GreenLamp",
+    "amber": "AmberLamp",
+    "blue": "BlueLamp",
+    "red": "RedLamp",
+}
 
 
 def status_binding(usd_prim: str, view: dict[str, Any]) -> dict[str, Any]:
@@ -14,7 +23,9 @@ def status_binding(usd_prim: str, view: dict[str, Any]) -> dict[str, Any]:
     return {
         "asset_prim": usd_prim,
         "indicator_prim": indicator_path,
+        "tower_prim": status_tower_prim(usd_prim) if usd_prim else "",
         "color": view.get("color") or (0.45, 0.45, 0.45),
+        "indicator": view.get("indicator") or "gray",
         "attributes": apply_status_attributes({}, view),
     }
 
@@ -58,12 +69,20 @@ def apply_status_to_stage(stage, usd_prim: str, view: dict[str, Any]) -> bool:
     for name, value in binding["attributes"].items():
         _set_string(asset, name, value)
     indicator = stage.GetPrimAtPath(binding["indicator_prim"])
+    color = binding["color"]
     if indicator and indicator.IsValid():
         for name, value in binding["attributes"].items():
             _set_string(indicator, name, value)
-        color = binding["color"]
         _set_display_color(indicator.GetChild("proxy"), color)
         _set_display_color(indicator.GetChild("render"), color)
+    tower = stage.GetPrimAtPath(binding["tower_prim"])
+    if tower and tower.IsValid():
+        for lamp_name in _LAMP_CHILD.values():
+            _set_display_color(tower.GetChild(lamp_name), _LAMP_OFF)
+        active = _LAMP_CHILD.get(str(binding.get("indicator") or ""))
+        if active:
+            _set_display_color(tower.GetChild(active), color)
+        _set_display_color(tower.GetChild("ActiveLamp"), color)
     return True
 
 
