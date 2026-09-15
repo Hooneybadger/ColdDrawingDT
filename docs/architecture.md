@@ -118,7 +118,7 @@ Equipment `source_quality` is not FEA numerical quality and not the FEA safety c
 ### OpenUSD view
 
 - Factory layout generated from YAML
-- Operator and senior Kit apps with a live `omni.ui` panel
+- Operator and senior Kit apps with a live `omni.ui` faceplate
 - Drawing 4 StatusIndicator color and `coldDrawing:*` attributes from backend state
 - Browser `/operator` and `/aas-inspector` (display only)
 

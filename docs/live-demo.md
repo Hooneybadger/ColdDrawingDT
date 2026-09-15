@@ -1,4 +1,4 @@
-# Portfolio demonstration
+# Live demonstration
 
 Terms: [glossary](glossary.md).
 
@@ -89,15 +89,60 @@ Kit 3D livestream (`omni.kit.livestream.webrtc`) still needs that host binary. T
 make factory-stage
 ```
 
-Open `usd/factory/bugok_factory.usda` in the Kit app. Drawing 4 is the referenced asset `usd/assets/drawing/Drawing_04.usda`. The live bind writes `displayColor` on `StatusIndicator/proxy` and `StatusIndicator/render`, and writes `coldDrawing:verdict`, `coldDrawing:quality`, `coldDrawing:feaRunning`, `coldDrawing:lastUpdate`, `coldDrawing:indicator`, and `coldDrawing:backendStatus` on the asset prim and the indicator prim.
+`make factory-stage` writes a conceptual OpenUSD representation of the manufacturing line, driven by real backend state (`usd/factory/bugok_factory.usda` and the Drawing 4 hero asset). It is not mill CAD.
+
+Open `usd/factory/bugok_factory.usda` in the Kit app. Switch the viewport camera:
+
+| Camera prim | Use |
+|---|---|
+| `/World/Cameras/FactoryOverview` | Whole hall |
+| `/World/Cameras/DrawingLine` | Drawing area |
+| `/World/Cameras/Drawing04Hero` | Hero equipment |
+| `/World/Cameras/Drawing04Process` | Die and workpiece path |
+| `/World/Cameras/StatusDetail` | Status tower with machine context |
+
+Legacy aliases `CAM_FACTORY_OVERVIEW`, `CAM_DRAWING_LINE`, `CAM_DRAWING_04`, and `CAM_STATUS_DETAIL` remain on the stage. Render mode: Storm / `omni.hydra.pxr` (this Kit build). Hide the viewport grid, FPS overlay, and unused editor panes before capture. The operator extension also tries to disable the grid (`apply_kit_viewport`). Drawing 4 is `usd/assets/drawing/Drawing_04.usda`. The live bind writes `displayColor` on `StatusIndicator/proxy`, `StatusIndicator/render`, and `StatusTower` lamps.
+
+Windows RTX helper (copy `omniverse/scripts/kit_capture.py` onto the Kit host as `capture.py`):
+
+```text
+KIT_CAPTURE_TAG=overview
+python capture.py
+```
+
+Tags: `overview` (factory + Drawing 4, no panel), `safe`, `fea`, `inconclusive`. The helper hides the viewport grid, binds live Twin state, aims `/World/CaptureCam`, and writes a Storm viewport frame. When the live panel is on, it also writes a window frame and a 16:9 compose of those two real captures (`*-composed.png`). Do not fake a screenshot.
+
+Capture names:
+
+```text
+01_factory_overview.png
+02_drawing4_hero.png
+03_drawing4_process.png
+04_fast_path_safe.png
+05_fast_path_aas.png
+06_fea_running.png
+07_fea_running_aas.png
+08_manual_review.png
+09_manual_review_aas.png
+10_lineage.png
+11_solver_evidence.png
+12_ci_evidence.png
+```
+
+Fast SAFE sequence: load the in-domain process vector, `POST /evaluations`, then capture `01` (FactoryOverview), `02` (Drawing04Hero, panel hidden), `03` (Drawing04Process, panel hidden), `04` (Drawing04Hero + LivePanel: SAFE / ACCEPT / PINN v0.1.1 / FEA NOT REQUIRED), `05` (AAS Inspector `?capture=1`, same IDs). Historical `lastCompletedFeaJobId` must stay out of the main FEA block.
+
+OOD FEA sequence: load reduction 0.55, `POST /evaluations`, capture `06` while FEA is RUNNING (current Evaluation WAITING FOR FEA / Engineering decision pending, last finalized Decision secondary), `07` AAS capture-mode active FEA job. After FINALIZED INCONCLUSIVE: `08` amber stack light, MANUAL REVIEW, Quality PASS, Criterion INCONCLUSIVE, `09` same Decision on AAS.
+
+`10` is the compact lineage card (backend / BaSyx / Omniverse / USD indicator IDs). `11` separates Released PINN (`NEED_FEA`, supported range, routing) from OpenRadioss (numerical quality, engineering criterion, MANUAL REVIEW). It must not label the PINN model result `INCONCLUSIVE`. `12` is the CI summary, including the private Hugging Face PINN workflow fetch failure if it occurred.
 
 ### 5. Open the AAS Inspector
 
 ```text
 http://127.0.0.1:8000/aas-inspector
+http://127.0.0.1:8000/aas-inspector?capture=1
 ```
 
-The page is labeled `Read-only AAS / BaSyx view`. It calls `GET /aas/{asset_id}/view` only. It does not read Twin SQL. Default Asset ID is `BG.MIEUM.DRW.04`.
+The page is labeled `Read-only AAS / BaSyx view`. It calls `GET /aas/{asset_id}/view` only. It does not read Twin SQL. Default Asset ID is `BG.MIEUM.DRW.04`. Process variables, Evaluation lineage IDs, and FEA job IDs are grouped like a submodel faceplate. Color banners appear only for OFFLINE or a non-normal verdict. `?capture=1` hides the asset field, Load/Copy buttons, and developer navigation for a 16:9 screenshot. When `activeFeaJobId` is set, the Inspector shows `CURRENT ANALYSIS / FEA RUNNING` with the current Evaluation, Snapshot, Route, and Active FEA job. `EvaluationState.latestDecisionId` is not shown as a generic current Decision; the previous result appears only as `LAST FINALIZED DECISION`. An `INCONCLUSIVE` Decision is presented as `MANUAL REVIEW`.
 
 Also useful:
 
@@ -142,7 +187,7 @@ curl -sS http://127.0.0.1:8000/aas/BG.MIEUM.DRW.04/view
 | Backend state | `latest_decision_id`, `latest_verdict`, `latest_evaluation_id`, `latest_snapshot_id` |
 | Backend live | `decision.decision_id`, `decision.latest_verdict`, `decision.evaluation_id`, `decision.snapshot_id` |
 | AAS Inspector | EvaluationState `latestDecisionId`, `latestVerdict`, `latestEvaluationId`, `latestSnapshotId` |
-| Omniverse panel | DECISION: Decision ID, Latest Verdict, Evaluation ID, Snapshot ID |
+| Omniverse panel | Faceplate lineage: Decision, Evaluation, Snapshot |
 
 The four ID fields must match. If BaSyx is disabled, the Inspector shows `OFFLINE` and null EvaluationState. Do not copy SQL into that page and call it AAS data.
 

@@ -52,7 +52,7 @@ BG.MIEUM.DRW.04
 
 `GET /aas/{asset_id}/view` reads those three submodels from BaSyx. It does not rebuild them from Twin SQL. If BaSyx is disabled or unreachable the payload is `basyx_status=OFFLINE` with `process`, `evaluation`, and `simulation` set to null. That is not `MANUAL_REVIEW` and not `ANALYSIS_REQUIRED`.
 
-`GET /aas-inspector` is a read-only HTML page for that endpoint. Default Asset ID is `BG.MIEUM.DRW.04`. See [portfolio-demo.md](portfolio-demo.md).
+`GET /aas-inspector` is a read-only HTML page for that endpoint. Default Asset ID is `BG.MIEUM.DRW.04`. The page is a BaSyx submodel faceplate (process variables, Evaluation lineage, FEA jobs), not a JSON dump. `?capture=1` hides editor controls for a screenshot. See [live-demo.md](live-demo.md).
 
 ## Snapshot
 

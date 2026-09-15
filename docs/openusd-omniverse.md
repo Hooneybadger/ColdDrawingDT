@@ -4,17 +4,14 @@ Terms: [glossary](glossary.md).
 
 OpenUSD is the spatial source of truth. Omniverse Kit is the 3D app. Neither owns safety rules or process measurements.
 
-This version generates `usd/factory/bugok_factory.usda` from layout YAML and ships Kit apps that call the HTTP API. Operator browsers can open `/operator` for a WebRTC datachannel (Twin state JSON, not a rendered 3D frame). Kit livestream (`omni.kit.livestream.webrtc`) still needs the site RTX Kit binary, the same way OpenRadioss needs solver binaries.
+This version generates a **conceptual OpenUSD representation of the manufacturing line, driven by real backend state**. It is not mill CAD, not OEM geometry, and not an as-built plant model. Kit apps call the HTTP API. Operator browsers can open `/operator` for a WebRTC datachannel (Twin state JSON, not a rendered 3D frame). Kit livestream (`omni.kit.livestream.webrtc`) still needs the site RTX Kit binary, the same way OpenRadioss needs solver binaries.
 
 ## Root tree
 
 ```text
 /World
   BugokFactory
-    Buildings
-      MainFactory
-      Office
-      RnD
+    Facility          (floor, aisles, columns, lights, cameras)
     Production
       Drawing
       Pilger
@@ -35,28 +32,33 @@ This version generates `usd/factory/bugok_factory.usda` from layout YAML and shi
     Utilities
 ```
 
-Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04` references `usd/assets/drawing/Drawing_04.usda` (Frame, Die, Workpiece, Entry, Exit, StatusIndicator). `proxy` and `render` purposes share that asset.
+Drawing 4 prim: `/World/BugokFactory/Production/Drawing/Drawing_04` references `usd/assets/drawing/Drawing_04.usda`. That file is a conceptual cold-drawing line (frame, die housing, input/output workpiece, pulling section, guarding, cabinet, status tower). `StatusIndicator/proxy` and `StatusIndicator/render` remain the bind targets. The live bind also tints `StatusTower` lamp prims. Stage cameras live under `/World/Cameras`: `FactoryOverview`, `DrawingLine`, `Drawing04Hero`, `Drawing04Process`, `StatusDetail` (legacy `CAM_*` names remain as aliases).
 
 Kit extensions poll `GET /assets/{id}/live` on a timer. They map Asset ID to `usd_prim` from [config/asset_registry.yaml](../config/asset_registry.yaml). They display backend verdicts; they do not compute safety. Fetch failure sets `Backend: OFFLINE` and a gray indicator. It does not become `ANALYSIS_REQUIRED`.
 
-The operator and senior extensions each open one `omni.ui` panel:
+The operator and senior extensions each open one compact `omni.ui` faceplate:
 
-- PROCESS STATE: Asset ID, reduction ratio, die half angle, friction, normalized hardening, state version, source timestamp, source quality
-- DECISION: latest verdict, Evaluation ID, Snapshot ID, Decision ID, routing action, model version, FEA job ID
-- FEA: status (`IDLE` / `QUEUED` / `RUNNING` / `COMPLETED` / `FAILED` / `TIMEOUT`), solver, solver version, criterion verdict, quality, last completed FEA job ID
-- CONNECTION STATUS: `Backend: ONLINE` or `Backend: OFFLINE`
+- Header: DRAWING 04, Asset ID, verdict or WAITING FOR FEA, Backend ONLINE/OFFLINE (once)
+- Process: reduction, die angle, friction, quality, source time
+- Current Evaluation: route, model, Evaluation ID, Snapshot ID
+- Decision: Decision ID. When FEA is running, last finalized verdict is a secondary line
+- FEA: `NOT REQUIRED` on a fast-path ACCEPT; `RUNNING` while a job is active; `COMPLETED` after an INCONCLUSIVE FEA. Historical `last_completed` jobs stay under History and are not the current FEA block
 
-Missing fields render as a dash or `Unavailable`. The extension writes `displayColor` and `coldDrawing:*` attributes onto `Drawing_04` and `Drawing_04/StatusIndicator`. Default CI does not launch Kit; mapping tests run without it. The live sequence is [portfolio-demo.md](portfolio-demo.md).
+Missing fields render as a dash. The extension writes `displayColor` and `coldDrawing:*` attributes onto `Drawing_04` and `Drawing_04/StatusIndicator`. The 3D lamp still uses the existing verdict colors (`SAFE` green, `UNSAFE` red, `ANALYSIS_REQUIRED` blue, `INCONCLUSIVE` / `MANUAL_REVIEW` amber). While FEA is running, the live panel shows `WAITING FOR FEA` and `Engineering decision pending.`; the last finalized Decision stays on a secondary line. An `INCONCLUSIVE` Decision is presented as `MANUAL REVIEW` with the engineering verdict shown separately. Chrome does not invent a verdict. Default CI does not launch Kit; mapping tests run without it. The live sequence is [live-demo.md](live-demo.md).
 
 ## Asset files
 
 Each important Asset is its own USD file.
 
 ```text
-assets/drawing/Drawing_04.usd
-  proxy
-  render
+usd/factory/bugok_factory.usda
+usd/assets/drawing/Drawing_04.usda
+usd/assets/{pointing,pilger,heat_treatment,cleaning,straightening,cutting,packaging,...}
+usd/materials/industrial_materials.usda
+usd/cameras/stage_cameras.usda
 ```
+
+Drawing 4 is a conceptual cold-drawing line (frame, die housing, input/output workpiece, pulling section, guarding, cabinet, status tower). Other process assets are distinct low-poly silhouettes, not repeated slabs. `StatusIndicator/proxy` and `StatusIndicator/render` remain the bind targets. Stage cameras live under `/World/Cameras`: `FactoryOverview`, `DrawingLine`, `Drawing04Hero`, `Drawing04Process`, `StatusDetail`.
 
 Use:
 
@@ -76,8 +78,8 @@ Not in this version: Snapshot timeline UI, FEA contour overlay, status filters, 
 ## Operator app (this version)
 
 - Assigned line `BG.MIEUM.DRW.04`
-- `omni.ui` live panel (process, Decision, FEA, connection)
-- Backend verdict colors: `SAFE` green, `UNSAFE` red, `ANALYSIS_REQUIRED` blue, `INCONCLUSIVE` / `MANUAL_REVIEW` amber
+- `omni.ui` live faceplate (attention banner, process variables, lineage, FEA)
+- Backend verdict colors on the 3D StatusIndicator: `SAFE` green, `UNSAFE` red, `ANALYSIS_REQUIRED` blue, `INCONCLUSIVE` / `MANUAL_REVIEW` amber
 - Unknown verdict or backend OFFLINE: gray, text `Backend OFFLINE. State unavailable.`
 - FEA lifecycle from backend job status only
 
