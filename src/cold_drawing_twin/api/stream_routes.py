@@ -5,12 +5,12 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
+from cold_drawing_twin.api.live import live_view
 from cold_drawing_twin.api.schemas import StreamHeartbeat, StreamSessionCreate, WebRtcOffer
-from cold_drawing_twin.display import operator_view
+from cold_drawing_twin.display import panel_model
 from cold_drawing_twin.observability.gpu import GpuSample
 from cold_drawing_twin.stream.sessions import STREAM_STORE, StreamSession
 from cold_drawing_twin.stream.webrtc import answer_operator_offer
-from cold_drawing_twin.twin.store import TwinStore
 
 router = APIRouter()
 OPERATOR_HTML = Path(__file__).resolve().parents[1] / "web" / "operator.html"
@@ -97,23 +97,9 @@ def _operator_view_for(asset_id: str) -> dict:
 
     session = container.open()
     try:
-        row = TwinStore(session).get(asset_id)
-        if row is None:
-            return operator_view({"asset_id": asset_id}, backend_online=True)
-        return operator_view(
-            {
-                "asset_id": row.asset_id,
-                "features": row.features,
-                "latest_verdict": row.latest_verdict,
-                "latest_evaluation_id": row.latest_evaluation_id,
-                "latest_snapshot_id": row.latest_snapshot_id,
-                "latest_decision_id": row.latest_decision_id,
-                "active_fea_job_id": row.active_fea_job_id,
-                "source_timestamp": row.source_timestamp.isoformat() if row.source_timestamp else None,
-                "quality": row.quality,
-            },
-            backend_online=True,
-        )
+        return panel_model(live_view(session, asset_id), backend_online=True)
+    except KeyError:
+        return panel_model({"asset_id": asset_id}, backend_online=True)
     finally:
         session.close()
 
