@@ -1,0 +1,54 @@
+#usda 1.0
+(
+    defaultPrim = "Gas_01"
+    metersPerUnit = 1
+    upAxis = "Z"
+    doc = "Conceptual OpenUSD industrial equipment representation. Not mill CAD."
+)
+
+def Xform "Gas_01"
+{
+    custom string coldDrawing:assetId = "BG.MIEUM.GAS.01"
+    def Cube "Skid" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (9.9000, 4.2500, 0.2000)
+        double3 xformOp:translate = (0.0000, 0.0000, 0.1000)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cylinder "Vessel" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.7000
+        double height = 2.4000
+        token axis = "Z"
+        double3 xformOp:translate = (0.0000, 0.0000, 1.5000)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cube "Cabinet" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (2.7500, 2.0000, 1.6500)
+        double3 xformOp:translate = (1.6500, 0.0000, 1.0500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.74, 0.75, 0.72)]
+    }
+    def Cube "Plaque" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (1.2000, 0.0500, 0.2800)
+        double3 xformOp:translate = (-4.7000, 2.1250, 1.3500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.8, 0.64, 0.14)]
+    }
+}
+
