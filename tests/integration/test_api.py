@@ -50,8 +50,17 @@ def test_http_contracts(settings):
     assert "Read-only AAS / BaSyx view" in inspector.text
     assert "/aas/" in inspector.text
     assert "/assets/" not in inspector.text
+    assert 'params.get("capture") === "1"' in inspector.text
+    assert "white-space: nowrap" in inspector.text
+    assert "CURRENT ANALYSIS" in inspector.text
+    assert "LAST FINALIZED DECISION" in inspector.text
+    assert "omit generic Decision" in inspector.text
+    assert "hist-kicker" in inspector.text
     aas = client.get(f"/aas/{PRIMARY}/view").json()
     assert aas["asset_id"] == PRIMARY
     assert aas["basyx_status"] == "OFFLINE"
     assert aas["process"] is None
     assert aas["evaluation"] is None
+    assert aas["current_analysis"] is None
+    assert aas["display"]["running"] is False
+    assert aas["display"]["show_generic_decision"] is True

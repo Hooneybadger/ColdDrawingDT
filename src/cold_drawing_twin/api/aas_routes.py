@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
+from sqlalchemy.orm import Session
 
+from cold_drawing_twin.api.routes import get_session
 from cold_drawing_twin.config_files import asset_registry
+from cold_drawing_twin.display import attach_current_analysis
 from cold_drawing_twin.twin.basyx import BasyxClient, read_projected_view
 
 router = APIRouter()
@@ -27,7 +30,13 @@ def aas_inspector_page():
 
 
 @router.get("/aas/{asset_id}/view")
-def get_aas_view(asset_id: str):
+def get_aas_view(asset_id: str, session: Session = Depends(get_session)):
     if asset_id not in asset_registry():
         raise HTTPException(404, "unknown asset")
-    return read_projected_view(_basyx_client(), asset_id)
+    view = read_projected_view(_basyx_client(), asset_id)
+    live = None
+    if (view.get("simulation") or {}).get("activeFeaJobId"):
+        from cold_drawing_twin.api.live import live_view
+
+        live = live_view(session, asset_id)
+    return attach_current_analysis(view, live)
