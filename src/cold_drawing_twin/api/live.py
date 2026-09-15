@@ -78,5 +78,7 @@ def live_view(session: Session, asset_id: str) -> dict:
             "criterion_verdict": None if job is None else job.criterion_verdict,
             "quality": _fea_quality_label(job),
             "last_completed_fea_job_id": row.last_completed_fea_job_id,
+            "active_evaluation_id": job.evaluation_id if row.active_fea_job_id and job is not None else None,
+            "active_snapshot_id": job.snapshot_id if row.active_fea_job_id and job is not None else None,
         },
     }
