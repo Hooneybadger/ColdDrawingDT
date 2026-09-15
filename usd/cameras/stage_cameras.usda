@@ -1,0 +1,84 @@
+#usda 1.0
+(
+    defaultPrim = "Cameras"
+    metersPerUnit = 1
+    upAxis = "Z"
+    doc = "Viewport camera presets for the conceptual factory stage."
+)
+
+def Xform "Cameras"
+{
+    def Camera "FactoryOverview"
+    {
+        double3 xformOp:translate = (78.00, -16.00, 22.00)
+        float3 xformOp:rotateXYZ = (48, 0, 38)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 18
+        float2 clippingRange = (0.1, 400)
+    }
+    def Camera "DrawingLine"
+    {
+        double3 xformOp:translate = (58.00, 3.00, 12.00)
+        float3 xformOp:rotateXYZ = (28, 0, 18)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 24
+        float2 clippingRange = (0.1, 200)
+    }
+    def Camera "Drawing04Hero"
+    {
+        double3 xformOp:translate = (49.00, 4.60, 6.40)
+        float3 xformOp:rotateXYZ = (18, 0, 22)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 26
+        float2 clippingRange = (0.1, 80)
+    }
+    def Camera "Drawing04Process"
+    {
+        double3 xformOp:translate = (36.00, 5.20, 3.40)
+        float3 xformOp:rotateXYZ = (10, 0, 12)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 32
+        float2 clippingRange = (0.1, 60)
+    }
+    def Camera "StatusDetail"
+    {
+        double3 xformOp:translate = (53.50, 5.40, 4.20)
+        float3 xformOp:rotateXYZ = (12, 0, 28)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 32
+        float2 clippingRange = (0.05, 40)
+    }
+    def Camera "CAM_FACTORY_OVERVIEW"
+    {
+        double3 xformOp:translate = (78.00, -16.00, 22.00)
+        float3 xformOp:rotateXYZ = (48, 0, 38)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 18
+        float2 clippingRange = (0.1, 400)
+    }
+    def Camera "CAM_DRAWING_LINE"
+    {
+        double3 xformOp:translate = (58.00, 3.00, 12.00)
+        float3 xformOp:rotateXYZ = (28, 0, 18)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 24
+        float2 clippingRange = (0.1, 200)
+    }
+    def Camera "CAM_DRAWING_04"
+    {
+        double3 xformOp:translate = (49.00, 4.60, 6.40)
+        float3 xformOp:rotateXYZ = (18, 0, 22)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 26
+        float2 clippingRange = (0.1, 80)
+    }
+    def Camera "CAM_STATUS_DETAIL"
+    {
+        double3 xformOp:translate = (53.50, 5.40, 4.20)
+        float3 xformOp:rotateXYZ = (12, 0, 28)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float focalLength = 32
+        float2 clippingRange = (0.05, 40)
+    }
+}
+
