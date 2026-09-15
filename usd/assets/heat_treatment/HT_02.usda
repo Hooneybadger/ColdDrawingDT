@@ -1,0 +1,135 @@
+#usda 1.0
+(
+    defaultPrim = "HT_02"
+    metersPerUnit = 1
+    upAxis = "Z"
+    doc = "Conceptual OpenUSD industrial equipment representation. Not mill CAD."
+)
+
+def Xform "HT_02"
+{
+    custom string coldDrawing:assetId = "BG.MIEUM.HT.02"
+    def Cube "Tunnel" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (35.3280, 3.1200, 2.9750)
+        double3 xformOp:translate = (0.0000, 0.0000, 1.7500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.42, 0.33, 0.26)]
+    }
+    def Cube "Insulation" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (33.1200, 3.4400, 0.4200)
+        double3 xformOp:translate = (0.0000, 0.0000, 3.2200)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.22, 0.22, 0.21)]
+    }
+    def Cube "EntryHood" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.8000, 2.8000, 1.9250)
+        double3 xformOp:translate = (-17.9000, 0.0000, 1.5750)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "ExitHood" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.8000, 2.8000, 1.9250)
+        double3 xformOp:translate = (17.9000, 0.0000, 1.5750)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "Belt" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (33.1200, 1.4000, 0.0800)
+        double3 xformOp:translate = (0.0000, 0.0000, 0.4500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.28, 0.28, 0.27)]
+    }
+    def Cylinder "StackA" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.2800
+        double height = 2.4500
+        token axis = "Z"
+        double3 xformOp:translate = (-4.6000, 0.0000, 3.7000)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cylinder "StackB" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.2800
+        double height = 2.4500
+        token axis = "Z"
+        double3 xformOp:translate = (4.6000, 0.0000, 3.7000)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "Rib0" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.1200, 3.2800, 3.1500)
+        double3 xformOp:translate = (-11.0400, 0.0000, 1.7500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "Rib1" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.1200, 3.2800, 3.1500)
+        double3 xformOp:translate = (1.8400, 0.0000, 1.7500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "Rib2" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.1200, 3.2800, 3.1500)
+        double3 xformOp:translate = (14.7200, 0.0000, 1.7500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "Rib3" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.1200, 3.2800, 3.1500)
+        double3 xformOp:translate = (27.6000, 0.0000, 1.7500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cube "Plaque" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (1.2000, 0.0500, 0.2800)
+        double3 xformOp:translate = (-17.6000, 1.7000, 1.3500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.8, 0.64, 0.14)]
+    }
+}
+

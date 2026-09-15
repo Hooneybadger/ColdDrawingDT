@@ -1,0 +1,207 @@
+#usda 1.0
+(
+    defaultPrim = "Straightening_01"
+    metersPerUnit = 1
+    upAxis = "Z"
+    doc = "Conceptual OpenUSD industrial equipment representation. Not mill CAD."
+)
+
+def Xform "Straightening_01"
+{
+    custom string coldDrawing:assetId = "BG.MIEUM.STR.01"
+    def Cube "Bed" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (16.6600, 2.3100, 0.2000)
+        double3 xformOp:translate = (0.0000, 0.0000, 0.1200)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.14, 0.15, 0.16)]
+    }
+    def Cylinder "Roll0" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (-6.6300, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch0" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (-6.6300, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cylinder "Roll1" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (-4.4200, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch1" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (-4.4200, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cylinder "Roll2" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (-2.2100, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch2" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (-2.2100, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cylinder "Roll3" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (0.0000, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch3" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (0.0000, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cylinder "Roll4" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (2.2100, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch4" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (2.2100, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cylinder "Roll5" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (4.4200, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch5" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (4.4200, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cylinder "Roll6" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1600
+        double height = 1.8150
+        token axis = "Y"
+        double3 xformOp:translate = (6.6300, 0.0000, 0.5200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.97, 0.98, 0.995)]
+    }
+    def Cylinder "Pinch6" (
+        purpose = "render"
+    )
+    {
+        double radius = 0.1200
+        double height = 1.3200
+        token axis = "Y"
+        double3 xformOp:translate = (6.6300, 0.0000, 0.8200)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cube "StandL" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.2000, 2.1450, 1.6100)
+        double3 xformOp:translate = (-3.4000, 0.0000, 0.9200)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cube "StandR" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.2000, 2.1450, 1.6100)
+        double3 xformOp:translate = (3.4000, 0.0000, 0.9200)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cube "Plaque" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (1.2000, 0.0500, 0.2800)
+        double3 xformOp:translate = (-7.7000, 1.4025, 1.3500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.8, 0.64, 0.14)]
+    }
+}
+
