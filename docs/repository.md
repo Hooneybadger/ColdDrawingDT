@@ -27,8 +27,14 @@ ColdDrawingDT/
     apps/operator/
     extensions/
     scripts/generate_factory_stage.py
-  usd/factory/
-  usd/assets/
+    scripts/visual_usd.py
+    scripts/kit_capture.py
+    scripts/render_evidence_cards.py
+  usd/
+    factory/
+    assets/
+    materials/
+    cameras/
   tests/unit/
   tests/integration/
   tests/e2e/

@@ -7,7 +7,7 @@ Source files:
 - [config/factory_layout.yaml](../config/factory_layout.yaml)
 - [config/asset_registry.yaml](../config/asset_registry.yaml)
 
-This picture is generated from those files. Drawing 4 is the thick box.
+This picture is generated from those files. The OpenUSD stage is a conceptual industrial representation of that layout, not mill CAD. Drawing 4 is the hero cold-drawing line.
 
 ![Main factory floor plan](images/factory-layout.svg)
 

@@ -117,4 +117,4 @@ Do not average PINN and FEA latency into one number.
 - Omniverse panel model conversion from `GET /assets/{id}/live` without `omni.ui`
 - USD StatusIndicator attribute mapping without Kit; in-memory `pxr.Usd.Stage` write when `pxr` is installed
 
-Kit window pixels, live BaSyx, and an OpenRadioss RUNNING screenshot are [portfolio-demo.md](portfolio-demo.md), not default `make test`.
+Kit window pixels, live BaSyx, and an OpenRadioss RUNNING screenshot are [live-demo.md](live-demo.md), not default `make test`.

@@ -116,11 +116,11 @@ Implemented means the code is in this repository and covered by tests or a docum
 | FEA automatic SAFE/UNSAFE thresholds | Implemented (`thresholds_v1`); mill YAML leaves it off (not a demonstrated mill verdict) |
 | Prometheus counters that the process actually increments | Implemented |
 | Twin age, FEA queue depth, GPU, stream sessions as live series | Implemented |
-| Browser operator `/operator` (WebRTC JSON + HTTP poll) | Implemented |
-| Omniverse `omni.ui` live panel (process, Decision, FEA, connection) | Implemented; Kit window is runtime-only |
+| Browser operator `/operator` (WebRTC JSON + HTTP poll) | Implemented (ISA-101 faceplate chrome; display only) |
+| Omniverse `omni.ui` live faceplate (attention, process, lineage, FEA) | Implemented; Kit window is runtime-only |
 | Drawing 4 USD StatusIndicator bind from backend verdict | Implemented; mapping tested without Kit; `pxr` stage write when `pxr` is installed |
 | Kit 3D livestream (`omni.kit.livestream.webrtc`) | Implemented as a Kit app dependency; raster needs the host Kit binary |
-| Same Decision ID on backend API, AAS, and Omniverse | API + AAS mapping demonstrated in tests; live Kit + BaSyx capture is [portfolio-demo.md](docs/portfolio-demo.md) |
+| Same Decision ID on backend API, AAS, and Omniverse | API + AAS mapping demonstrated in tests; live Kit + BaSyx capture is [live-demo.md](docs/live-demo.md) |
 | Production deployment / Kubernetes | Planned / not implemented |
 | Certified safety system / mill-validated fracture prediction | Planned / not implemented |
 
@@ -133,5 +133,5 @@ PINN `normalized_hardening_coefficient` is not a megapascal material property. O
 | [docs/openradioss-fea.md](docs/openradioss-fea.md) | Formulation, material, contact, quality |
 | [docs/architecture.md](docs/architecture.md) | How the parts connect |
 | [docs/demo-acceptance.md](docs/demo-acceptance.md) | make targets |
-| [docs/portfolio-demo.md](docs/portfolio-demo.md) | Backend to AAS to Omniverse demo sequence |
+| [docs/live-demo.md](docs/live-demo.md) | Backend to AAS to Omniverse demo sequence |
 | [docs/glossary.md](docs/glossary.md) | Shared names |
