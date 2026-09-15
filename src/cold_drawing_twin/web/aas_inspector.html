@@ -2,93 +2,363 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>AAS Inspector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AAS Inspector · BG.MIEUM</title>
   <style>
-    body { font-family: sans-serif; margin: 2rem; max-width: 48rem; }
-    section { margin-bottom: 1.5rem; }
-    table { border-collapse: collapse; width: 100%; }
-    td { padding: 0.25rem 0.5rem; border-bottom: 1px solid #ddd; vertical-align: top; }
-    td:first-child { width: 16rem; color: #444; }
-    .offline { color: #777; }
+    :root {
+      --bg: #1c1f24;
+      --panel: #262b31;
+      --edge: #3a4048;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --lamp-safe: #3d8a4a;
+      --lamp-unsafe: #c62828;
+      --lamp-warn: #c9a227;
+      --lamp-info: #3d7ec9;
+      --lamp-off: #6b7178;
+      --banner-alarm: #6b1d1d;
+      --banner-warn: #5a4714;
+      --banner-info: #1a3558;
+      --banner-off: #3a3f46;
+      --tile: #2f353c;
+      --hist: #8a9098;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); }
+    body { font-family: "Segoe UI", ui-sans-serif, sans-serif; font-size: 16px; line-height: 1.35; }
+    .wrap { max-width: 68rem; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    header {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      padding: 0.55rem 1rem; background: #16191d; border-bottom: 1px solid var(--edge);
+    }
+    header nav { margin-left: auto; display: flex; gap: 0.75rem; }
+    header a { color: var(--muted); text-decoration: none; }
+    header a[aria-current="page"] { color: var(--text); }
+    .site { font-weight: 600; letter-spacing: 0.08em; }
+    .conn { display: flex; align-items: center; gap: 0.4rem; font-size: 14px; color: var(--muted); }
+    .lamp { width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--lamp-off); display: inline-block; }
+    .lamp.online { background: var(--lamp-safe); }
+    .lamp.offline { background: var(--lamp-off); }
+    .offline { color: var(--muted); }
+    #banner { display: none; padding: 0.75rem 1rem; font-weight: 600; font-size: 1.05rem; }
+    #banner.alarm { display: block; background: var(--banner-alarm); }
+    #banner.warning { display: block; background: var(--banner-warn); color: #fff6d5; }
+    #banner.advisory { display: block; background: var(--banner-info); }
+    #banner.unavailable { display: block; background: var(--banner-off); }
+    .head-card {
+      margin: 0.85rem 0.85rem 0;
+      background: var(--panel);
+      border: 1px solid var(--edge);
+      padding: 1rem 1.1rem;
+    }
+    .kicker { margin: 0; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .asset-title { margin: 0.2rem 0 0; font-size: 1.55rem; font-weight: 650; }
+    .urn { margin: 0.2rem 0 0; font-family: ui-monospace, Consolas, monospace; font-size: 0.9rem; color: var(--muted); }
+    .lede { margin: 0.45rem 0 0; color: var(--muted); font-size: 13px; }
+    main { display: grid; grid-template-columns: repeat(3, minmax(14rem, 1fr)); gap: 0.85rem; padding: 0.85rem; flex: 1; }
+    @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+    section { background: var(--panel); border: 1px solid var(--edge); padding: 1rem 1.1rem; }
+    h1 { margin: 0; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .verdict { font-size: 2.15rem; font-weight: 650; margin: 0.4rem 0 0.75rem; }
+    .subhead { margin: 0 0 0.75rem; color: var(--muted); font-size: 0.95rem; }
+    .hist { color: var(--hist); }
+    #last-finalized {
+      display: none;
+      margin-top: 0.95rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid var(--edge);
+    }
+    .hist-kicker {
+      margin: 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--hist);
+    }
+    .hist-verdict {
+      margin: 0.28rem 0 0;
+      font-size: 1.2rem;
+      font-weight: 650;
+      color: var(--hist);
+    }
+    .hist-id {
+      margin: 0.12rem 0 0;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.95rem;
+      color: var(--hist);
+    }
+    .pvs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+    .pv { background: var(--tile); padding: 0.6rem 0.7rem; }
+    .pv .label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .pv .value { font-size: 1.12rem; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; }
+    .id-row { display: grid; grid-template-columns: 8.2rem minmax(0, 1fr) auto; gap: 0.4rem; align-items: center; margin: 0.4rem 0; }
+    .id-row span { color: var(--muted); }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    button, input { font: inherit; color: var(--text); background: #1c1f24; border: 1px solid var(--edge); padding: 0.25rem 0.45rem; }
+    button { cursor: pointer; }
+    footer { padding: 0.45rem 1rem 0.8rem; color: var(--muted); font-size: 13px; }
+    .note { font-size: 13px; color: var(--muted); }
+    body.capture header label,
+    body.capture header input,
+    body.capture header button,
+    body.capture header nav,
+    body.capture .lede,
+    body.capture footer,
+    body.capture .copy-btn,
+    body.capture .dev-note { display: none; }
+    body.capture .wrap { max-width: 62rem; min-height: auto; padding: 0.9rem 0 0.7rem; }
+    body.capture main { padding: 0.5rem 1rem 0.4rem; }
+    body.capture .verdict { font-size: 2.35rem; }
   </style>
 </head>
 <body>
-  <h1>AAS Inspector</h1>
-  <p>Read-only AAS / BaSyx view. This page does not write Decisions and does not read SQL Twin tables.</p>
-  <p>
-    Asset
-    <input id="asset" value="BG.MIEUM.DRW.04" size="28">
+  <div class="wrap">
+  <header>
+    <span class="site">AAS V3 / BaSyx</span>
+    <label for="asset">Asset</label>
+    <input id="asset" value="BG.MIEUM.DRW.04" size="28" autocomplete="off">
     <button id="load" type="button">Load</button>
-  </p>
-  <section>
-    <h2>Asset</h2>
-    <table>
-      <tr><td>Asset ID</td><td id="asset_id">—</td></tr>
-      <tr><td>AAS ID</td><td id="aas_id">—</td></tr>
-      <tr><td>BaSyx connection status</td><td id="basyx_status">—</td></tr>
-    </table>
-  </section>
-  <section>
-    <h2>ProcessState</h2>
-    <table id="process"></table>
-  </section>
-  <section>
-    <h2>EvaluationState</h2>
-    <table id="evaluation"></table>
-  </section>
-  <section>
-    <h2>SimulationState</h2>
-    <table id="simulation"></table>
-  </section>
+    <span class="conn"><span id="basyx-lamp" class="lamp offline"></span> <span id="basyx_status">—</span></span>
+    <nav>
+      <a href="/operator">Operator</a>
+      <a href="/aas-inspector" aria-current="page">AAS Inspector</a>
+    </nav>
+  </header>
+  <div id="banner" role="status"></div>
+  <div class="head-card">
+    <p class="kicker">AAS V3 / BaSyx</p>
+    <p class="asset-title" id="asset_name">BG.MIEUM.DRW.04</p>
+    <p class="urn" id="aas_id">urn:bg:mieum:drw:04</p>
+    <p class="lede">Read-only AAS / BaSyx view. This page does not write Decisions and does not read SQL Twin tables.</p>
+  </div>
+  <main>
+    <section>
+      <h1>Process State</h1>
+      <div id="process" class="pvs"></div>
+    </section>
+    <section>
+      <h1 id="eval-title">Evaluation</h1>
+      <p id="verdict" class="verdict">—</p>
+      <p id="eval-note" class="subhead"></p>
+      <div id="evaluation"></div>
+      <div id="last-finalized"></div>
+    </section>
+    <section>
+      <h1 id="sim-title">Simulation</h1>
+      <p id="sim-note" class="subhead"></p>
+      <div id="simulation"></div>
+    </section>
+  </main>
+  <footer>Display only. This page does not write Decisions.</footer>
+  </div>
   <script>
-    const processKeys = [
-      "reductionRatio", "dieHalfAngleRad", "frictionCoefficient",
-      "normalizedHardeningCoefficient", "sourceTimestamp", "quality", "stateVersion"
+    const params = new URLSearchParams(window.location.search);
+    const captureMode = params.get("capture") === "1";
+    if (captureMode) document.body.classList.add("capture");
+
+    const processFields = [
+      { key: "reductionRatio", label: "Reduction" },
+      { key: "quality", label: "Quality" },
+      { key: "dieHalfAngleRad", label: "Die angle", unit: "rad" },
+      { key: "stateVersion", label: "Version" },
+      { key: "frictionCoefficient", label: "Friction" },
+      { key: "sourceTimestamp", label: "Source" }
     ];
-    const evaluationKeys = [
-      "latestEvaluationId", "latestSnapshotId", "latestDecisionId", "latestVerdict"
+    const evaluationFields = [
+      { key: "latestDecisionId", label: "Decision" },
+      { key: "latestEvaluationId", label: "Evaluation" },
+      { key: "latestSnapshotId", label: "Snapshot" }
     ];
-    const simulationKeys = ["activeFeaJobId", "lastCompletedFeaJobId"];
+    const simulationFields = [
+      { key: "activeFeaJobId", label: "Active FEA" },
+      { key: "lastCompletedFeaJobId", label: "Last completed" }
+    ];
 
     function dash(value) {
       if (value === null || value === undefined || value === "") return "—";
       return String(value);
     }
 
-    function fillTable(tableId, keys, payload) {
-      const table = document.getElementById(tableId);
-      table.innerHTML = "";
-      keys.forEach((key) => {
-        const row = document.createElement("tr");
-        const name = document.createElement("td");
-        const value = document.createElement("td");
-        name.textContent = key;
-        value.textContent = payload ? dash(payload[key]) : "—";
+    function shortId(value) {
+      const text = dash(value);
+      if (text === "—" || text.length <= 12) return text;
+      return text.slice(0, 10) + "…";
+    }
+
+    function attentionFor(verdict, online, running) {
+      if (!online) return "unavailable";
+      if (verdict === "UNSAFE") return "alarm";
+      if (running) return "advisory";
+      if (verdict === "INCONCLUSIVE" || verdict === "MANUAL_REVIEW") return "warning";
+      if (verdict === "ANALYSIS_REQUIRED") return "advisory";
+      if (!verdict) return "unavailable";
+      return "none";
+    }
+
+    function fillTiles(containerId, fields, payload) {
+      const root = document.getElementById(containerId);
+      root.innerHTML = "";
+      fields.forEach((field) => {
+        const tile = document.createElement("div");
+        tile.className = "pv";
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = field.label;
+        label.title = field.key;
+        const value = document.createElement("div");
+        value.className = "value";
+        let raw = payload ? payload[field.key] : null;
+        if (field.key === "sourceTimestamp" && raw) raw = String(raw).slice(11, 19);
+        value.textContent = dash(raw);
+        value.title = payload ? dash(payload[field.key]) : "";
+        tile.appendChild(label);
+        tile.appendChild(value);
+        if (field.unit) {
+          const unit = document.createElement("span");
+          unit.className = "note";
+          unit.textContent = field.unit;
+          tile.appendChild(unit);
+        }
+        root.appendChild(tile);
+      });
+    }
+
+    function fillIds(containerId, fields, payload) {
+      const root = document.getElementById(containerId);
+      root.innerHTML = "";
+      fields.forEach((field) => {
+        const row = document.createElement("div");
+        row.className = "id-row";
+        const name = document.createElement("span");
+        name.textContent = field.label;
+        name.title = field.key;
+        const code = document.createElement("code");
+        const full = payload ? dash(payload[field.key]) : "—";
+        code.textContent = shortId(full);
+        code.title = full;
         row.appendChild(name);
-        row.appendChild(value);
-        table.appendChild(row);
+        row.appendChild(code);
+        if (!captureMode) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "copy-btn";
+          button.textContent = "Copy";
+          button.addEventListener("click", async () => {
+            try { await navigator.clipboard.writeText(full); } catch (err) {}
+          });
+          row.appendChild(button);
+        }
+        root.appendChild(row);
       });
     }
 
     async function load() {
       const assetId = document.getElementById("asset").value.trim() || "BG.MIEUM.DRW.04";
+      const banner = document.getElementById("banner");
+      const status = document.getElementById("basyx_status");
+      const lamp = document.getElementById("basyx-lamp");
       const response = await fetch("/aas/" + encodeURIComponent(assetId) + "/view");
       if (!response.ok) {
-        document.getElementById("basyx_status").textContent = "Unavailable";
-        document.getElementById("basyx_status").className = "offline";
+        status.textContent = "Unavailable";
+        status.className = "offline";
+        lamp.className = "lamp offline";
+        banner.className = "unavailable";
+        banner.textContent = "BaSyx view unavailable.";
         return;
       }
       const body = await response.json();
-      document.getElementById("asset_id").textContent = dash(body.asset_id);
+      const online = body.basyx_status === "ONLINE";
+      status.textContent = online ? "ONLINE" : dash(body.basyx_status);
+      status.className = online ? "" : "offline";
+      lamp.className = "lamp " + (online ? "online" : "offline");
+      document.getElementById("asset_name").textContent = dash(body.asset_id);
       document.getElementById("aas_id").textContent = dash(body.aas_id);
-      document.getElementById("basyx_status").textContent = dash(body.basyx_status);
-      document.getElementById("basyx_status").className = body.basyx_status === "ONLINE" ? "" : "offline";
-      fillTable("process", processKeys, body.process);
-      fillTable("evaluation", evaluationKeys, body.evaluation);
-      fillTable("simulation", simulationKeys, body.simulation);
+      const evaluation = body.evaluation || {};
+      const simulation = body.simulation || {};
+      const verdict = evaluation.latestVerdict || null;
+      const running = Boolean(simulation.activeFeaJobId);
+      const display = body.display || {};
+      const evalTitle = document.getElementById("eval-title");
+      const simTitle = document.getElementById("sim-title");
+      const evalNote = document.getElementById("eval-note");
+      const simNote = document.getElementById("sim-note");
+      const lastBox = document.getElementById("last-finalized");
+      lastBox.innerHTML = "";
+      lastBox.style.display = "none";
+      evalTitle.textContent = display.title || (running ? "Current Analysis" : "Evaluation");
+      document.getElementById("verdict").textContent = display.headline || (running ? "FEA RUNNING" : dash(verdict));
+      evalNote.className = "subhead";
+      evalNote.textContent = display.engineering_note || "";
+      simTitle.textContent = "Simulation";
+      simNote.textContent = display.sim_note || (running ? "FEA RUNNING" : "");
+      const currentRows = display.current_rows;
+      if (running) {
+        // omit generic Decision — last-finalized is historical only
+        const current = body.current_analysis || {};
+        fillIds("evaluation", [
+          { key: "evaluation_id", label: "Evaluation" },
+          { key: "snapshot_id", label: "Snapshot" },
+          { key: "routing", label: "Route" }
+        ], currentRows ? Object.fromEntries(currentRows.map((row) => [row.key, row.value])) : {
+          evaluation_id: current.evaluation_id,
+          snapshot_id: current.snapshot_id,
+          routing: current.routing || "REQUIRES_FEA"
+        });
+        lastBox.style.display = "block";
+        const kicker = document.createElement("p");
+        kicker.className = "hist-kicker";
+        kicker.textContent = "LAST FINALIZED DECISION";
+        const histVerdict = document.createElement("p");
+        histVerdict.className = "hist-verdict";
+        histVerdict.textContent = dash(display.last_finalized_verdict || verdict);
+        const histId = document.createElement("p");
+        histId.className = "hist-id";
+        histId.textContent = shortId(display.last_finalized_decision_id || evaluation.latestDecisionId);
+        lastBox.appendChild(kicker);
+        lastBox.appendChild(histVerdict);
+        lastBox.appendChild(histId);
+        fillIds("simulation", display.sim_rows || [
+          { key: "activeFeaJobId", label: "Active FEA" },
+          { key: "lastCompletedFeaJobId", label: "Last completed" }
+        ], simulation);
+      } else if (verdict === "INCONCLUSIVE" || verdict === "MANUAL_REVIEW") {
+        fillIds("evaluation", evaluationFields, evaluation);
+        fillIds("simulation", simulationFields, simulation);
+      } else if (verdict === "SAFE" || verdict === "UNSAFE") {
+        fillIds("evaluation", evaluationFields, evaluation);
+        fillIds("simulation", [
+          { key: "activeFeaJobId", label: "Active FEA" }
+        ], simulation);
+      } else {
+        fillIds("evaluation", evaluationFields, evaluation);
+        fillIds("simulation", simulationFields, simulation);
+      }
+      const attention = attentionFor(verdict, online, running);
+      banner.className = "";
+      banner.textContent = "";
+      if (!online) {
+        banner.className = "unavailable";
+        banner.textContent = "BaSyx OFFLINE. Submodels unavailable.";
+      } else if (attention === "alarm") {
+        banner.className = "alarm";
+        banner.textContent = "UNSAFE";
+      } else if (running) {
+        banner.className = "advisory";
+        banner.textContent = "CURRENT ANALYSIS  FEA RUNNING";
+      } else if (attention === "warning") {
+        banner.className = "warning";
+        banner.textContent = "MANUAL REVIEW";
+      } else if (attention === "advisory") {
+        banner.className = "advisory";
+        banner.textContent = dash(verdict);
+      }
+      fillTiles("process", processFields, body.process);
     }
 
     document.getElementById("load").addEventListener("click", load);
+    document.getElementById("asset").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") load();
+    });
     load();
   </script>
 </body>
