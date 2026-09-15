@@ -1,0 +1,280 @@
+#usda 1.0
+(
+    defaultPrim = "Looks"
+    metersPerUnit = 1
+    upAxis = "Z"
+    doc = "Restrained industrial preview materials. Conceptual display only."
+)
+
+def Scope "Looks"
+{
+    def Material "MAT_FactoryFloor"
+    {
+        token outputs:surface.connect = </Looks/MAT_FactoryFloor/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.07, 0.07, 0.068)
+            float inputs:metallic = 0.0
+            float inputs:roughness = 0.82
+            token outputs:surface
+        }
+    }
+    def Material "MAT_StructuralSteel"
+    {
+        token outputs:surface.connect = </Looks/MAT_StructuralSteel/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.14, 0.15, 0.16)
+            float inputs:metallic = 0.72
+            float inputs:roughness = 0.4
+            token outputs:surface
+        }
+    }
+    def Material "MAT_MachineFrame"
+    {
+        token outputs:surface.connect = </Looks/MAT_MachineFrame/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.14, 0.15, 0.16)
+            float inputs:metallic = 0.55
+            float inputs:roughness = 0.45
+            token outputs:surface
+        }
+    }
+    def Material "MAT_MachineHousing"
+    {
+        token outputs:surface.connect = </Looks/MAT_MachineHousing/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.44, 0.46, 0.49)
+            float inputs:metallic = 0.32
+            float inputs:roughness = 0.5
+            token outputs:surface
+        }
+    }
+    def Material "MAT_Guard"
+    {
+        token outputs:surface.connect = </Looks/MAT_Guard/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.64, 0.65, 0.66)
+            float inputs:metallic = 0.18
+            float inputs:roughness = 0.55
+            token outputs:surface
+        }
+    }
+    def Material "MAT_Workpiece"
+    {
+        token outputs:surface.connect = </Looks/MAT_Workpiece/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.97, 0.98, 0.995)
+            float inputs:metallic = 0.88
+            float inputs:roughness = 0.22
+            token outputs:surface
+        }
+    }
+    def Material "MAT_Tooling"
+    {
+        token outputs:surface.connect = </Looks/MAT_Tooling/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.03, 0.031, 0.035)
+            float inputs:metallic = 0.82
+            float inputs:roughness = 0.28
+            token outputs:surface
+        }
+    }
+    def Material "MAT_ControlCabinet"
+    {
+        token outputs:surface.connect = </Looks/MAT_ControlCabinet/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.74, 0.75, 0.72)
+            float inputs:metallic = 0.04
+            float inputs:roughness = 0.55
+            token outputs:surface
+        }
+    }
+    def Material "MAT_SafetyYellow"
+    {
+        token outputs:surface.connect = </Looks/MAT_SafetyYellow/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.8, 0.64, 0.14)
+            float inputs:metallic = 0.05
+            float inputs:roughness = 0.45
+            token outputs:surface
+        }
+    }
+    def Material "MAT_StatusGreen"
+    {
+        token outputs:surface.connect = </Looks/MAT_StatusGreen/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.08, 0.22, 0.1)
+            float inputs:metallic = 0.1
+            float inputs:roughness = 0.35
+            color3f inputs:emissiveColor = (0.05, 0.35, 0.08)
+            token outputs:surface
+        }
+    }
+    def Material "MAT_StatusAmber"
+    {
+        token outputs:surface.connect = </Looks/MAT_StatusAmber/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.28, 0.2, 0.05)
+            float inputs:metallic = 0.1
+            float inputs:roughness = 0.35
+            color3f inputs:emissiveColor = (0.35, 0.22, 0.04)
+            token outputs:surface
+        }
+    }
+    def Material "MAT_StatusBlue"
+    {
+        token outputs:surface.connect = </Looks/MAT_StatusBlue/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.08, 0.14, 0.28)
+            float inputs:metallic = 0.1
+            float inputs:roughness = 0.35
+            color3f inputs:emissiveColor = (0.06, 0.14, 0.4)
+            token outputs:surface
+        }
+    }
+    def Material "MAT_StatusRed"
+    {
+        token outputs:surface.connect = </Looks/MAT_StatusRed/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.28, 0.08, 0.08)
+            float inputs:metallic = 0.1
+            float inputs:roughness = 0.35
+            color3f inputs:emissiveColor = (0.4, 0.06, 0.06)
+            token outputs:surface
+        }
+    }
+    def Material "MAT_StatusOffline"
+    {
+        token outputs:surface.connect = </Looks/MAT_StatusOffline/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.14, 0.14, 0.14)
+            float inputs:metallic = 0.05
+            float inputs:roughness = 0.7
+            token outputs:surface
+        }
+    }
+    def Material "Concrete"
+    {
+        token outputs:surface.connect = </Looks/Concrete/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.07, 0.07, 0.068)
+            float inputs:metallic = 0.0
+            float inputs:roughness = 0.78
+            token outputs:surface
+        }
+    }
+    def Material "Steel"
+    {
+        token outputs:surface.connect = </Looks/Steel/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.14, 0.15, 0.16)
+            float inputs:metallic = 0.65
+            float inputs:roughness = 0.42
+            token outputs:surface
+        }
+    }
+    def Material "Housing"
+    {
+        token outputs:surface.connect = </Looks/Housing/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.44, 0.46, 0.49)
+            float inputs:metallic = 0.35
+            float inputs:roughness = 0.5
+            token outputs:surface
+        }
+    }
+    def Material "Guard"
+    {
+        token outputs:surface.connect = </Looks/Guard/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.64, 0.65, 0.66)
+            float inputs:metallic = 0.2
+            float inputs:roughness = 0.55
+            token outputs:surface
+        }
+    }
+    def Material "Workpiece"
+    {
+        token outputs:surface.connect = </Looks/Workpiece/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.97, 0.98, 0.995)
+            float inputs:metallic = 0.85
+            float inputs:roughness = 0.28
+            token outputs:surface
+        }
+    }
+    def Material "Die"
+    {
+        token outputs:surface.connect = </Looks/Die/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.03, 0.031, 0.035)
+            float inputs:metallic = 0.8
+            float inputs:roughness = 0.32
+            token outputs:surface
+        }
+    }
+    def Material "Cabinet"
+    {
+        token outputs:surface.connect = </Looks/Cabinet/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.74, 0.75, 0.72)
+            float inputs:metallic = 0.05
+            float inputs:roughness = 0.55
+            token outputs:surface
+        }
+    }
+    def Material "SafetyYellow"
+    {
+        token outputs:surface.connect = </Looks/SafetyYellow/Preview.outputs:surface>
+        def Shader "Preview"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.8, 0.64, 0.14)
+            float inputs:metallic = 0.05
+            float inputs:roughness = 0.45
+            token outputs:surface
+        }
+    }
+}
+
