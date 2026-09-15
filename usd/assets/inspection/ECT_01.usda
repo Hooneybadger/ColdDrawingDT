@@ -1,0 +1,53 @@
+#usda 1.0
+(
+    defaultPrim = "ECT_01"
+    metersPerUnit = 1
+    upAxis = "Z"
+    doc = "Conceptual OpenUSD industrial equipment representation. Not mill CAD."
+)
+
+def Xform "ECT_01"
+{
+    custom string coldDrawing:assetId = "BG.MIEUM.ECT.01"
+    def Cube "Booth" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (14.4000, 2.5500, 1.7600)
+        double3 xformOp:translate = (0.0000, 0.0000, 0.9900)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.74, 0.75, 0.72)]
+    }
+    def Cube "Window" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (0.0800, 1.3500, 0.7700)
+        double3 xformOp:translate = (3.6000, 0.0000, 1.1000)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.3, 0.38, 0.42)]
+    }
+    def Cube "Bench" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (11.2000, 1.2000, 0.1200)
+        double3 xformOp:translate = (0.0000, 0.0000, 0.7000)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.44, 0.46, 0.49)]
+    }
+    def Cube "Plaque" (
+        purpose = "render"
+    )
+    {
+        double size = 1
+        float3 xformOp:scale = (1.2000, 0.0500, 0.2800)
+        double3 xformOp:translate = (-7.2000, 1.2750, 1.3500)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.8, 0.64, 0.14)]
+    }
+}
+
